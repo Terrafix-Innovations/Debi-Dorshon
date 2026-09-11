@@ -69,6 +69,10 @@ async def seed_data():
     if pandals:
         result = await collection.insert_many(pandals)
         print(f"[+] Successfully inserted {len(result.inserted_ids)} pandals into MongoDB!")
+        # Create multi-key and transit indexes
+        await collection.create_index("nearest_stations.name")
+        await collection.create_index("nearest_metro.name")
+        print("[+] Created indexes on nearest_stations.name and nearest_metro.name")
     else:
         print("[i] No pandals to insert.")
 

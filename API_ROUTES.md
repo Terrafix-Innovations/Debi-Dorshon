@@ -67,9 +67,11 @@ This document provides a comprehensive reference for all available API endpoints
     "name": "Shyambazar",
     "line": "Blue Line"
   },
-  "nearest_station": {
-    "name": "Kolkata Railway Station"
-  },
+  "nearest_stations": [
+    {
+      "name": "Kolkata Railway Station"
+    }
+  ],
   "nearest_ferry": {
     "name": "Bagbazar Ghat"
   }

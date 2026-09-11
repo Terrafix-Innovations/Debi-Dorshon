@@ -11,9 +11,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -30,9 +32,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -49,9 +53,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -68,9 +74,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -87,9 +95,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -106,9 +116,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -125,9 +137,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -144,9 +158,11 @@
       "name": "Girish Park",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    }
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
   },
   {
     "name": "Lalabagan",
@@ -160,9 +176,11 @@
       "name": "Girish Park",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    }
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
   },
   {
     "name": "Lalabagan Nabankur",
@@ -176,9 +194,11 @@
       "name": "Girish Park",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    }
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
   },
   {
     "name": "Chalta Bagan Lohapatty",
@@ -192,9 +212,11 @@
       "name": "Girish Park",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    }
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
   },
   {
     "name": "Ahiritola Sarbojonin",
@@ -208,9 +230,11 @@
       "name": "Sovabazar-Sutanuti",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Sovabazar Ahiritola"
-    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
     "nearest_ferry": {
       "name": "Ahiritola Ferry"
     }
@@ -227,9 +251,11 @@
       "name": "Sovabazar-Sutanuti",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Sovabazar Ahiritola"
-    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
     "nearest_ferry": {
       "name": "Ahiritola Ferry"
     }
@@ -246,9 +272,11 @@
       "name": "Sovabazar-Sutanuti",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Sovabazar Ahiritola"
-    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
     "nearest_ferry": {
       "name": "Ahiritola Ferry"
     }
@@ -265,9 +293,11 @@
       "name": "Sovabazar-Sutanuti",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Sovabazar Ferry"
     }
@@ -284,9 +314,11 @@
       "name": "Sovabazar-Sutanuti",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Sovabazar Ferry"
     }
@@ -303,9 +335,11 @@
       "name": "Sovabazar-Sutanuti",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Sovabazar Ferry"
     }
@@ -322,9 +356,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bagbazar"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -341,9 +377,11 @@
       "name": "Sovabazar-Sutanuti",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Sovabazar Ahiritola"
-    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
     "nearest_ferry": {
       "name": "Ahiritola Ferry"
     }
@@ -360,9 +398,11 @@
       "name": "Belgachhia",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tala"
-    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -379,9 +419,11 @@
       "name": "Belgachhia",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tala"
-    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -398,9 +440,11 @@
       "name": "Belgachhia",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tala"
-    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -417,9 +461,11 @@
       "name": "Belgachhia",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tala"
-    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -436,9 +482,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -455,9 +503,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -474,9 +524,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -493,9 +545,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -512,9 +566,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -531,9 +587,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -550,9 +608,11 @@
       "name": "Shyambazar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Bidhannagar Road"
-    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
     "nearest_ferry": {
       "name": "Bagbazar Ferry"
     }
@@ -569,9 +629,11 @@
       "name": "Jessore Road",
       "line": "Yellow"
     },
-    "nearest_station": {
-      "name": "Dum Dum Cant."
-    }
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
   },
   {
     "name": "Dumdum Park Sarbojonin",
@@ -585,9 +647,11 @@
       "name": "Jessore Road",
       "line": "Yellow"
     },
-    "nearest_station": {
-      "name": "Dum Dum Cant."
-    }
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
   },
   {
     "name": "Dumdum Park Bharat Chakra",
@@ -601,9 +665,11 @@
       "name": "Jessore Road",
       "line": "Yellow"
     },
-    "nearest_station": {
-      "name": "Dum Dum Cant."
-    }
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
   },
   {
     "name": "Dumdum Park Tarun Dal",
@@ -617,9 +683,11 @@
       "name": "Jessore Road",
       "line": "Yellow"
     },
-    "nearest_station": {
-      "name": "Dum Dum Cant."
-    }
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
   },
   {
     "name": "DumDum Mall Palli",
@@ -633,9 +701,11 @@
       "name": "Jessore Road",
       "line": "Yellow"
     },
-    "nearest_station": {
-      "name": "Dum Dum Cant."
-    }
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
   },
   {
     "name": "Dadabhai Sangha",
@@ -649,9 +719,11 @@
       "name": "Noapara",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Dumdum"
-    }
+    "nearest_stations": [
+      {
+        "name": "Dumdum"
+      }
+    ]
   },
   {
     "name": "Hajra Park",
@@ -743,9 +815,14 @@
       "name": "Taratala",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Tarun Matri Sebak Samity",
@@ -759,9 +836,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Behala Natun Dal",
@@ -775,9 +857,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Behala Friends Club",
@@ -791,9 +878,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "11 Pally",
@@ -807,9 +899,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Behala Young Men's Association",
@@ -823,9 +920,14 @@
       "name": "Taratala",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Debdaru Fotok Club",
@@ -839,9 +941,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Behala Club",
@@ -855,9 +962,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Behala Natun Sangha",
@@ -871,9 +983,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Behala Adorsho Pally",
@@ -887,9 +1004,14 @@
       "name": "Behala Bazar",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur / Majherhat"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
   },
   {
     "name": "Thakurpukur SB Park",
@@ -929,9 +1051,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "New Alipur"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
   },
   {
     "name": "Alipore Sarbojonin",
@@ -945,9 +1069,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "New Alipur"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
   },
   {
     "name": "Akal Bodhon",
@@ -961,9 +1087,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "New Alipur"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
   },
   {
     "name": "Suruchi Sangha",
@@ -977,9 +1105,11 @@
       "name": "Rabindra Sarobar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "New Alipur"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
   },
   {
     "name": "Buro Shibtola",
@@ -993,9 +1123,11 @@
       "name": "Taratala",
       "line": "Purple"
     },
-    "nearest_station": {
-      "name": "New Alipur"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
   },
   {
     "name": "Rajdanga Nobo Uday Sangha",
@@ -1009,9 +1141,11 @@
       "name": "Hemanta Mukhopadhyay",
       "line": "Orange"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Bosepukur Sitala Mandir",
@@ -1025,9 +1159,11 @@
       "name": "Hemanta Mukhopadhyay",
       "line": "Orange"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Bosepukur Talbagan",
@@ -1041,9 +1177,11 @@
       "name": "Hemanta Mukhopadhyay",
       "line": "Orange"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "New Ballygunge Durga Puja",
@@ -1057,9 +1195,11 @@
       "name": "Hemanta Mukhopadhyay",
       "line": "Orange"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Ekdalia Evergreen",
@@ -1073,9 +1213,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Falguni Sangha",
@@ -1089,9 +1231,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Singhi Park",
@@ -1105,9 +1249,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Hindusthan Club",
@@ -1121,9 +1267,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Hindusthan Park",
@@ -1137,9 +1285,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Ballygaunge 21 Pally",
@@ -1153,9 +1303,11 @@
       "name": "Jatin Das Park",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Triangular Park",
@@ -1169,9 +1321,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Deshapriya Park",
@@ -1185,9 +1339,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Ballygunge Cultural",
@@ -1201,9 +1357,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Samaj Sebi Sangha",
@@ -1217,9 +1375,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Tridhara Sammilani",
@@ -1233,9 +1393,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Ballygunge Jn"
-    }
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
   },
   {
     "name": "Mudiali",
@@ -1249,9 +1411,11 @@
       "name": "Rabindra Sarobar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "Shib Mandir",
@@ -1265,9 +1429,11 @@
       "name": "Rabindra Sarobar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "Naktala Udoyon Sangha",
@@ -1333,9 +1499,11 @@
       "name": "Kavi Nazrul",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "New Garia"
-    }
+    "nearest_stations": [
+      {
+        "name": "New Garia"
+      }
+    ]
   },
   {
     "name": "Taltala Durga Puja (EEDF)",
@@ -1349,9 +1517,14 @@
       "name": "Rabindra Sarobar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Lake Gardens / Dhakuria"
-    }
+    "nearest_stations": [
+      {
+        "name": "Lake Gardens"
+      },
+      {
+        "name": "Dhakuria"
+      }
+    ]
   },
   {
     "name": "95 Pally",
@@ -1365,9 +1538,14 @@
       "name": "Rabindra Sarobar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Lake Gardens / Dhakuria"
-    }
+    "nearest_stations": [
+      {
+        "name": "Lake Gardens"
+      },
+      {
+        "name": "Dhakuria"
+      }
+    ]
   },
   {
     "name": "Jodhpur Park",
@@ -1381,9 +1559,14 @@
       "name": "Rabindra Sarobar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Lake Gardens / Dhakuria"
-    }
+    "nearest_stations": [
+      {
+        "name": "Lake Gardens"
+      },
+      {
+        "name": "Dhakuria"
+      }
+    ]
   },
   {
     "name": "Selimpur Pally",
@@ -1397,9 +1580,11 @@
       "name": "Rabindra Sarobar",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Dhakuria"
-    }
+    "nearest_stations": [
+      {
+        "name": "Dhakuria"
+      }
+    ]
   },
   {
     "name": "Babubagan",
@@ -1413,9 +1598,11 @@
       "name": "Kalighat",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Dhakuria"
-    }
+    "nearest_stations": [
+      {
+        "name": "Dhakuria"
+      }
+    ]
   },
   {
     "name": "Santoshpur Lake Pally",
@@ -1425,9 +1612,11 @@
       "latitude": 22.4914713,
       "longitude": 88.3827705
     },
-    "nearest_station": {
-      "name": "Jadabpur"
-    }
+    "nearest_stations": [
+      {
+        "name": "Jadabpur"
+      }
+    ]
   },
   {
     "name": "Santoshpur Trikon Park",
@@ -1450,9 +1639,11 @@
       "name": "Netaji Bhavan",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "Chakraberia Sarbojonin",
@@ -1466,9 +1657,11 @@
       "name": "Netaji Bhavan",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "Bhawanipur Abasar",
@@ -1482,9 +1675,11 @@
       "name": "Netaji Bhavan",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "Maddox Square",
@@ -1498,9 +1693,11 @@
       "name": "Netaji Bhavan",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "64 Pally",
@@ -1514,9 +1711,11 @@
       "name": "Netaji Bhavan",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "Bakul Bagan",
@@ -1530,9 +1729,11 @@
       "name": "Netaji Bhavan",
       "line": "Blue"
     },
-    "nearest_station": {
-      "name": "Tollygunj"
-    }
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
   },
   {
     "name": "75 Pally",
@@ -1542,9 +1743,11 @@
       "latitude": 22.5402695,
       "longitude": 88.3205241
     },
-    "nearest_station": {
-      "name": "Khidirpur"
-    }
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
   },
   {
     "name": "25 Pally",
@@ -1554,9 +1757,11 @@
       "latitude": 22.5391961,
       "longitude": 88.3264565
     },
-    "nearest_station": {
-      "name": "Khidirpur"
-    }
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
   },
   {
     "name": "Nabarag",
@@ -1566,9 +1771,11 @@
       "latitude": 22.5417107,
       "longitude": 88.3212546
     },
-    "nearest_station": {
-      "name": "Khidirpur"
-    }
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
   },
   {
     "name": "Kabi Tirtha Sarani",
@@ -1578,9 +1785,11 @@
       "latitude": 22.5417107,
       "longitude": 88.3212546
     },
-    "nearest_station": {
-      "name": "Khidirpur"
-    }
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
   },
   {
     "name": "Jubak Sangha Club",
@@ -1590,9 +1799,11 @@
       "latitude": 22.5411941,
       "longitude": 88.319591
     },
-    "nearest_station": {
-      "name": "Khidirpur"
-    }
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
   },
   {
     "name": "Pally Sharadiya",
@@ -1602,9 +1813,11 @@
       "latitude": 22.5432531,
       "longitude": 88.3215038
     },
-    "nearest_station": {
-      "name": "Khidirpur"
-    }
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
   },
   {
     "name": "Mohammad Ali Park",

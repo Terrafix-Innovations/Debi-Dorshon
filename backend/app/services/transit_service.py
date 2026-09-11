@@ -5,6 +5,7 @@ Service layer for Ride by Metro and Ride by Train features.
 Queries MongoDB for distinct transit hubs and associated pandals.
 """
 
+import re
 from typing import List, Optional, Dict
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.config import settings
@@ -42,11 +43,13 @@ class TransitService:
         self, station_name: str, line: Optional[str] = None
     ) -> List[Dict]:
         """Get all pandals near a specific metro station."""
+        escaped_name = re.escape(station_name.strip())
         query = {
-            "nearest_metro.name": {"$regex": f"^{station_name}$", "$options": "i"}
+            "nearest_metro.name": {"$regex": f"^{escaped_name}$", "$options": "i"}
         }
         if line:
-            query["nearest_metro.line"] = {"$regex": f"^{line}$", "$options": "i"}
+            escaped_line = re.escape(line.strip())
+            query["nearest_metro.line"] = {"$regex": f"^{escaped_line}$", "$options": "i"}
 
         cursor = self.collection.find(query)
         pandals = []
@@ -59,10 +62,12 @@ class TransitService:
     async def get_train_stations(self) -> List[Dict]:
         """Aggregate all distinct railway stations with pandal counts."""
         pipeline = [
-            {"$match": {"nearest_station.name": {"$exists": True, "$ne": None}}},
+            {"$match": {"nearest_stations": {"$exists": True, "$ne": []}}},
+            {"$unwind": "$nearest_stations"},
+            {"$match": {"nearest_stations.name": {"$exists": True, "$ne": None}}},
             {
                 "$group": {
-                    "_id": "$nearest_station.name",
+                    "_id": "$nearest_stations.name",
                     "pandal_count": {"$sum": 1}
                 }
             },
@@ -78,8 +83,9 @@ class TransitService:
 
     async def get_pandals_by_train(self, station_name: str) -> List[Dict]:
         """Get all pandals near a specific railway station."""
+        escaped_name = re.escape(station_name.strip())
         query = {
-            "nearest_station.name": {"$regex": f"^{station_name}$", "$options": "i"}
+            "nearest_stations.name": {"$regex": f"^{escaped_name}$", "$options": "i"}
         }
         cursor = self.collection.find(query)
         pandals = []
