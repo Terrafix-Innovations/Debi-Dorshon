@@ -141,3 +141,63 @@ async def test_routing_failure_handling():
         with pytest.raises(HTTPException) as exc_info:
             await osrm_client.get_route(origin, destination)
         assert exc_info.value.status_code == 502
+
+
+def test_cluster_aware_pandal_hopping_tour():
+    """9. Verify cluster-aware tour starts at nearest pandal to origin and progresses smoothly towards destination."""
+    origin = (22.5675, 88.3711)  # Sealdah Station
+    destination = (22.5958, 88.3585)  # Ahiritola
+
+    # Polyline from Sealdah towards Ahiritola
+    polyline_coords = [
+        [88.3711, 22.5675],
+        [88.3680, 22.5750],
+        [88.3620, 22.5850],
+        [88.3585, 22.5958],
+    ]
+
+    pandals = [
+        {
+            "id": "ahiritola_pandal",
+            "name": "Ahiritola Sarbojonin",
+            "cluster": "Ahiritola-Kumartuli-Bagbazar",
+            "location": {"latitude": 22.5958, "longitude": 88.3585},
+        },
+        {
+            "id": "shyambazar_pandal",
+            "name": "Kashi Bose Lane",
+            "cluster": "Shyambazar",
+            "location": {"latitude": 22.5908, "longitude": 88.3689},
+        },
+        {
+            "id": "sealdah_pandal",
+            "name": "Sealdah Athletic Club",
+            "cluster": "Central Kolkata",
+            "location": {"latitude": 22.5683, "longitude": 88.3717},
+        },
+        {
+            "id": "bowbazar_pandal",
+            "name": "Santosh Mitra Square",
+            "cluster": "Central Kolkata",
+            "location": {"latitude": 22.5668, "longitude": 88.3664},
+        },
+    ]
+
+    ordered = order_pandals_along_polyline(
+        pandals,
+        polyline_coords,
+        max_detour_km=1.0,
+        origin=origin,
+        destination=destination,
+    )
+
+    assert len(ordered) == 4
+    # Pandal 1 must be Sealdah Athletic Club (closest to Sealdah Station origin)
+    assert ordered[0]["id"] == "sealdah_pandal"
+    # Pandal 2 must be Santosh Mitra Square (sweeps Central Kolkata cluster)
+    assert ordered[1]["id"] == "bowbazar_pandal"
+    # Pandal 3 must be Kashi Bose Lane (advances to Shyambazar cluster)
+    assert ordered[2]["id"] == "shyambazar_pandal"
+    # Final pandal must be Ahiritola Sarbojonin (reaches destination)
+    assert ordered[3]["id"] == "ahiritola_pandal"
+

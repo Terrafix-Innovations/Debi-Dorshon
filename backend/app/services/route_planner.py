@@ -107,7 +107,11 @@ class RoutePlannerService:
 
         # 3. Filter pandals within max_detour_km of polyline and order along route
         ordered_candidates = order_pandals_along_polyline(
-            candidates, coordinates, max_detour_km=request.max_detour_km
+            candidates,
+            coordinates,
+            max_detour_km=request.max_detour_km,
+            origin=(request.origin.latitude, request.origin.longitude),
+            destination=(request.destination.latitude, request.destination.longitude),
         )
 
         # 4. Limit to max_pandals
