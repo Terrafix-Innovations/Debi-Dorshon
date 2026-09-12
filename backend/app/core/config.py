@@ -7,7 +7,15 @@ Your FastAPI dev friend can easily add JWT keys, CORS origins, Redis URLs here l
 """
 
 import os
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
+_ENV_FILES = [
+    _BACKEND_DIR / ".env",
+    _BACKEND_DIR.parent / ".env",
+    Path(".env"),
+]
 
 
 class Settings(BaseSettings):
@@ -28,7 +36,7 @@ class Settings(BaseSettings):
 
     # Configure Pydantic to read from `.env` file
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=[str(p) for p in _ENV_FILES if p.exists()] or [".env"],
         env_file_encoding="utf-8",
         extra="ignore"
     )

@@ -201,3 +201,60 @@ def test_cluster_aware_pandal_hopping_tour():
     # Final pandal must be Ahiritola Sarbojonin (reaches destination)
     assert ordered[3]["id"] == "ahiritola_pandal"
 
+
+def test_destination_arrival_and_no_backtrack_loop():
+    """10. Verify that arriving at destination does not trigger backtracking or far-off candidate loops."""
+    # Route from 75 Palli to Maddox Square
+    origin = (22.5333, 88.3457)
+    destination = (22.5265, 88.3546)
+
+    # Simplified polyline corridor
+    polyline_coords = [
+        [88.3457, 22.5333],
+        [88.3489, 22.5278],
+        [88.3546, 22.5265],
+    ]
+
+    pandals = [
+        {
+            "id": "75_palli",
+            "name": "75 Pally",
+            "cluster": "Bhowanipur",
+            "location": {"latitude": 22.5333, "longitude": 88.3457},
+        },
+        {
+            "id": "abasar",
+            "name": "Bhawanipur Abasar",
+            "cluster": "Bhowanipur",
+            "location": {"latitude": 22.5278, "longitude": 88.3489},
+        },
+        {
+            "id": "maddox_square",
+            "name": "Maddox Square",
+            "cluster": "Bhowanipur",
+            "location": {"latitude": 22.5265, "longitude": 88.3546},
+        },
+        # Pandal far away or past destination that should not be appended after reaching Maddox Square
+        {
+            "id": "chakraberia",
+            "name": "Chakraberia Sarbojonin",
+            "cluster": "Bhowanipur",
+            "location": {"latitude": 22.5336, "longitude": 88.3519},
+        },
+    ]
+
+    ordered = order_pandals_along_polyline(
+        pandals,
+        polyline_coords,
+        max_detour_km=0.8,
+        origin=origin,
+        destination=destination,
+    )
+
+    ids = [p["id"] for p in ordered]
+    assert ids[0] == "75_palli"
+    assert "maddox_square" in ids
+    # The last pandal must be Maddox Square (destination reached, no post-destination loop)
+    assert ids[-1] == "maddox_square"
+    assert "chakraberia" not in ids[ids.index("maddox_square") + 1 :]
+

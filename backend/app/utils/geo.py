@@ -201,7 +201,15 @@ def order_pandals_along_polyline(
         )
 
         d_orig = haversine_distance(origin[0], origin[1], float(p_lat), float(p_lng))
-        if (detour_dist <= max_detour_km or d_orig <= 1.5) and -0.05 <= progress <= 1.15:
+        d_dest = haversine_distance(destination[0], destination[1], float(p_lat), float(p_lng))
+
+        # Pandal must be within max_detour_km of the route corridor or trip endpoints
+        is_near_corridor = (
+            detour_dist <= max_detour_km
+            or d_orig <= max_detour_km
+            or d_dest <= max_detour_km
+        )
+        if is_near_corridor and -0.05 <= progress <= 1.05:
             pandal_copy = dict(pandal)
             pandal_copy["detour_distance_km"] = detour_dist
             pandal_copy["route_progress_ratio"] = progress
@@ -218,42 +226,64 @@ def order_pandals_along_polyline(
 
     while candidates:
         if not itinerary:
-            # 1. Starting step: pick candidate closest to origin (favoring destination orientation)
+            # 1. Starting step: pick candidate closest to origin (favoring forward orientation towards destination)
             candidates.sort(
                 key=lambda p: haversine_distance(
                     curr_lat, curr_lng, p["location"]["latitude"], p["location"]["longitude"]
                 )
-                + 0.2
+                + 0.15
                 * haversine_distance(
                     dest_lat, dest_lng, p["location"]["latitude"], p["location"]["longitude"]
                 )
             )
             next_p = candidates.pop(0)
+            itinerary.append(next_p)
+            curr_lat = next_p["location"]["latitude"]
+            curr_lng = next_p["location"]["longitude"]
+            curr_prog = max(curr_prog, next_p["route_progress_ratio"])
         else:
-            # 2. Local walking proximity or cluster-aware inter-cluster advance:
+            # Check if destination or route completion has been reached
+            last_p = itinerary[-1]
+            dist_to_dest = haversine_distance(curr_lat, curr_lng, dest_lat, dest_lng)
+
+            # If last pandal is right at destination (<= 150m) or route progress is practically 1.0, terminate
+            if dist_to_dest <= 0.15 or last_p.get("route_progress_ratio", 0) >= 0.98:
+                break
+
             def hop_cost(p):
                 d_hop = haversine_distance(
                     curr_lat, curr_lng, p["location"]["latitude"], p["location"]["longitude"]
                 )
                 curr_cluster = itinerary[-1].get("cluster")
                 same_cluster = bool(curr_cluster and p.get("cluster") == curr_cluster)
-                cluster_bonus = -0.25 if same_cluster else 0.0
-                d_dest = haversine_distance(
+                cluster_bonus = -0.20 if same_cluster else 0.0
+
+                d_target = haversine_distance(
                     dest_lat, dest_lng, p["location"]["latitude"], p["location"]["longitude"]
                 )
                 p_prog = p["route_progress_ratio"]
                 backtrack = max(0.0, curr_prog - p_prog)
-                if d_hop <= 0.8:
-                    return d_hop + cluster_bonus
-                return d_hop + 0.35 * d_dest + 8.0 * backtrack + cluster_bonus
+
+                # Prioritize proximity, while continuously guiding forward towards destination and discouraging backtracking
+                return d_hop + 0.30 * d_target + 4.0 * backtrack + cluster_bonus
 
             candidates.sort(key=hop_cost)
-            next_p = candidates.pop(0)
+            best_candidate = candidates[0]
 
-        itinerary.append(next_p)
-        curr_lat = next_p["location"]["latitude"]
-        curr_lng = next_p["location"]["longitude"]
-        curr_prog = max(curr_prog, next_p["route_progress_ratio"])
+            # Stop if the best remaining candidate is a large detour away from destination when we are already near it
+            d_cand_dest = haversine_distance(
+                dest_lat, dest_lng,
+                best_candidate["location"]["latitude"],
+                best_candidate["location"]["longitude"]
+            )
+            if dist_to_dest < 0.5 and d_cand_dest > dist_to_dest + 0.4:
+                break
+
+            next_p = candidates.pop(0)
+            itinerary.append(next_p)
+            curr_lat = next_p["location"]["latitude"]
+            curr_lng = next_p["location"]["longitude"]
+            curr_prog = max(curr_prog, next_p["route_progress_ratio"])
 
     return itinerary
 
