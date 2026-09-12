@@ -25,6 +25,10 @@ class PandalBase(BaseModel):
     cluster: Optional[str] = Field(None, json_schema_extra={"example": "Shyambazar"})
     location: Optional[LocationSchema] = None
     nearest_metro: Optional[TransportInfoSchema] = None
+    nearest_stations: Optional[List[TransportInfoSchema]] = Field(
+        default_factory=list,
+        json_schema_extra={"example": [{"name": "New Alipur"}, {"name": "Majherhat"}]}
+    )
     nearest_station: Optional[TransportInfoSchema] = None
     nearest_ferry: Optional[TransportInfoSchema] = None
 

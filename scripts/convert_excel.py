@@ -116,7 +116,25 @@ def parse_metro(val):
     return {"name": s}
 
 
-def parse_station(val):
+def parse_stations(val):
+    if val is None:
+        return []
+    s = str(val).strip()
+    if not s or s.lower() in ["nil", "none"]:
+        return []
+    raw_names = re.split(r'\s*[/,&]\s*|\s+or\s+|\s+and\s+', s)
+    stations = []
+    seen = set()
+    for name in raw_names:
+        cleaned = name.strip()
+        if cleaned and cleaned.lower() not in ["nil", "none"]:
+            if cleaned.lower() not in seen:
+                seen.add(cleaned.lower())
+                stations.append({"name": cleaned})
+    return stations
+
+
+def parse_ferry(val):
     if val is None:
         return None
     s = str(val).strip()
@@ -236,11 +254,11 @@ def main():
                         if metro_obj:
                             pandal_obj["nearest_metro"] = metro_obj
 
-                        station_obj = parse_station(station_val)
-                        if station_obj:
-                            pandal_obj["nearest_station"] = station_obj
+                        station_objs = parse_stations(station_val)
+                        if station_objs:
+                            pandal_obj["nearest_stations"] = station_objs
 
-                        ferry_obj = parse_station(ferry_val)
+                        ferry_obj = parse_ferry(ferry_val)
                         if ferry_obj:
                             pandal_obj["nearest_ferry"] = ferry_obj
 

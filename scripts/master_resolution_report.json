@@ -1,0 +1,2280 @@
+[
+  {
+    "index": 0,
+    "name": "Shikdar Bagan",
+    "cluster": "Shyambazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.596485,
+      "longitude": 88.37199
+    },
+    "new_location": {
+      "latitude": 22.5954834,
+      "longitude": 88.3727205
+    },
+    "dist_shifted_meters": 134.3,
+    "source": "search: Shikdar Bagan Puja Pandal Kolkata",
+    "detail": "Sikdar Bagan St, Hati Bagan, Kolkata, West Bengal"
+  },
+  {
+    "index": 1,
+    "name": "Kashi Bose Lane",
+    "cluster": "Shyambazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5908979,
+      "longitude": 88.3689174
+    },
+    "new_location": {
+      "latitude": 22.5908979,
+      "longitude": 88.3689174
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Kashi Bose Lane Durga Puja Pandal Kolkata",
+    "detail": "0x3a027636f4aba21b:0xd56a6b40b1520547"
+  },
+  {
+    "index": 2,
+    "name": "Dorjipara Sarbojonin",
+    "cluster": "Shyambazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5925365,
+      "longitude": 88.3680032
+    },
+    "new_location": {
+      "latitude": 22.5922343,
+      "longitude": 88.3664257
+    },
+    "dist_shifted_meters": 165.4,
+    "source": "search: Dorjipara Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "Darjipara, Kolkata, West Bengal"
+  },
+  {
+    "index": 3,
+    "name": "Hati Bagan Sarbojonin",
+    "cluster": "Shyambazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5943863,
+      "longitude": 88.3720004
+    },
+    "new_location": {
+      "latitude": 22.5974903,
+      "longitude": 88.3706729
+    },
+    "dist_shifted_meters": 371.1,
+    "source": "search: Hati Bagan Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "Hati Bagan, Shyam Bazar, Kolkata, West Bengal"
+  },
+  {
+    "index": 4,
+    "name": "Hati Bagan Nabin Pally",
+    "cluster": "Shyambazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5959523,
+      "longitude": 88.3735085
+    },
+    "new_location": {
+      "latitude": 22.5974903,
+      "longitude": 88.3706729
+    },
+    "dist_shifted_meters": 337.6,
+    "source": "search: Hati Bagan Nabin Pally Durga Puja Pandal Kolkata",
+    "detail": "Hati Bagan, Shyam Bazar, Kolkata, West Bengal"
+  },
+  {
+    "index": 5,
+    "name": "Nalin Sarkar Street",
+    "cluster": "Shyambazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5945442,
+      "longitude": 88.3743283
+    },
+    "new_location": {
+      "latitude": 22.5955614,
+      "longitude": 88.3734788
+    },
+    "dist_shifted_meters": 142.8,
+    "source": "search: Nalin Sarkar Street Puja Pandal Kolkata",
+    "detail": "Nalin Sarkar St, Kolkata, West Bengal"
+  },
+  {
+    "index": 6,
+    "name": "North Tridhara",
+    "cluster": "Shyambazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5958155,
+      "longitude": 88.3745568
+    },
+    "new_location": {
+      "latitude": 22.5958155,
+      "longitude": 88.3745568
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: North Tridhara Durga Puja Pandal Kolkata",
+    "detail": "0x3a02779677298fb9:0x9473a4b994b8d3cc"
+  },
+  {
+    "index": 7,
+    "name": "Vivekananda Sarbojonin",
+    "cluster": "Manicktala-Girish Park",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5855,
+      "longitude": 88.3685
+    },
+    "new_location": {
+      "latitude": 22.5863743,
+      "longitude": 88.376133
+    },
+    "dist_shifted_meters": 789.7,
+    "source": "search: Vivekananda Sarbojonin Durga Puja Manicktala-Girish Park Kolkata",
+    "detail": "Manicktala, Garpar, Machuabazar, Kolkata, West Bengal"
+  },
+  {
+    "index": 8,
+    "name": "Lalabagan",
+    "cluster": "Manicktala-Girish Park",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5873616,
+      "longitude": 88.3768746
+    },
+    "new_location": {
+      "latitude": 22.5883732,
+      "longitude": 88.3767567
+    },
+    "dist_shifted_meters": 113.1,
+    "source": "search: Lalabagan Puja Pandal Kolkata",
+    "detail": "0x3a02770026d8bcad:0xa9e9419ef4a43e88"
+  },
+  {
+    "index": 9,
+    "name": "Lalabagan Nabankur",
+    "cluster": "Manicktala-Girish Park",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5883732,
+      "longitude": 88.3767567
+    },
+    "new_location": {
+      "latitude": 22.5883732,
+      "longitude": 88.3767567
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Lalabagan Nabankur Durga Puja Pandal Kolkata",
+    "detail": "0x3a02770026d8bcad:0xa9e9419ef4a43e88"
+  },
+  {
+    "index": 10,
+    "name": "Chalta Bagan Lohapatty",
+    "cluster": "Manicktala-Girish Park",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5844943,
+      "longitude": 88.3723008
+    },
+    "new_location": {
+      "latitude": 22.5848905,
+      "longitude": 88.3721509
+    },
+    "dist_shifted_meters": 46.7,
+    "source": "search: Chalta Bagan Lohapatty Durga Puja Pandal Kolkata",
+    "detail": "0x3a02779e94bb4087:0x66e73dad2ff4e1b0"
+  },
+  {
+    "index": 11,
+    "name": "Ahiritola Sarbojonin",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5948383,
+      "longitude": 88.3571698
+    },
+    "new_location": {
+      "latitude": 22.5943514,
+      "longitude": 88.3548955
+    },
+    "dist_shifted_meters": 239.7,
+    "source": "search: Ahiritola Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "Ahiritola, Beniatola, Kolkata, West Bengal"
+  },
+  {
+    "index": 12,
+    "name": "Ahiritola Yubak Brinda",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5946791,
+      "longitude": 88.3602117
+    },
+    "new_location": {
+      "latitude": 22.5946791,
+      "longitude": 88.3602117
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/AHIRITOLA+JUBAK+BRINDA+SARBOJONIN+SARODOTSAB/@22.5948383,88.3545949,17z/data=!4m6!3m5!1s0x3a027725480b7939:0xfcc6e76fb58b5884!8m2!3d22.5946791!4d88.3602117!16s/g/11hdrwgyd0!18m1!1e1?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=5dec74f0-dc84-4be1-9085-885022e9a3bf"
+  },
+  {
+    "index": 13,
+    "name": "Beniatola",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5958452,
+      "longitude": 88.3611126
+    },
+    "new_location": {
+      "latitude": 22.5951394,
+      "longitude": 88.3591439
+    },
+    "dist_shifted_meters": 216.8,
+    "source": "search: Beniatola Puja Pandal Kolkata",
+    "detail": "Beniatola, Kolkata, West Bengal"
+  },
+  {
+    "index": 14,
+    "name": "Kumartuli Park",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5990285,
+      "longitude": 88.3614858
+    },
+    "new_location": {
+      "latitude": 22.5989827,
+      "longitude": 88.3614663
+    },
+    "dist_shifted_meters": 5.5,
+    "source": "search: Kumartuli Park Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277cd636f29f3:0x76a486a0b70b04b7"
+  },
+  {
+    "index": 15,
+    "name": "Kumartuli Sarbojonin",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6011655,
+      "longitude": 88.362723
+    },
+    "new_location": {
+      "latitude": 22.6000017,
+      "longitude": 88.3612679
+    },
+    "dist_shifted_meters": 197.6,
+    "source": "search: Kumartuli Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "Kumartuli, Hatkhola, Kolkata, West Bengal"
+  },
+  {
+    "index": 16,
+    "name": "Jagat Mukherjee Park",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5994903,
+      "longitude": 88.3660388
+    },
+    "new_location": {
+      "latitude": 22.5994903,
+      "longitude": 88.3660388
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Jagat Mukherjee Park Durga Puja Pandal Kolkata",
+    "detail": "0x3a02763275b71687:0xd927b406f878b566"
+  },
+  {
+    "index": 17,
+    "name": "Bagbazar Sarbojonin",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.60478,
+      "longitude": 88.3661767
+    },
+    "new_location": {
+      "latitude": 22.6038115,
+      "longitude": 88.3679355
+    },
+    "dist_shifted_meters": 210.2,
+    "source": "search: Bagbazar Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "Baghbazar, Kolkata, West Bengal"
+  },
+  {
+    "index": 18,
+    "name": "Nimtala Sarbojonin",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5925,
+      "longitude": 88.3528
+    },
+    "new_location": {
+      "latitude": 22.5918418,
+      "longitude": 88.3586946
+    },
+    "dist_shifted_meters": 609.6,
+    "source": "search: Nimtala Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277cbc3764565:0x4d210c8478c3edbe"
+  },
+  {
+    "index": 19,
+    "name": "Tala Barowari",
+    "cluster": "Tala",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6072038,
+      "longitude": 88.3760758
+    },
+    "new_location": {
+      "latitude": 22.6072038,
+      "longitude": 88.3760758
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Tala Barowari Durga Puja Pandal Kolkata",
+    "detail": "0x3a02770037205ccb:0xb107f0749334100a"
+  },
+  {
+    "index": 20,
+    "name": "Tala Prottoy",
+    "cluster": "Tala",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6087911,
+      "longitude": 88.382502
+    },
+    "new_location": {
+      "latitude": 22.6104572,
+      "longitude": 88.3846031
+    },
+    "dist_shifted_meters": 284.3,
+    "source": "search: Tala Prottoy Tala Kolkata",
+    "detail": ""
+  },
+  {
+    "index": 21,
+    "name": "Belgachhia Sadharan",
+    "cluster": "Tala",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6077319,
+      "longitude": 88.3827393
+    },
+    "new_location": {
+      "latitude": 22.6077319,
+      "longitude": 88.3827393
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Belgachia+Sadharon+Durgotsav/@22.6078265,88.3829464,19.28z/data=!4m6!3m5!1s0x3a02761f65e977c5:0xb4a2aa7574f820e1!8m2!3d22.6077319!4d88.3827393!16s/g/11f505v6__!18m1!1e1?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=d0bfe14a-b2f1-46a5-b004-d5ce4c061a7d"
+  },
+  {
+    "index": 22,
+    "name": "Tala Pally Sadharan",
+    "cluster": "Tala",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6069052,
+      "longitude": 88.3746504
+    },
+    "new_location": {
+      "latitude": 22.6069052,
+      "longitude": 88.3746504
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Tala+Palli+Sadharan+Durgotsab+Samity/@22.6069052,88.3720755,17z/data=!3m1!4b1!4m6!3m5!1s0x3a0276263d2b0389:0xa515bb8479760f9e!8m2!3d22.6069052!4d88.3746504!16s/g/11bwd9mm1s!18m1!1e1?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=493c9ebb-5163-4a66-8770-664ad58f1d1d"
+  },
+  {
+    "index": 23,
+    "name": "Gauri Bari Sarbojonin",
+    "cluster": "Ultadanga",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5943737,
+      "longitude": 88.3790894
+    },
+    "new_location": {
+      "latitude": 22.5944481,
+      "longitude": 88.3790857
+    },
+    "dist_shifted_meters": 8.3,
+    "source": "search: Gauri Bari Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "0x3a02763c2ff55cf3:0x3b115d3e0b47dc81"
+  },
+  {
+    "index": 24,
+    "name": "Telenga Bagan",
+    "cluster": "Ultadanga",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5888,
+      "longitude": 88.3882
+    },
+    "new_location": {
+      "latitude": 22.5940824,
+      "longitude": 88.3835636
+    },
+    "dist_shifted_meters": 756.0,
+    "source": "search: Telenga Bagan Durga Puja Pandal Kolkata",
+    "detail": "Telenga Bagan, Ultadanga, Kolkata, West Bengal"
+  },
+  {
+    "index": 25,
+    "name": "Dakhindari Youth",
+    "cluster": "Ultadanga",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5975,
+      "longitude": 88.397
+    },
+    "new_location": {
+      "latitude": 22.5953004,
+      "longitude": 88.39385
+    },
+    "dist_shifted_meters": 405.5,
+    "source": "search: Dakhindari Youth Durga Puja Ultadanga Kolkata",
+    "detail": "0x3a02760e67a24671:0x5dfbe508a0d48293"
+  },
+  {
+    "index": 26,
+    "name": "Ultadanga Pallyshree",
+    "cluster": "Ultadanga",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.591,
+      "longitude": 88.384
+    },
+    "new_location": {
+      "latitude": 22.5958298,
+      "longitude": 88.3844134
+    },
+    "dist_shifted_meters": 538.7,
+    "source": "search: Ultadanga Pallyshree Durga Puja Pandal Kolkata",
+    "detail": "0x3a027616593953f5:0x48ddab9db01bd44e"
+  },
+  {
+    "index": 27,
+    "name": "Karbagan Sarbojonin",
+    "cluster": "Ultadanga",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5895,
+      "longitude": 88.3855
+    },
+    "new_location": {
+      "latitude": 22.595241,
+      "longitude": 88.3842775
+    },
+    "dist_shifted_meters": 650.6,
+    "source": "search: Karbagan Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "0x3a02761671a8ad37:0x304bf77a07aa76e5"
+  },
+  {
+    "index": 28,
+    "name": "Surir Bagan Sarbojonin",
+    "cluster": "Ultadanga",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5878,
+      "longitude": 88.3872
+    },
+    "new_location": {
+      "latitude": 22.5949974,
+      "longitude": 88.3876018
+    },
+    "dist_shifted_meters": 801.4,
+    "source": "search: Surir Bagan Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "0x3a0276114e0d1abb:0xa54c65b6ecffc475"
+  },
+  {
+    "index": 29,
+    "name": "Jagarani Sangha",
+    "cluster": "Ultadanga",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.589,
+      "longitude": 88.3895
+    },
+    "new_location": {
+      "latitude": 22.5944516,
+      "longitude": 88.3835325
+    },
+    "dist_shifted_meters": 861.9,
+    "source": "search: Jagarani Sangha Puja Pandal Ultadanga Kolkata",
+    "detail": "Ultadanga, Kolkata, West Bengal"
+  },
+  {
+    "index": 30,
+    "name": "Sreebhumi Sporting Club",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.5998,
+      "longitude": 88.4022
+    },
+    "new_location": {
+      "latitude": 22.5988987,
+      "longitude": 88.4029328
+    },
+    "dist_shifted_meters": 125.3,
+    "source": "link_place_search",
+    "detail": "HCX3 H53 Sree Bhumi Sporting Club, Canal St, near P.S, Sreebhumi, Lake Town, South Dumdum, West Bengal 700048"
+  },
+  {
+    "index": 31,
+    "name": "Dumdum Park Sarbojonin",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6075,
+      "longitude": 88.411
+    },
+    "new_location": {
+      "latitude": 22.6094363,
+      "longitude": 88.4164052
+    },
+    "dist_shifted_meters": 595.2,
+    "source": "search: Dumdum Park Sarbojonin Puja Pandal Kolkata",
+    "detail": "0x3a0275f5d410ed31:0xe23f982d56f9571e"
+  },
+  {
+    "index": 32,
+    "name": "Dumdum Park Bharat Chakra",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6062,
+      "longitude": 88.4132
+    },
+    "new_location": {
+      "latitude": 22.6108213,
+      "longitude": 88.4146001
+    },
+    "dist_shifted_meters": 533.6,
+    "source": "search: Dumdum Park Bharat Chakra Durga Puja Pandal Kolkata",
+    "detail": "0x3a0275f638219271:0x3974eb6bb6cbe800"
+  },
+  {
+    "index": 33,
+    "name": "Dumdum Park Tarun Dal",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.608,
+      "longitude": 88.4145
+    },
+    "new_location": {
+      "latitude": 22.611486,
+      "longitude": 88.418626
+    },
+    "dist_shifted_meters": 574.1,
+    "source": "link_place_search",
+    "detail": "JC69 JCF Dum Dum Park Tarun Dal, Shyam Nagar Rd, Satgachi, Baguiati, South Dumdum, West Bengal 700055"
+  },
+  {
+    "index": 34,
+    "name": "DumDum Mall Palli",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6281119,
+      "longitude": 88.4221371
+    },
+    "new_location": {
+      "latitude": 22.6281119,
+      "longitude": 88.4221371
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Dum+Dum+Mall+Palli+Club/@22.6281119,88.4173735,17z/data=!4m7!3m6!1s0x39f89e3d8e38a953:0x45d10cec517abd20!8m2!3d22.6281119!4d88.4221371!15sCg8xNCBwYWxseSBkdW1kdW1aESIPMTQgcGFsbHkgZHVtZHVtkgEEY2x1YpoBRENpOURRVWxSUVVOdlpFTm9kSGxqUmpsdlQyMXNRMDVzUVRKbFZXUTBVV3MxVDA0eU9XWmtNV1JwWkcwMWRGUnNSUkFC4AEA-gEECAAQOg!16s/g/1pyqs5dfy?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=fdd30498-b5c9-4406-b328-a68dae1500a8"
+  },
+  {
+    "index": 35,
+    "name": "Dadabhai Sangha",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "region": "North",
+    "old_location": {
+      "latitude": 22.6416696,
+      "longitude": 88.3886567
+    },
+    "new_location": {
+      "latitude": 22.6416696,
+      "longitude": 88.3886567
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Dadabhai Sangha Durga Puja Pandal Kolkata",
+    "detail": "0x39f89dc4763b3383:0x64d800b6efff4567"
+  },
+  {
+    "index": 36,
+    "name": "Hajra Park",
+    "cluster": "Hajra-Kalighat",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5255,
+      "longitude": 88.3468
+    },
+    "new_location": {
+      "latitude": 22.5228058,
+      "longitude": 88.3500398
+    },
+    "dist_shifted_meters": 447.8,
+    "source": "search: Hajra Park Durga Puja Hajra-Kalighat Kolkata",
+    "detail": "Hazra, Kalighat, Kolkata, West Bengal"
+  },
+  {
+    "index": 37,
+    "name": "Kalighat Milan Sangha",
+    "cluster": "Hajra-Kalighat",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5243173,
+      "longitude": 88.3410395
+    },
+    "new_location": {
+      "latitude": 22.5243173,
+      "longitude": 88.3410395
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Kalighat Milan Sangha Durga Puja Pandal Kolkata",
+    "detail": "0x3a02774908f26f31:0x7ca309b32ad6d38e"
+  },
+  {
+    "index": 38,
+    "name": "Badamtala Asar Sanagha",
+    "cluster": "Hajra-Kalighat",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5179668,
+      "longitude": 88.3437245
+    },
+    "new_location": {
+      "latitude": 22.5179668,
+      "longitude": 88.3437245
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Badamtala Asar Sanagha Durga Puja Pandal Kolkata",
+    "detail": "0x3a02770034b2c43f:0xe927c8d0bec44587"
+  },
+  {
+    "index": 39,
+    "name": "66 Pally",
+    "cluster": "Hajra-Kalighat",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5180613,
+      "longitude": 88.3427526
+    },
+    "new_location": {
+      "latitude": 22.5180613,
+      "longitude": 88.3427526
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: 66 Pally Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277005a00bfb7:0x26118fb10c31fc81"
+  },
+  {
+    "index": 40,
+    "name": "Nepal Bhattacharjee Street",
+    "cluster": "Hajra-Kalighat",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5178934,
+      "longitude": 88.3412609
+    },
+    "new_location": {
+      "latitude": 22.5176514,
+      "longitude": 88.3427551
+    },
+    "dist_shifted_meters": 155.8,
+    "source": "search: Nepal Bhattacharjee Street Durga Puja Pandal Kolkata",
+    "detail": "Nepal Bhattacharya St, Kalighat, Kolkata, West Bengal"
+  },
+  {
+    "index": 41,
+    "name": "Protapadityo Tricone Park",
+    "cluster": "Hajra-Kalighat",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5134551,
+      "longitude": 88.3447357
+    },
+    "new_location": {
+      "latitude": 22.5134551,
+      "longitude": 88.3447357
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Protapadityo Tricone Park Durga Puja Pandal Kolkata",
+    "detail": "0x3a0270cb1d1a6955:0x2df0cb98705cfbb5"
+  },
+  {
+    "index": 42,
+    "name": "29 Pally",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4935,
+      "longitude": 88.3082
+    },
+    "new_location": {
+      "latitude": 22.506987,
+      "longitude": 88.322693
+    },
+    "dist_shifted_meters": 2113.2,
+    "source": "search: 29 Pally Durga Puja Pandal Kolkata",
+    "detail": "0x3a027a070ac99853:0x8e04678782d8d343"
+  },
+  {
+    "index": 43,
+    "name": "Tarun Matri Sebak Samity",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.502,
+      "longitude": 88.3185
+    },
+    "new_location": {
+      "latitude": 22.5020659,
+      "longitude": 88.3219608
+    },
+    "dist_shifted_meters": 355.6,
+    "source": "search: Tarun Matri Sebak Samity Puja Pandal Kolkata",
+    "detail": "0x3a027b779dc3626d:0x6e1006091f5ee25"
+  },
+  {
+    "index": 44,
+    "name": "Behala Natun Dal",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5012,
+      "longitude": 88.3125
+    },
+    "new_location": {
+      "latitude": 22.5002078,
+      "longitude": 88.320287
+    },
+    "dist_shifted_meters": 807.5,
+    "source": "search: Behala Natun Dal Puja Pandal Kolkata",
+    "detail": "0x3a027a091884e2f5:0xeda7dc93f955e9f4"
+  },
+  {
+    "index": 45,
+    "name": "Behala Friends Club",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5085,
+      "longitude": 88.322
+    },
+    "new_location": {
+      "latitude": 22.5013531,
+      "longitude": 88.3198079
+    },
+    "dist_shifted_meters": 826.0,
+    "source": "search: Behala Friends Club Durga Puja Pandal Kolkata",
+    "detail": "0x3a027a0ef9bcd14d:0x73e8aabbc63c45a2"
+  },
+  {
+    "index": 46,
+    "name": "11 Pally",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5032,
+      "longitude": 88.3195
+    },
+    "new_location": {
+      "latitude": 22.4984807,
+      "longitude": 88.3214726
+    },
+    "dist_shifted_meters": 562.5,
+    "source": "search: 11 Pally Puja Pandal Kolkata",
+    "detail": "0x3a027a0978c2d76b:0xca7e152360f5472e"
+  },
+  {
+    "index": 47,
+    "name": "Behala Young Men's Association",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4988,
+      "longitude": 88.3142
+    },
+    "new_location": {
+      "latitude": 22.5073293,
+      "longitude": 88.3248569
+    },
+    "dist_shifted_meters": 1448.4,
+    "source": "search: Behala Young Men's Association Durga Puja Pandal Kolkata",
+    "detail": "0x3a0270a834aa7d5d:0x8293754529b5a2ea"
+  },
+  {
+    "index": 48,
+    "name": "Debdaru Fotok Club",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4955,
+      "longitude": 88.3155
+    },
+    "new_location": {
+      "latitude": 22.5015719,
+      "longitude": 88.3209437
+    },
+    "dist_shifted_meters": 876.7,
+    "source": "search: Debdaru Fotok Club Durga Puja Behala Kolkata",
+    "detail": "Behala, Kolkata, West Bengal"
+  },
+  {
+    "index": 49,
+    "name": "Behala Club",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4995,
+      "longitude": 88.311
+    },
+    "new_location": {
+      "latitude": 22.5052597,
+      "longitude": 88.3140807
+    },
+    "dist_shifted_meters": 714.4,
+    "source": "search: Behala Club Durga Puja Pandal Kolkata",
+    "detail": "0x3a027a1ab5524559:0x402ace7b7e4059b4"
+  },
+  {
+    "index": 50,
+    "name": "Behala Natun Sangha",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4975,
+      "longitude": 88.3055
+    },
+    "new_location": {
+      "latitude": 22.5015719,
+      "longitude": 88.3209437
+    },
+    "dist_shifted_meters": 1649.9,
+    "source": "search: Behala Natun Sangha Durga Puja Behala Kolkata",
+    "detail": "Behala, Kolkata, West Bengal"
+  },
+  {
+    "index": 51,
+    "name": "Behala Adorsho Pally",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.496,
+      "longitude": 88.313
+    },
+    "new_location": {
+      "latitude": 22.4998456,
+      "longitude": 88.3277163
+    },
+    "dist_shifted_meters": 1571.1,
+    "source": "search: Behala Adorsho Pally Puja Pandal Kolkata",
+    "detail": ""
+  },
+  {
+    "index": 52,
+    "name": "Thakurpukur SB Park",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4677772,
+      "longitude": 88.3090707
+    },
+    "new_location": {
+      "latitude": 22.4677772,
+      "longitude": 88.3090707
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/State+Bank+Park/@22.4656547,88.2998356,15.55z/data=!4m6!3m5!1s0x3a027a8a074c4ad3:0x567c947fef1f6a8f!8m2!3d22.4677772!4d88.3090707!16s/g/1q5grjfsw!18m1!1e1?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=603b01cb-0dab-40d2-8d0d-3365c562dff6"
+  },
+  {
+    "index": 53,
+    "name": "Barisha Club",
+    "cluster": "Behala",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4825,
+      "longitude": 88.3115
+    },
+    "new_location": {
+      "latitude": 22.4812859,
+      "longitude": 88.3132412
+    },
+    "dist_shifted_meters": 224.1,
+    "source": "search: Barisha Club Durga Puja Pandal Kolkata",
+    "detail": "0x3a027a6fe9697123:0xe1530cae4fe5b431"
+  },
+  {
+    "index": 54,
+    "name": "Chetla Agrani",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5163997,
+      "longitude": 88.3368366
+    },
+    "new_location": {
+      "latitude": 22.5163878,
+      "longitude": 88.337111
+    },
+    "dist_shifted_meters": 28.2,
+    "source": "search: Chetla Agrani Durga Puja Pandal Kolkata",
+    "detail": "0x3a02774cc9065925:0x8664b2ff7895f91d"
+  },
+  {
+    "index": 55,
+    "name": "Alipore Sarbojonin",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5191675,
+      "longitude": 88.333401
+    },
+    "new_location": {
+      "latitude": 22.5191675,
+      "longitude": 88.333401
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Alipore+Sarbojanin+Durgapuja/@22.519074,88.3333786,20.25z/data=!4m6!3m5!1s0x3a0277000c3971f7:0x5ae5475fd7c3b77c!8m2!3d22.5191675!4d88.333401!16s/g/11xzt2tt4_!18m1!1e1?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=54d6dc67-3a28-4cb9-b3f6-fec6dd235083"
+  },
+  {
+    "index": 56,
+    "name": "Akal Bodhon",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5156046,
+      "longitude": 88.3364179
+    },
+    "new_location": {
+      "latitude": 22.5156046,
+      "longitude": 88.3364179
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Akal Bodhon Durga Puja Chetla-Alipore-NewAlipore Kolkata",
+    "detail": "0x3a0270b32933ee6b:0x37af9d822ae2e4d9"
+  },
+  {
+    "index": 57,
+    "name": "Suruchi Sangha",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5089855,
+      "longitude": 88.3339522
+    },
+    "new_location": {
+      "latitude": 22.5089855,
+      "longitude": 88.3339522
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Suruchi Sangha Durga Puja Pandal Kolkata",
+    "detail": "0x3a027112d9c0466f:0x21832239a8285502"
+  },
+  {
+    "index": 58,
+    "name": "Buro Shibtola",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5041504,
+      "longitude": 88.330462
+    },
+    "new_location": {
+      "latitude": 22.5025165,
+      "longitude": 88.3324332
+    },
+    "dist_shifted_meters": 272.1,
+    "source": "search: Buro Shibtola Puja Pandal Kolkata",
+    "detail": "Buroshibtalla, Behala, Kolkata, West Bengal"
+  },
+  {
+    "index": 59,
+    "name": "Rajdanga Nobo Uday Sangha",
+    "cluster": "Kasba",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5142,
+      "longitude": 88.3905
+    },
+    "new_location": {
+      "latitude": 22.5131325,
+      "longitude": 88.3896665
+    },
+    "dist_shifted_meters": 146.4,
+    "source": "search: Rajdanga Nobo Uday Sangha Durga Puja Pandal Kolkata",
+    "detail": "Sarat Park, Rajdanga, Kasba, Kolkata, West Bengal"
+  },
+  {
+    "index": 60,
+    "name": "Bosepukur Sitala Mandir",
+    "cluster": "Kasba",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5175,
+      "longitude": 88.3882
+    },
+    "new_location": {
+      "latitude": 22.5192181,
+      "longitude": 88.3848576
+    },
+    "dist_shifted_meters": 392.9,
+    "source": "search: Bosepukur Sitala Mandir Durga Puja Pandal Kolkata",
+    "detail": "0x3a0276b4fd6fec85:0xb383d0cf7fdb6bc8"
+  },
+  {
+    "index": 61,
+    "name": "Bosepukur Talbagan",
+    "cluster": "Kasba",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5185,
+      "longitude": 88.3865
+    },
+    "new_location": {
+      "latitude": 22.5183226,
+      "longitude": 88.3855348
+    },
+    "dist_shifted_meters": 101.1,
+    "source": "search: Bosepukur Talbagan Durga Puja Pandal Kolkata",
+    "detail": "Tal Bagan, Bosepukur, Kasba, Kolkata, West Bengal"
+  },
+  {
+    "index": 62,
+    "name": "New Ballygunge Durga Puja",
+    "cluster": "Kasba",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5205,
+      "longitude": 88.384
+    },
+    "new_location": {
+      "latitude": 22.5197708,
+      "longitude": 88.3761156
+    },
+    "dist_shifted_meters": 813.9,
+    "source": "search: New Ballygunge Durga Puja Durga Puja Kasba Kolkata",
+    "detail": "0x3a027700751a2029:0xdb14ff3dbafa6c6c"
+  },
+  {
+    "index": 63,
+    "name": "Ekdalia Evergreen",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.52125,
+      "longitude": 88.36596
+    },
+    "new_location": {
+      "latitude": 22.5212187,
+      "longitude": 88.3665629
+    },
+    "dist_shifted_meters": 62.0,
+    "source": "search: Ekdalia Evergreen Durga Puja Pandal Kolkata",
+    "detail": "0x3a0276d417b26201:0x220c3a4dbd7f651a"
+  },
+  {
+    "index": 64,
+    "name": "Falguni Sangha",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5220333,
+      "longitude": 88.3656673
+    },
+    "new_location": {
+      "latitude": 22.5220333,
+      "longitude": 88.3656673
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Falguni Sangha Durga Puja Pandal Kolkata",
+    "detail": "Falguni Sangha, Ekdalia, Ballygunge, Kolkata, West Bengal"
+  },
+  {
+    "index": 65,
+    "name": "Singhi Park",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5209489,
+      "longitude": 88.3627281
+    },
+    "new_location": {
+      "latitude": 22.5209489,
+      "longitude": 88.3627281
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Singhi Park Durga Puja Pandal Kolkata",
+    "detail": "0x3a0276d5f6fa97af:0x310ce7fdfb83ca22"
+  },
+  {
+    "index": 66,
+    "name": "Hindusthan Club",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5201571,
+      "longitude": 88.3609098
+    },
+    "new_location": {
+      "latitude": 22.5201571,
+      "longitude": 88.3609098
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Hindusthan Club Durga Puja Gariahat-Ballygaunge Phari Kolkata",
+    "detail": "0x3a02772a4e8c11cb:0x28051ded4beda059"
+  },
+  {
+    "index": 67,
+    "name": "Hindusthan Park",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5176792,
+      "longitude": 88.3620716
+    },
+    "new_location": {
+      "latitude": 22.5169831,
+      "longitude": 88.3633918
+    },
+    "dist_shifted_meters": 156.1,
+    "source": "search: Hindusthan Park Durga Puja Pandal Kolkata",
+    "detail": "Golpark, Hindustan Park, Gariahat, Kolkata, West Bengal"
+  },
+  {
+    "index": 68,
+    "name": "Ballygaunge 21 Pally",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.529175,
+      "longitude": 88.3688163
+    },
+    "new_location": {
+      "latitude": 22.529175,
+      "longitude": 88.3688163
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Ballygaunge 21 Pally Durga Puja Pandal Kolkata",
+    "detail": "0x3a0276da11045def:0xdfde27864be4b528"
+  },
+  {
+    "index": 69,
+    "name": "Triangular Park",
+    "cluster": "Rashbehari Avenue",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5185,
+      "longitude": 88.3582
+    },
+    "new_location": {
+      "latitude": 22.5178665,
+      "longitude": 88.3586887
+    },
+    "dist_shifted_meters": 86.5,
+    "source": "search: Triangular Park Durga Puja Pandal Kolkata",
+    "detail": ""
+  },
+  {
+    "index": 70,
+    "name": "Deshapriya Park",
+    "cluster": "Rashbehari Avenue",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.51843,
+      "longitude": 88.35351
+    },
+    "new_location": {
+      "latitude": 22.5185819,
+      "longitude": 88.3534607
+    },
+    "dist_shifted_meters": 17.6,
+    "source": "search: Deshapriya Park Durga Puja Pandal Kolkata",
+    "detail": "0x3a027761da29a45d:0x9da1834309e5d8aa"
+  },
+  {
+    "index": 71,
+    "name": "Ballygunge Cultural",
+    "cluster": "Rashbehari Avenue",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.51588,
+      "longitude": 88.35581
+    },
+    "new_location": {
+      "latitude": 22.5162122,
+      "longitude": 88.3558059
+    },
+    "dist_shifted_meters": 36.9,
+    "source": "search: Ballygunge Cultural Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277004f58677f:0x6b0e23aa0c96a063"
+  },
+  {
+    "index": 72,
+    "name": "Samaj Sebi Sangha",
+    "cluster": "Rashbehari Avenue",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.51473,
+      "longitude": 88.35599
+    },
+    "new_location": {
+      "latitude": 22.5157267,
+      "longitude": 88.3562977
+    },
+    "dist_shifted_meters": 115.2,
+    "source": "search: Samaj Sebi Sangha Durga Puja Pandal Kolkata",
+    "detail": "0x3a02710006ffef83:0xac6faefbaf19d165"
+  },
+  {
+    "index": 73,
+    "name": "Tridhara Sammilani",
+    "cluster": "Rashbehari Avenue",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.51957,
+      "longitude": 88.35534
+    },
+    "new_location": {
+      "latitude": 22.5195286,
+      "longitude": 88.3554398
+    },
+    "dist_shifted_meters": 11.2,
+    "source": "search: Tridhara Sammilani Durga Puja Pandal Kolkata",
+    "detail": "0x3a02772daca1f653:0xdbf590e266b01219"
+  },
+  {
+    "index": 74,
+    "name": "Mudiali",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.51007,
+      "longitude": 88.34662
+    },
+    "new_location": {
+      "latitude": 22.510194,
+      "longitude": 88.3463122
+    },
+    "dist_shifted_meters": 34.5,
+    "source": "search: Mudiali Durga Puja Pandal Kolkata",
+    "detail": "0x3a0270cbdf5173cd:0x5518c1c09c9335f0"
+  },
+  {
+    "index": 75,
+    "name": "Shib Mandir",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5108,
+      "longitude": 88.3495
+    },
+    "new_location": {
+      "latitude": 22.5109975,
+      "longitude": 88.3498496
+    },
+    "dist_shifted_meters": 42.1,
+    "source": "link_place_search",
+    "detail": "Shibmandir Sarbojanin Durgotsab Samiti, 25, Lake Temple Rd, Lake Range, Kalighat, Kolkata, West Bengal 700029"
+  },
+  {
+    "index": 76,
+    "name": "Naktala Udoyon Sangha",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4715,
+      "longitude": 88.3635
+    },
+    "new_location": {
+      "latitude": 22.4742929,
+      "longitude": 88.3665898
+    },
+    "dist_shifted_meters": 444.1,
+    "source": "search: Naktala Udoyon Sangha Durga Puja Pandal Kolkata",
+    "detail": "0x3a027107aa5b8751:0x9999c634b4271a8f"
+  },
+  {
+    "index": 77,
+    "name": "Haridevpur Ajeya Sanghati",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.476,
+      "longitude": 88.328
+    },
+    "new_location": {
+      "latitude": 22.4808597,
+      "longitude": 88.3377053
+    },
+    "dist_shifted_meters": 1134.2,
+    "source": "search: Haridevpur Ajeya Sanghati Durga Puja Pandal Kolkata",
+    "detail": "0x3a027091e5eed5d1:0x7fc068a8d695b5ea"
+  },
+  {
+    "index": 78,
+    "name": "41 Pally",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.482,
+      "longitude": 88.3295
+    },
+    "new_location": {
+      "latitude": 22.4828575,
+      "longitude": 88.3384255
+    },
+    "dist_shifted_meters": 922.0,
+    "source": "search: 41 Pally Durga Puja Tollygunge-Haridevpur-Patuli Kolkata",
+    "detail": "0x3a027100532e8167:0xae3d17a078a2c565"
+  },
+  {
+    "index": 79,
+    "name": "Vivekananda Athletic",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4845,
+      "longitude": 88.332
+    },
+    "new_location": {
+      "latitude": 22.479414,
+      "longitude": 88.3355732
+    },
+    "dist_shifted_meters": 674.3,
+    "source": "search: Vivekananda Athletic Puja Pandal Tollygunge-Haridevpur-Patuli Kolkata",
+    "detail": "Haridevpur, Paschim Putiary, Kolkata, West Bengal"
+  },
+  {
+    "index": 80,
+    "name": "Kendua Shanti Sangha",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4720391,
+      "longitude": 88.3810371
+    },
+    "new_location": {
+      "latitude": 22.471984,
+      "longitude": 88.381501
+    },
+    "dist_shifted_meters": 48.1,
+    "source": "search: Kendua Shanti Sangha Durga Puja Pandal Kolkata",
+    "detail": "0x3a02710b2646bc05:0x467e1acc52723dad"
+  },
+  {
+    "index": 81,
+    "name": "Taltala Durga Puja (EEDF)",
+    "cluster": "Jadavpur-Dhakuria",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4975,
+      "longitude": 88.3715
+    },
+    "new_location": {
+      "latitude": 22.5030022,
+      "longitude": 88.3646841
+    },
+    "dist_shifted_meters": 929.8,
+    "source": "search: Taltala Durga Puja Puja Pandal Kolkata",
+    "detail": "0x3a0271bfad7c0f7d:0xbcd5fc5923832a92"
+  },
+  {
+    "index": 82,
+    "name": "95 Pally",
+    "cluster": "Jadavpur-Dhakuria",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.502,
+      "longitude": 88.367
+    },
+    "new_location": {
+      "latitude": 22.508235,
+      "longitude": 88.3627602
+    },
+    "dist_shifted_meters": 818.8,
+    "source": "search: 95 Pally Durga Puja Pandal Kolkata",
+    "detail": "0x3a027129d8c8c381:0xe59f767b26bfbefa"
+  },
+  {
+    "index": 83,
+    "name": "Jodhpur Park",
+    "cluster": "Jadavpur-Dhakuria",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5035,
+      "longitude": 88.365
+    },
+    "new_location": {
+      "latitude": 22.5050586,
+      "longitude": 88.3623379
+    },
+    "dist_shifted_meters": 323.8,
+    "source": "search: Jodhpur Park Durga Puja Pandal Kolkata",
+    "detail": "Jodhpur Park, Kolkata, West Bengal"
+  },
+  {
+    "index": 84,
+    "name": "Selimpur Pally",
+    "cluster": "Jadavpur-Dhakuria",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5065,
+      "longitude": 88.3675
+    },
+    "new_location": {
+      "latitude": 22.5046776,
+      "longitude": 88.3683663
+    },
+    "dist_shifted_meters": 221.3,
+    "source": "search: Selimpur Pally Durga Puja Pandal Kolkata",
+    "detail": "0x3a02715f5cb7d155:0xa994a74309a0f43b"
+  },
+  {
+    "index": 85,
+    "name": "Babubagan",
+    "cluster": "Jadavpur-Dhakuria",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5085,
+      "longitude": 88.366
+    },
+    "new_location": {
+      "latitude": 22.5084823,
+      "longitude": 88.3697628
+    },
+    "dist_shifted_meters": 386.5,
+    "source": "search: Babubagan Jadavpur-Dhakuria Kolkata",
+    "detail": "0x3a02712eec8f6d41:0xe050c20b854dc6bb"
+  },
+  {
+    "index": 86,
+    "name": "Santoshpur Lake Pally",
+    "cluster": "Jadavpur-Dhakuria",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4914713,
+      "longitude": 88.3827705
+    },
+    "new_location": {
+      "latitude": 22.4914713,
+      "longitude": 88.3827705
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Santoshpur Lake Pally Durga Puja Pandal Kolkata",
+    "detail": ""
+  },
+  {
+    "index": 87,
+    "name": "Santoshpur Trikon Park",
+    "cluster": "Jadavpur-Dhakuria",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.4925,
+      "longitude": 88.3792
+    },
+    "new_location": {
+      "latitude": 22.4931559,
+      "longitude": 88.3784752
+    },
+    "dist_shifted_meters": 104.2,
+    "source": "search: Santoshpur Trikon Park Durga Puja Pandal Kolkata",
+    "detail": "0x3a02713e1850c74b:0xaffa07324320d69d"
+  },
+  {
+    "index": 88,
+    "name": "75 Pally",
+    "cluster": "Bhowanipur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.531,
+      "longitude": 88.347
+    },
+    "new_location": {
+      "latitude": 22.533319,
+      "longitude": 88.3457086
+    },
+    "dist_shifted_meters": 290.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Bhowanipur+75+Palli/@22.533319,88.3431337,17z/data=!3m1!4b1!4m6!3m5!1s0x3a027738d78d4fbd:0x4d0b78b9bd98a1fd!8m2!3d22.533319!4d88.3457086!16s/g/11b5wlr8qh!18m1!1e1?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=03230d77-53b7-438b-9902-76caee56d4fc"
+  },
+  {
+    "index": 89,
+    "name": "Chakraberia Sarbojonin",
+    "cluster": "Bhowanipur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5336065,
+      "longitude": 88.3519214
+    },
+    "new_location": {
+      "latitude": 22.5336065,
+      "longitude": 88.3519214
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Chakraberia Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "0x3a02773bbf310017:0xf6d48ad98db4016a"
+  },
+  {
+    "index": 90,
+    "name": "Bhawanipur Abasar",
+    "cluster": "Bhowanipur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5278699,
+      "longitude": 88.3489227
+    },
+    "new_location": {
+      "latitude": 22.5278699,
+      "longitude": 88.3489227
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Bhawanipur Abasar Durga Puja Pandal Kolkata",
+    "detail": "0x3a02770066af874f:0x2523f7ecc9c159b2"
+  },
+  {
+    "index": 91,
+    "name": "Maddox Square",
+    "cluster": "Bhowanipur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5265634,
+      "longitude": 88.3546477
+    },
+    "new_location": {
+      "latitude": 22.5265634,
+      "longitude": 88.3546477
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Maddox Square Durga Puja Bhowanipur Kolkata",
+    "detail": "0x3a02772554053a63:0x257b3f0f56afec64"
+  },
+  {
+    "index": 92,
+    "name": "64 Pally",
+    "cluster": "Bhowanipur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5312,
+      "longitude": 88.3475
+    },
+    "new_location": {
+      "latitude": 22.5205584,
+      "longitude": 88.3475801
+    },
+    "dist_shifted_meters": 1183.3,
+    "source": "search: 64 Pally Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277346d4d65c1:0xd3868d29d4cee885"
+  },
+  {
+    "index": 93,
+    "name": "Bakul Bagan",
+    "cluster": "Bhowanipur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5267621,
+      "longitude": 88.34826
+    },
+    "new_location": {
+      "latitude": 22.5267621,
+      "longitude": 88.34826
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Bakul Bagan Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277374a1ee63d:0xdd54c54430847f8e"
+  },
+  {
+    "index": 94,
+    "name": "75 Pally",
+    "cluster": "Khidirpur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5402695,
+      "longitude": 88.3205241
+    },
+    "new_location": {
+      "latitude": 22.5402695,
+      "longitude": 88.3205241
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: 75 Pally Puja Pandal Kolkata",
+    "detail": "0x3a0279de1f6ee7b5:0x7cf2bbf2cc8db51f"
+  },
+  {
+    "index": 95,
+    "name": "25 Pally",
+    "cluster": "Khidirpur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5391961,
+      "longitude": 88.3264565
+    },
+    "new_location": {
+      "latitude": 22.5391961,
+      "longitude": 88.3264565
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: 25 Pally Durga Puja Khidirpur Kolkata",
+    "detail": ""
+  },
+  {
+    "index": 96,
+    "name": "Nabarag",
+    "cluster": "Khidirpur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5417107,
+      "longitude": 88.3212546
+    },
+    "new_location": {
+      "latitude": 22.5417107,
+      "longitude": 88.3212546
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Nabarag Puja Pandal Kolkata",
+    "detail": "0x3a0279de4dceaaab:0x270a591cc9f2c98"
+  },
+  {
+    "index": 97,
+    "name": "Kabi Tirtha Sarani",
+    "cluster": "Khidirpur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5417107,
+      "longitude": 88.3212546
+    },
+    "new_location": {
+      "latitude": 22.5406238,
+      "longitude": 88.3223506
+    },
+    "dist_shifted_meters": 165.2,
+    "source": "search: Kabi Tirtha Sarani Durga Puja Khidirpur Kolkata",
+    "detail": "0x3a0279ec6db617e1:0xe518297d24727953"
+  },
+  {
+    "index": 98,
+    "name": "Jubak Sangha Club",
+    "cluster": "Khidirpur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5411941,
+      "longitude": 88.319591
+    },
+    "new_location": {
+      "latitude": 22.5411941,
+      "longitude": 88.319591
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Jubak Sangha Club Puja Pandal Khidirpur Kolkata",
+    "detail": "0x3a0279de72c1a66b:0xa34584f0a533bfac"
+  },
+  {
+    "index": 99,
+    "name": "Pally Sharadiya",
+    "cluster": "Khidirpur",
+    "region": "South",
+    "old_location": {
+      "latitude": 22.5432531,
+      "longitude": 88.3215038
+    },
+    "new_location": {
+      "latitude": 22.5432531,
+      "longitude": 88.3215038
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: Pally Sharadiya Durga Puja Khidirpur Kolkata",
+    "detail": "0x3a0279de55bc9fb1:0x982082f962201187"
+  },
+  {
+    "index": 100,
+    "name": "Mohammad Ali Park",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5794,
+      "longitude": 88.3603
+    },
+    "new_location": {
+      "latitude": 22.5771888,
+      "longitude": 88.3607369
+    },
+    "dist_shifted_meters": 249.9,
+    "source": "search: Mohammad Ali Park Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277b28cce4d49:0x64c1f82caceb3609"
+  },
+  {
+    "index": 101,
+    "name": "Sealdah Athletic Club",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5683,
+      "longitude": 88.3717
+    },
+    "new_location": {
+      "latitude": 22.5705774,
+      "longitude": 88.37194
+    },
+    "dist_shifted_meters": 254.4,
+    "source": "search: Sealdah Athletic Club Durga Puja Pandal Kolkata",
+    "detail": "0x3a027650a397390d:0x78172af37c615acf"
+  },
+  {
+    "index": 102,
+    "name": "College Square Sarbojanin Durgotsav",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.576,
+      "longitude": 88.363
+    },
+    "new_location": {
+      "latitude": 22.5743114,
+      "longitude": 88.3615713
+    },
+    "dist_shifted_meters": 238.3,
+    "source": "search: College Square Sarbojanin Durgotsav Durga Puja Central Kolkata Kolkata",
+    "detail": "College Square, Kolkata, West Bengal"
+  },
+  {
+    "index": 103,
+    "name": "Santosh Mitra Square",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5668,
+      "longitude": 88.3664
+    },
+    "new_location": {
+      "latitude": 22.5660201,
+      "longitude": 88.3656532
+    },
+    "dist_shifted_meters": 115.8,
+    "source": "search: Santosh Mitra Square Durga Puja Pandal Kolkata",
+    "detail": "0x3a027655a41c9633:0xd230742cc8f8580b"
+  },
+  {
+    "index": 104,
+    "name": "Lebutala",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5665,
+      "longitude": 88.366
+    },
+    "new_location": {
+      "latitude": 22.5660201,
+      "longitude": 88.3656532
+    },
+    "dist_shifted_meters": 64.2,
+    "source": "search: Lebutala Durga Puja Pandal Kolkata",
+    "detail": "0x3a027655a41c9633:0xd230742cc8f8580b"
+  },
+  {
+    "index": 105,
+    "name": "Subodh Mallick Square",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.563,
+      "longitude": 88.3585
+    },
+    "new_location": {
+      "latitude": 22.5635842,
+      "longitude": 88.3595075
+    },
+    "dist_shifted_meters": 122.2,
+    "source": "search: Subodh Mallick Square Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277009c15f669:0x2dea23284f852c5c"
+  },
+  {
+    "index": 106,
+    "name": "Taltala Sarbojonin",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5562,
+      "longitude": 88.3589
+    },
+    "new_location": {
+      "latitude": 22.561418,
+      "longitude": 88.3583706
+    },
+    "dist_shifted_meters": 582.8,
+    "source": "search: Taltala Sarbojonin Durga Puja Pandal Kolkata",
+    "detail": "Taltala, Kolkata, West Bengal"
+  },
+  {
+    "index": 107,
+    "name": "14 Pally Udayan Sangha",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5575857,
+      "longitude": 88.3669753
+    },
+    "new_location": {
+      "latitude": 22.5575857,
+      "longitude": 88.3669753
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "search: 14 Pally Udayan Sangha Durga Puja Pandal Kolkata",
+    "detail": "0x3a02772a288cc8d5:0xc4a5bf593fc9a9e0"
+  },
+  {
+    "index": 108,
+    "name": "37 Pally Sarbojanin Durgotsab",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5725,
+      "longitude": 88.3688
+    },
+    "new_location": {
+      "latitude": 22.5746858,
+      "longitude": 88.3693988
+    },
+    "dist_shifted_meters": 250.7,
+    "source": "search: 37 Pally Sarbojanin Durgotsab Durga Puja Pandal Kolkata",
+    "detail": "0x3a027651f2fe94ad:0x18eb16164bb331ed"
+  },
+  {
+    "index": 109,
+    "name": "47 Pally Jubak Brinda Durga Puja",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5695,
+      "longitude": 88.3745
+    },
+    "new_location": {
+      "latitude": 22.5714699,
+      "longitude": 88.3587305
+    },
+    "dist_shifted_meters": 1633.9,
+    "source": "search: 47 Pally Jubak Brinda Durga Puja Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277ac22c49275:0xf4e0cb14374addfc"
+  },
+  {
+    "index": 110,
+    "name": "Central Calcutta Youth Association",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.571,
+      "longitude": 88.3645
+    },
+    "new_location": {
+      "latitude": 22.563699,
+      "longitude": 88.3622861
+    },
+    "dist_shifted_meters": 843.1,
+    "source": "search: Central Calcutta Youth Association Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277001d72ae07:0x7320a2728dab8514"
+  },
+  {
+    "index": 111,
+    "name": "Entally Matribhumi Durga Puja",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5535,
+      "longitude": 88.3732
+    },
+    "new_location": {
+      "latitude": 22.5585486,
+      "longitude": 88.3674004
+    },
+    "dist_shifted_meters": 818.4,
+    "source": "search: Entally Matribhumi Durga Puja Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277006f4a8243:0x834547fb3a47f7e2"
+  },
+  {
+    "index": 112,
+    "name": "Entally Sarbojanin Sri Sri Durga Puja",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5545,
+      "longitude": 88.3705
+    },
+    "new_location": {
+      "latitude": 22.5545,
+      "longitude": 88.3705
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "retained_old",
+    "detail": "no new source"
+  },
+  {
+    "index": 113,
+    "name": "Chowringhee High School Sarbojanin Durgotsav",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5585,
+      "longitude": 88.3548
+    },
+    "new_location": {
+      "latitude": 22.5577853,
+      "longitude": 88.3530608
+    },
+    "dist_shifted_meters": 195.5,
+    "source": "search: Chowringhee High School Sarbojanin Durgotsav Durga Puja Kolkata",
+    "detail": "0x3a02770f5555d957:0xa910f32f4d33ffad"
+  },
+  {
+    "index": 114,
+    "name": "Kanai Dhar Lane Adhibasi Brinda",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5728,
+      "longitude": 88.3615
+    },
+    "new_location": {
+      "latitude": 22.572337,
+      "longitude": 88.365265
+    },
+    "dist_shifted_meters": 390.0,
+    "source": "search: Kanai Dhar Lane Adhibasi Brinda Durga Puja Pandal Kolkata",
+    "detail": "0x3a027653a9cf217d:0x73435c8079ddfc00"
+  },
+  {
+    "index": 115,
+    "name": "Machua Bazar Sarbajanik Durga Puja Samity",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5815,
+      "longitude": 88.3605
+    },
+    "new_location": {
+      "latitude": 22.5812141,
+      "longitude": 88.3572457
+    },
+    "dist_shifted_meters": 335.6,
+    "source": "search: Machua Bazar Sarbajanik Durga Puja Samity Durga Puja Central Kolkata Kolkata",
+    "detail": "0x3a0277300e9cad43:0x4cbfc524fc30a087"
+  },
+  {
+    "index": 116,
+    "name": "New Market Sarbojanin Sri Sri Durga Puja",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5592,
+      "longitude": 88.3536
+    },
+    "new_location": {
+      "latitude": 22.5604449,
+      "longitude": 88.3550866
+    },
+    "dist_shifted_meters": 206.1,
+    "source": "search: New Market Sarbojanin Sri Sri Durga Puja Durga Puja Pandal Kolkata",
+    "detail": "0x3a027743068417cd:0xc075677b37c665f"
+  },
+  {
+    "index": 117,
+    "name": "Pallir Yubak Brinda Durga Puja",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.567,
+      "longitude": 88.3618
+    },
+    "new_location": {
+      "latitude": 22.5761009,
+      "longitude": 88.3669929
+    },
+    "dist_shifted_meters": 1143.8,
+    "source": "search: Pallir Yubak Brinda Durga Puja Durga Puja Pandal Kolkata",
+    "detail": "0x3a02764df76256cd:0xbc679e05a9dcc06e"
+  },
+  {
+    "index": 118,
+    "name": "Shishu Palan Foundation",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5652,
+      "longitude": 88.3625
+    },
+    "new_location": {
+      "latitude": 22.5652,
+      "longitude": 88.3625
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "retained_old",
+    "detail": "no new source"
+  },
+  {
+    "index": 119,
+    "name": "Wellington Nagarik Kalyan Samity",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5622,
+      "longitude": 88.3572
+    },
+    "new_location": {
+      "latitude": 22.5645217,
+      "longitude": 88.3583834
+    },
+    "dist_shifted_meters": 285.3,
+    "source": "search: Wellington Nagarik Kalyan Samity Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277a89f78fcd5:0x3ee4a8ea97409d72"
+  },
+  {
+    "index": 120,
+    "name": "Jorasanko 7 er Pally",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5838,
+      "longitude": 88.3578
+    },
+    "new_location": {
+      "latitude": 22.5839891,
+      "longitude": 88.3613312
+    },
+    "dist_shifted_meters": 363.2,
+    "source": "search: Jorasanko 7 er Pally Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277b4e8a015f3:0xcad307aa0a1221db"
+  },
+  {
+    "index": 121,
+    "name": "Jorasanko Sadharon Durgotsav Samity",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5845,
+      "longitude": 88.3592
+    },
+    "new_location": {
+      "latitude": 22.5862387,
+      "longitude": 88.3605571
+    },
+    "dist_shifted_meters": 238.3,
+    "source": "search: Jorasanko Sadharon Durgotsav Samity Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277a4965d1fa1:0xa3e9ff822157645"
+  },
+  {
+    "index": 122,
+    "name": "Darpanarayan Sarbojonin",
+    "cluster": "Central Kolkata",
+    "region": "Central",
+    "old_location": {
+      "latitude": 22.5865,
+      "longitude": 88.3555
+    },
+    "new_location": {
+      "latitude": 22.5918418,
+      "longitude": 88.3586946
+    },
+    "dist_shifted_meters": 678.5,
+    "source": "link_place_search",
+    "detail": "Nimtala Sarbojanin DurgaPuja, 16 B, Nimtala Ln, Ahiritola, Beniatola, Kolkata, West Bengal 700006"
+  },
+  {
+    "index": 123,
+    "name": "Sovabazar Rajbari - Boro Torof",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5975,
+      "longitude": 88.3648
+    },
+    "new_location": {
+      "latitude": 22.5962644,
+      "longitude": 88.3673797
+    },
+    "dist_shifted_meters": 298.3,
+    "source": "search: Sovabazar Rajbari Durga Puja Pandal Kolkata",
+    "detail": "0x3a027633ccbc0001:0x91c63cb1189b5816"
+  },
+  {
+    "index": 124,
+    "name": "Sovabazar Rajbari - Chhoto Torof",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5978,
+      "longitude": 88.3642
+    },
+    "new_location": {
+      "latitude": 22.5958452,
+      "longitude": 88.3611126
+    },
+    "dist_shifted_meters": 384.3,
+    "source": "search: Sovabazar Rajbari - Chhoto Torof Durga Puja Pandal Kolkata",
+    "detail": "0x3a0277cce8f9ef27:0x8f9e647650c3c512"
+  },
+  {
+    "index": 125,
+    "name": "Lokmata Rani Rashmoni Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5625179,
+      "longitude": 88.3552648
+    },
+    "new_location": {
+      "latitude": 22.5625179,
+      "longitude": 88.3552648
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Rani+Rashmoni+Bhawan/@22.5625179,88.3526899,17z/data=!4m6!3m5!1s0x3a0277070f4fceb7:0x4f9a11015f4cb9a9!8m2!3d22.5625179!4d88.3552648!16s/g/1td51vrl?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=4cfe423e-e945-47b6-aa31-fdafed49005c"
+  },
+  {
+    "index": 126,
+    "name": "Hazra Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.6061219,
+      "longitude": 88.3486629
+    },
+    "new_location": {
+      "latitude": 22.6061219,
+      "longitude": 88.3486629
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Hazra+Bari+Durga+Temple+হাজরা+বাড়ী+দূর্গা+মন্দির/@22.6061219,88.346088,17z/data=!3m1!4b1!4m6!3m5!1s0x3a0277d95032aa41:0xa0b41ef71485c08f!8m2!3d22.6061219!4d88.3486629!16s/g/11cn2w0zn0?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=3586bd5f-1df5-44e2-87d9-77570ecec111"
+  },
+  {
+    "index": 127,
+    "name": "Mathur Mohan Biswas Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5818,
+      "longitude": 88.3702
+    },
+    "new_location": {
+      "latitude": 22.5818,
+      "longitude": 88.3702
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "retained_old",
+    "detail": "no new source"
+  },
+  {
+    "index": 128,
+    "name": "Bowbazar Dutta Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5682,
+      "longitude": 88.3635
+    },
+    "new_location": {
+      "latitude": 22.5663214,
+      "longitude": 88.3599007
+    },
+    "dist_shifted_meters": 424.5,
+    "source": "search: Bowbazar Dutta Bari Durga Puja Pandal Kolkata",
+    "detail": "Bowbazar, Kolkata, West Bengal"
+  },
+  {
+    "index": 129,
+    "name": "Motilal Seal Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5742,
+      "longitude": 88.3582
+    },
+    "new_location": {
+      "latitude": 22.5755874,
+      "longitude": 88.3591392
+    },
+    "dist_shifted_meters": 181.9,
+    "source": "search: Motilal Seal Bari Kolkata Bonedi Bari Kolkata",
+    "detail": "0x3a0277e17b12c05f:0xd13226ad73e6b683"
+  },
+  {
+    "index": 130,
+    "name": "Badan Chandra Roy Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5692,
+      "longitude": 88.3622
+    },
+    "new_location": {
+      "latitude": 22.5749652,
+      "longitude": 88.3581126
+    },
+    "dist_shifted_meters": 766.2,
+    "source": "search: Badan Chandra Roy Bari Puja Pandal Kolkata",
+    "detail": "0x3a027700713c1ed3:0xf1c619da33f5bc99"
+  },
+  {
+    "index": 131,
+    "name": "Shyamaldhan Dutta Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5862,
+      "longitude": 88.3638
+    },
+    "new_location": {
+      "latitude": 22.5877273,
+      "longitude": 88.362069
+    },
+    "dist_shifted_meters": 245.8,
+    "source": "search: Shyamaldhan Dutta Bari Durga Puja Kolkata",
+    "detail": "0x3a0277b5550152dd:0xa1eba2da35293cc6"
+  },
+  {
+    "index": 132,
+    "name": "Kundu Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.5822,
+      "longitude": 88.3685
+    },
+    "new_location": {
+      "latitude": 22.5854637,
+      "longitude": 88.3617916
+    },
+    "dist_shifted_meters": 778.5,
+    "source": "search: Kundu Bari Puja Pandal Kolkata",
+    "detail": "0x3a0277005aa735e9:0x81a0449c609434ef"
+  },
+  {
+    "index": 133,
+    "name": "Atta Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "region": "Bonedi Bari",
+    "old_location": {
+      "latitude": 22.6075307,
+      "longitude": 88.3491879
+    },
+    "new_location": {
+      "latitude": 22.6075307,
+      "longitude": 88.3491879
+    },
+    "dist_shifted_meters": 0.0,
+    "source": "link_link_3d",
+    "detail": "https://www.google.com/maps/place/Atta+Bari+Durga+Temple/@22.6016293,88.3446767,15.6z/data=!4m6!3m5!1s0x3a0277d93c8f1877:0x6e509a04ad0161e9!8m2!3d22.6075307!4d88.3491879!16s/g/11c5_rkl3t?entry=tts&g_ep=EgoyMDI2MDgxOS4wIPu8ASoASAFQAw==&skid=de687019-cce9-44a6-8d32-218a95878be6"
+  }
+]
