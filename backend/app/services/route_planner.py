@@ -114,8 +114,12 @@ class RoutePlannerService:
             destination=(request.destination.latitude, request.destination.longitude),
         )
 
-        # 4. Limit to max_pandals
-        selected_candidates = ordered_candidates[: request.max_pandals]
+        # 4. Limit to max_pandals if provided, otherwise return all pandals along route
+        if request.max_pandals is not None:
+            selected_candidates = ordered_candidates[: request.max_pandals]
+        else:
+            selected_candidates = ordered_candidates
+
 
         # 5. Build itinerary items
         itinerary = []

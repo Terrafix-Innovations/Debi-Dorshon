@@ -175,6 +175,12 @@ def order_pandals_along_polyline(
 
     cum_dists = calculate_polyline_cumulative_distances(polyline_coords)
 
+    # Vector AB for origin to destination bounds checking
+    a_lat, a_lng = origin
+    b_lat, b_lng = destination
+    ab_x, ab_y = b_lng - a_lng, b_lat - a_lat
+    ab_sq = ab_x * ab_x + ab_y * ab_y
+
     candidates = []
     seen_ids = set()
 
@@ -203,6 +209,21 @@ def order_pandals_along_polyline(
         d_orig = haversine_distance(origin[0], origin[1], float(p_lat), float(p_lng))
         d_dest = haversine_distance(destination[0], destination[1], float(p_lat), float(p_lng))
 
+        # Check projection along overall vector AB
+        if ab_sq > 0:
+            ap_x, ap_y = float(p_lng) - a_lng, float(p_lat) - a_lat
+            t_proj = (ap_x * ab_x + ap_y * ab_y) / ab_sq
+        else:
+            t_proj = 0.5
+
+        # Pandal must not lie significantly past destination in direction of travel
+        if t_proj > 1.05 and d_dest > 0.35:
+            continue
+
+        # Pandal must not lie significantly before origin in direction of travel
+        if t_proj < -0.05 and d_orig > 0.35:
+            continue
+
         # Pandal must be within max_detour_km of the route corridor or trip endpoints
         is_near_corridor = (
             detour_dist <= max_detour_km
@@ -213,6 +234,7 @@ def order_pandals_along_polyline(
             pandal_copy = dict(pandal)
             pandal_copy["detour_distance_km"] = detour_dist
             pandal_copy["route_progress_ratio"] = progress
+            pandal_copy["d_dest"] = d_dest
             candidates.append(pandal_copy)
             seen_ids.add(pandal_id)
 
@@ -221,36 +243,29 @@ def order_pandals_along_polyline(
 
     itinerary = []
     curr_lat, curr_lng = origin
-    curr_prog = 0.0
-    dest_lat, dest_lng = destination
+    max_reached_prog = 0.0
+    dest_reached = False
 
     while candidates:
         if not itinerary:
-            # 1. Starting step: pick candidate closest to origin (favoring forward orientation towards destination)
             candidates.sort(
                 key=lambda p: haversine_distance(
                     curr_lat, curr_lng, p["location"]["latitude"], p["location"]["longitude"]
                 )
-                + 0.15
-                * haversine_distance(
-                    dest_lat, dest_lng, p["location"]["latitude"], p["location"]["longitude"]
-                )
+                + 2.0 * p["route_progress_ratio"]
             )
             next_p = candidates.pop(0)
             itinerary.append(next_p)
             curr_lat = next_p["location"]["latitude"]
             curr_lng = next_p["location"]["longitude"]
-            curr_prog = max(curr_prog, next_p["route_progress_ratio"])
+            max_reached_prog = max(max_reached_prog, next_p["route_progress_ratio"])
+            if next_p.get("d_dest", float("inf")) <= 0.35:
+                dest_reached = True
         else:
-            # Check if destination or route completion has been reached
-            last_p = itinerary[-1]
-            dist_to_dest = haversine_distance(curr_lat, curr_lng, dest_lat, dest_lng)
+            d_curr_to_dest = haversine_distance(curr_lat, curr_lng, destination[0], destination[1])
+            if d_curr_to_dest <= 0.35 or itinerary[-1].get("d_dest", float("inf")) <= 0.35:
+                dest_reached = True
 
-            # If last pandal is right at destination (<= 150m) or route progress is practically 1.0, terminate
-            if dist_to_dest <= 0.15 or last_p.get("route_progress_ratio", 0) >= 0.98:
-                break
-
-            # Filter candidates to enforce strictly forward progression
             valid_candidates = []
             for p in candidates:
                 p_prog = p["route_progress_ratio"]
@@ -260,13 +275,19 @@ def order_pandals_along_polyline(
                 curr_cluster = itinerary[-1].get("cluster")
                 same_cluster = bool(curr_cluster and p.get("cluster") == curr_cluster and d_hop <= 1.2)
 
-                # Must be ahead or slightly behind (>= curr_prog - 0.08) or in same local cluster
-                if p_prog >= (curr_prog - 0.08) or (same_cluster and p_prog >= curr_prog - 0.15):
-                    valid_candidates.append(p)
+                if dest_reached:
+                    # Once destination reached, only accept candidates in destination immediate neighborhood
+                    if p.get("d_dest", float("inf")) <= 0.45 or (same_cluster and p.get("d_dest", float("inf")) <= 0.6 and d_hop <= 0.6):
+                        valid_candidates.append(p)
+                else:
+                    if p_prog >= (max_reached_prog - 0.10) or (same_cluster and d_hop <= 1.0):
+                        valid_candidates.append(p)
 
             if not valid_candidates:
-                # Filter out past candidates completely and advance to forward candidates
-                candidates = [p for p in candidates if p["route_progress_ratio"] >= (curr_prog - 0.05)]
+                if dest_reached:
+                    # Destination cluster fully swept, stop tour!
+                    break
+                candidates = [p for p in candidates if p["route_progress_ratio"] >= (max_reached_prog - 0.05)]
                 if not candidates:
                     break
                 valid_candidates = candidates
@@ -280,34 +301,20 @@ def order_pandals_along_polyline(
                 cluster_bonus = -0.35 if same_cluster else 0.0
 
                 p_prog = p["route_progress_ratio"]
-                prog_diff = p_prog - curr_prog
+                prog_diff = p_prog - max_reached_prog
+                prog_penalty = 2.0 * max(0.0, prog_diff)
+                backtrack_penalty = 4.0 * abs(min(0.0, prog_diff))
 
-                # Backtrack penalty if trying to go backwards along route progress
-                backtrack_penalty = 8.0 * abs(prog_diff) if prog_diff < 0 else 0.0
-
-                # Leapfrog penalty if jumping far down the highway (leaving intermediate pandals behind)
-                leap_penalty = 5.0 * (prog_diff - 0.20) if prog_diff > 0.20 else 0.0
-
-                return d_hop + leap_penalty + backtrack_penalty + cluster_bonus
+                return d_hop + prog_penalty + backtrack_penalty + cluster_bonus
 
             valid_candidates.sort(key=hop_cost)
-            next_p = valid_candidates[0]
-
-            # Stop if the best remaining candidate is a large detour away from destination when we are already near it
-            d_cand_dest = haversine_distance(
-                dest_lat, dest_lng,
-                next_p["location"]["latitude"],
-                next_p["location"]["longitude"]
-            )
-            if dist_to_dest < 0.5 and d_cand_dest > dist_to_dest + 0.4:
-                break
-
+            next_p = valid_candidates.pop(0)
             candidates.remove(next_p)
             itinerary.append(next_p)
             curr_lat = next_p["location"]["latitude"]
             curr_lng = next_p["location"]["longitude"]
-            curr_prog = max(curr_prog, next_p["route_progress_ratio"])
-
+            max_reached_prog = max(max_reached_prog, next_p["route_progress_ratio"])
+            if next_p.get("d_dest", float("inf")) <= 0.35:
+                dest_reached = True
 
     return itinerary
-

@@ -18,9 +18,10 @@ class RoutePlanRequest(BaseModel):
     origin: PointSchema
     destination: PointSchema
     max_detour_km: float = Field(1.0, ge=0.1, le=20.0, description="Maximum off-route distance in km", json_schema_extra={"example": 1.0})
-    max_pandals: int = Field(15, ge=1, le=50, description="Maximum number of pandals to return", json_schema_extra={"example": 15})
+    max_pandals: Optional[int] = Field(None, ge=1, le=500, description="Optional maximum number of pandals to return", json_schema_extra={"example": 15})
     region: Optional[str] = Field(None, json_schema_extra={"example": "North"})
     cluster: Optional[str] = Field(None, json_schema_extra={"example": "Shyambazar"})
+
 
 
 class RouteItineraryItem(BaseModel):
