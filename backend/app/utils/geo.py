@@ -250,40 +250,64 @@ def order_pandals_along_polyline(
             if dist_to_dest <= 0.15 or last_p.get("route_progress_ratio", 0) >= 0.98:
                 break
 
+            # Filter candidates to enforce strictly forward progression
+            valid_candidates = []
+            for p in candidates:
+                p_prog = p["route_progress_ratio"]
+                d_hop = haversine_distance(
+                    curr_lat, curr_lng, p["location"]["latitude"], p["location"]["longitude"]
+                )
+                curr_cluster = itinerary[-1].get("cluster")
+                same_cluster = bool(curr_cluster and p.get("cluster") == curr_cluster and d_hop <= 1.2)
+
+                # Must be ahead or slightly behind (>= curr_prog - 0.08) or in same local cluster
+                if p_prog >= (curr_prog - 0.08) or (same_cluster and p_prog >= curr_prog - 0.15):
+                    valid_candidates.append(p)
+
+            if not valid_candidates:
+                # Filter out past candidates completely and advance to forward candidates
+                candidates = [p for p in candidates if p["route_progress_ratio"] >= (curr_prog - 0.05)]
+                if not candidates:
+                    break
+                valid_candidates = candidates
+
             def hop_cost(p):
                 d_hop = haversine_distance(
                     curr_lat, curr_lng, p["location"]["latitude"], p["location"]["longitude"]
                 )
                 curr_cluster = itinerary[-1].get("cluster")
-                same_cluster = bool(curr_cluster and p.get("cluster") == curr_cluster)
-                cluster_bonus = -0.20 if same_cluster else 0.0
+                same_cluster = bool(curr_cluster and p.get("cluster") == curr_cluster and d_hop <= 1.2)
+                cluster_bonus = -0.35 if same_cluster else 0.0
 
-                d_target = haversine_distance(
-                    dest_lat, dest_lng, p["location"]["latitude"], p["location"]["longitude"]
-                )
                 p_prog = p["route_progress_ratio"]
-                backtrack = max(0.0, curr_prog - p_prog)
+                prog_diff = p_prog - curr_prog
 
-                # Prioritize proximity, while continuously guiding forward towards destination and discouraging backtracking
-                return d_hop + 0.30 * d_target + 4.0 * backtrack + cluster_bonus
+                # Backtrack penalty if trying to go backwards along route progress
+                backtrack_penalty = 8.0 * abs(prog_diff) if prog_diff < 0 else 0.0
 
-            candidates.sort(key=hop_cost)
-            best_candidate = candidates[0]
+                # Leapfrog penalty if jumping far down the highway (leaving intermediate pandals behind)
+                leap_penalty = 5.0 * (prog_diff - 0.20) if prog_diff > 0.20 else 0.0
+
+                return d_hop + leap_penalty + backtrack_penalty + cluster_bonus
+
+            valid_candidates.sort(key=hop_cost)
+            next_p = valid_candidates[0]
 
             # Stop if the best remaining candidate is a large detour away from destination when we are already near it
             d_cand_dest = haversine_distance(
                 dest_lat, dest_lng,
-                best_candidate["location"]["latitude"],
-                best_candidate["location"]["longitude"]
+                next_p["location"]["latitude"],
+                next_p["location"]["longitude"]
             )
             if dist_to_dest < 0.5 and d_cand_dest > dist_to_dest + 0.4:
                 break
 
-            next_p = candidates.pop(0)
+            candidates.remove(next_p)
             itinerary.append(next_p)
             curr_lat = next_p["location"]["latitude"]
             curr_lng = next_p["location"]["longitude"]
             curr_prog = max(curr_prog, next_p["route_progress_ratio"])
+
 
     return itinerary
 
