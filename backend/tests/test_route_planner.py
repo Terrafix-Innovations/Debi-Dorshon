@@ -258,3 +258,58 @@ def test_destination_arrival_and_no_backtrack_loop():
     assert ids[-1] == "maddox_square"
     assert "chakraberia" not in ids[ids.index("maddox_square") + 1 :]
 
+
+def test_no_khidirpur_jump_after_netaji_bhavan():
+    """11. Verify that reaching Netaji Bhavan Metro does not wander off into Khidirpur pandals."""
+    origin = (22.5197, 88.3426)  # Kalighat Metro
+    destination = (22.5404, 88.3462)  # Netaji Bhavan Metro
+
+    polyline_coords = [
+        [88.3426, 22.5197],
+        [88.3434, 22.5280],
+        [88.3440, 22.5350],
+        [88.3462, 22.5404],
+    ]
+
+    pandals = [
+        {
+            "id": "66_pally",
+            "name": "66 Pally",
+            "cluster": "Hajra-Kalighat",
+            "location": {"latitude": 22.5180, "longitude": 88.3427},
+        },
+        {
+            "id": "75_pally_bhowanipur",
+            "name": "75 Pally",
+            "cluster": "Bhowanipur",
+            "location": {"latitude": 22.5333, "longitude": 88.3457},
+        },
+        # Khidirpur pandals (lateral detour > 1.8km to the west)
+        {
+            "id": "25_pally_khidirpur",
+            "name": "25 Pally",
+            "cluster": "Khidirpur",
+            "location": {"latitude": 22.5391, "longitude": 88.3264},
+        },
+        {
+            "id": "kabi_tirtha_khidirpur",
+            "name": "Kabi Tirtha Sarani",
+            "cluster": "Khidirpur",
+            "location": {"latitude": 22.5406, "longitude": 88.3223},
+        },
+    ]
+
+    ordered = order_pandals_along_polyline(
+        pandals,
+        polyline_coords,
+        max_detour_km=2.5,
+        origin=origin,
+        destination=destination,
+    )
+
+    pandal_ids = [p["id"] for p in ordered]
+    assert "25_pally_khidirpur" not in pandal_ids
+    assert "kabi_tirtha_khidirpur" not in pandal_ids
+    assert pandal_ids[-1] == "75_pally_bhowanipur"
+
+

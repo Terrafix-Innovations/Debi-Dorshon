@@ -181,6 +181,8 @@ def order_pandals_along_polyline(
     ab_x, ab_y = b_lng - a_lng, b_lat - a_lat
     ab_sq = ab_x * ab_x + ab_y * ab_y
 
+    effective_max_detour = min(max_detour_km, 1.25)
+
     candidates = []
     seen_ids = set()
 
@@ -217,18 +219,18 @@ def order_pandals_along_polyline(
             t_proj = 0.5
 
         # Pandal must not lie significantly past destination in direction of travel
-        if t_proj > 1.05 and d_dest > 0.35:
+        if t_proj > 1.05 and d_dest > 0.4:
             continue
 
         # Pandal must not lie significantly before origin in direction of travel
-        if t_proj < -0.05 and d_orig > 0.35:
+        if t_proj < -0.05 and d_orig > 0.4:
             continue
 
-        # Pandal must be within max_detour_km of the route corridor or trip endpoints
+        # Pandal must be within effective_max_detour of the route corridor or immediate trip endpoints
         is_near_corridor = (
-            detour_dist <= max_detour_km
-            or d_orig <= max_detour_km
-            or d_dest <= max_detour_km
+            detour_dist <= effective_max_detour
+            or d_orig <= 0.8
+            or d_dest <= 0.8
         )
         if is_near_corridor and -0.05 <= progress <= 1.05:
             pandal_copy = dict(pandal)
@@ -259,11 +261,11 @@ def order_pandals_along_polyline(
             curr_lat = next_p["location"]["latitude"]
             curr_lng = next_p["location"]["longitude"]
             max_reached_prog = max(max_reached_prog, next_p["route_progress_ratio"])
-            if next_p.get("d_dest", float("inf")) <= 0.35:
+            if next_p.get("d_dest", float("inf")) <= 0.65 or next_p["route_progress_ratio"] >= 0.85:
                 dest_reached = True
         else:
             d_curr_to_dest = haversine_distance(curr_lat, curr_lng, destination[0], destination[1])
-            if d_curr_to_dest <= 0.35 or itinerary[-1].get("d_dest", float("inf")) <= 0.35:
+            if d_curr_to_dest <= 0.65 or itinerary[-1].get("d_dest", float("inf")) <= 0.65 or max_reached_prog >= 0.85:
                 dest_reached = True
 
             valid_candidates = []
@@ -276,8 +278,8 @@ def order_pandals_along_polyline(
                 same_cluster = bool(curr_cluster and p.get("cluster") == curr_cluster and d_hop <= 1.2)
 
                 if dest_reached:
-                    # Once destination reached, only accept candidates in destination immediate neighborhood
-                    if p.get("d_dest", float("inf")) <= 0.45 or (same_cluster and p.get("d_dest", float("inf")) <= 0.6 and d_hop <= 0.6):
+                    # Once destination area is reached, only accept candidates in destination cluster or immediate walking vicinity
+                    if p.get("d_dest", float("inf")) <= 0.75 or (same_cluster and d_hop <= 0.8):
                         valid_candidates.append(p)
                 else:
                     if p_prog >= (max_reached_prog - 0.10) or (same_cluster and d_hop <= 1.0):
@@ -285,7 +287,7 @@ def order_pandals_along_polyline(
 
             if not valid_candidates:
                 if dest_reached:
-                    # Destination cluster fully swept, stop tour!
+                    # Destination area fully swept, stop tour! Do not jump to Khidirpur or far off regions.
                     break
                 candidates = [p for p in candidates if p["route_progress_ratio"] >= (max_reached_prog - 0.05)]
                 if not candidates:
@@ -314,7 +316,7 @@ def order_pandals_along_polyline(
             curr_lat = next_p["location"]["latitude"]
             curr_lng = next_p["location"]["longitude"]
             max_reached_prog = max(max_reached_prog, next_p["route_progress_ratio"])
-            if next_p.get("d_dest", float("inf")) <= 0.35:
+            if next_p.get("d_dest", float("inf")) <= 0.65 or next_p["route_progress_ratio"] >= 0.85:
                 dest_reached = True
 
     return itinerary
