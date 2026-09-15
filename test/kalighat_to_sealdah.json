@@ -1,0 +1,1641 @@
+{
+  "origin": {
+    "latitude": 22.5166502,
+    "longitude": 88.3423636
+  },
+  "destination": {
+    "latitude": 22.5671106,
+    "longitude": 88.367648
+  },
+  "total_pandals": 30,
+  "estimated_distance_km": 7.51,
+  "max_detour_km": 2.5,
+  "itinerary": [
+    {
+      "step": 1,
+      "pandal": {
+        "name": "Nepal Bhattacharjee Street",
+        "region": "South",
+        "cluster": "Hajra-Kalighat",
+        "location": {
+          "latitude": 22.5176514,
+          "longitude": 88.3427551
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5ba"
+      },
+      "detour_distance_km": 0.09,
+      "route_progress_ratio": 0.008
+    },
+    {
+      "step": 2,
+      "pandal": {
+        "name": "66 Pally",
+        "region": "South",
+        "cluster": "Hajra-Kalighat",
+        "location": {
+          "latitude": 22.5180613,
+          "longitude": 88.3427526
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5b9"
+      },
+      "detour_distance_km": 0.13,
+      "route_progress_ratio": 0.008
+    },
+    {
+      "step": 3,
+      "pandal": {
+        "name": "Badamtala Asar Sanagha",
+        "region": "South",
+        "cluster": "Hajra-Kalighat",
+        "location": {
+          "latitude": 22.5179668,
+          "longitude": 88.3437245
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5b8"
+      },
+      "detour_distance_km": 0.12,
+      "route_progress_ratio": 0.0212
+    },
+    {
+      "step": 4,
+      "pandal": {
+        "name": "Protapadityo Tricone Park",
+        "region": "South",
+        "cluster": "Hajra-Kalighat",
+        "location": {
+          "latitude": 22.5134551,
+          "longitude": 88.3447357
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5bb"
+      },
+      "detour_distance_km": 0.39,
+      "route_progress_ratio": 0.0327
+    },
+    {
+      "step": 5,
+      "pandal": {
+        "name": "Shib Mandir",
+        "region": "South",
+        "cluster": "Tollygunge-Haridevpur-Patuli",
+        "location": {
+          "latitude": 22.5109975,
+          "longitude": 88.3498496
+        },
+        "nearest_metro": {
+          "name": "Rabindra Sarobar",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Tollygunj",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5dd"
+      },
+      "detour_distance_km": 0.66,
+      "route_progress_ratio": 0.0875
+    },
+    {
+      "step": 6,
+      "pandal": {
+        "name": "Ballygunge Cultural",
+        "region": "South",
+        "cluster": "Rashbehari Avenue",
+        "location": {
+          "latitude": 22.5162122,
+          "longitude": 88.3558059
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d9"
+      },
+      "detour_distance_km": 0.38,
+      "route_progress_ratio": 0.1393
+    },
+    {
+      "step": 7,
+      "pandal": {
+        "name": "Samaj Sebi Sangha",
+        "region": "South",
+        "cluster": "Rashbehari Avenue",
+        "location": {
+          "latitude": 22.5157267,
+          "longitude": 88.3562977
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5da"
+      },
+      "detour_distance_km": 0.45,
+      "route_progress_ratio": 0.1393
+    },
+    {
+      "step": 8,
+      "pandal": {
+        "name": "Triangular Park",
+        "region": "South",
+        "cluster": "Rashbehari Avenue",
+        "location": {
+          "latitude": 22.5178665,
+          "longitude": 88.3586887
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d7"
+      },
+      "detour_distance_km": 0.66,
+      "route_progress_ratio": 0.1393
+    },
+    {
+      "step": 9,
+      "pandal": {
+        "name": "Tridhara Sammilani",
+        "region": "South",
+        "cluster": "Rashbehari Avenue",
+        "location": {
+          "latitude": 22.5195286,
+          "longitude": 88.3554398
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5db"
+      },
+      "detour_distance_km": 0.36,
+      "route_progress_ratio": 0.1578
+    },
+    {
+      "step": 10,
+      "pandal": {
+        "name": "Deshapriya Park",
+        "region": "South",
+        "cluster": "Rashbehari Avenue",
+        "location": {
+          "latitude": 22.5185819,
+          "longitude": 88.3534607
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d8"
+      },
+      "detour_distance_km": 0.14,
+      "route_progress_ratio": 0.1499
+    },
+    {
+      "step": 11,
+      "pandal": {
+        "name": "Hajra Park",
+        "region": "South",
+        "cluster": "Hajra-Kalighat",
+        "location": {
+          "latitude": 22.5228058,
+          "longitude": 88.3500398
+        },
+        "nearest_metro": {
+          "name": "Jatin Das Park",
+          "line": "Blue"
+        },
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5b6"
+      },
+      "detour_distance_km": 0.19,
+      "route_progress_ratio": 0.2122
+    },
+    {
+      "step": 12,
+      "pandal": {
+        "name": "Bakul Bagan",
+        "region": "South",
+        "cluster": "Bhowanipur",
+        "location": {
+          "latitude": 22.5267621,
+          "longitude": 88.34826
+        },
+        "nearest_metro": {
+          "name": "Netaji Bhavan",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Tollygunj",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5ef"
+      },
+      "detour_distance_km": 0.44,
+      "route_progress_ratio": 0.277
+    },
+    {
+      "step": 13,
+      "pandal": {
+        "name": "Bhawanipur Abasar",
+        "region": "South",
+        "cluster": "Bhowanipur",
+        "location": {
+          "latitude": 22.5278699,
+          "longitude": 88.3489227
+        },
+        "nearest_metro": {
+          "name": "Netaji Bhavan",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Tollygunj",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5ec"
+      },
+      "detour_distance_km": 0.39,
+      "route_progress_ratio": 0.2865
+    },
+    {
+      "step": 14,
+      "pandal": {
+        "name": "Maddox Square",
+        "region": "South",
+        "cluster": "Bhowanipur",
+        "location": {
+          "latitude": 22.5265634,
+          "longitude": 88.3546477
+        },
+        "nearest_metro": {
+          "name": "Netaji Bhavan",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Tollygunj",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5ed"
+      },
+      "detour_distance_km": 0.21,
+      "route_progress_ratio": 0.2772
+    },
+    {
+      "step": 15,
+      "pandal": {
+        "name": "Chakraberia Sarbojonin",
+        "region": "South",
+        "cluster": "Bhowanipur",
+        "location": {
+          "latitude": 22.5336065,
+          "longitude": 88.3519214
+        },
+        "nearest_metro": {
+          "name": "Netaji Bhavan",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Tollygunj",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5eb"
+      },
+      "detour_distance_km": 0.14,
+      "route_progress_ratio": 0.3767
+    },
+    {
+      "step": 16,
+      "pandal": {
+        "name": "75 Pally",
+        "region": "South",
+        "cluster": "Bhowanipur",
+        "location": {
+          "latitude": 22.533319,
+          "longitude": 88.3457086
+        },
+        "nearest_metro": {
+          "name": "Netaji Bhavan",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Tollygunj",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5ea"
+      },
+      "detour_distance_km": 0.76,
+      "route_progress_ratio": 0.3568
+    },
+    {
+      "step": 17,
+      "pandal": {
+        "name": "Ballygaunge 21 Pally",
+        "region": "South",
+        "cluster": "Gariahat-Ballygaunge Phari",
+        "location": {
+          "latitude": 22.529175,
+          "longitude": 88.3688163
+        },
+        "nearest_metro": {
+          "name": "Jatin Das Park",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d6"
+      },
+      "detour_distance_km": 1.64,
+      "route_progress_ratio": 0.3156
+    },
+    {
+      "step": 18,
+      "pandal": {
+        "name": "Falguni Sangha",
+        "region": "South",
+        "cluster": "Gariahat-Ballygaunge Phari",
+        "location": {
+          "latitude": 22.5220333,
+          "longitude": 88.3656673
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d2"
+      },
+      "detour_distance_km": 1.39,
+      "route_progress_ratio": 0.2374
+    },
+    {
+      "step": 19,
+      "pandal": {
+        "name": "Ekdalia Evergreen",
+        "region": "South",
+        "cluster": "Gariahat-Ballygaunge Phari",
+        "location": {
+          "latitude": 22.5212187,
+          "longitude": 88.3665629
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d1"
+      },
+      "detour_distance_km": 1.5,
+      "route_progress_ratio": 0.2321
+    },
+    {
+      "step": 20,
+      "pandal": {
+        "name": "Singhi Park",
+        "region": "South",
+        "cluster": "Gariahat-Ballygaunge Phari",
+        "location": {
+          "latitude": 22.5209489,
+          "longitude": 88.3627281
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d3"
+      },
+      "detour_distance_km": 1.12,
+      "route_progress_ratio": 0.1578
+    },
+    {
+      "step": 21,
+      "pandal": {
+        "name": "Hindusthan Club",
+        "region": "South",
+        "cluster": "Gariahat-Ballygaunge Phari",
+        "location": {
+          "latitude": 22.5201571,
+          "longitude": 88.3609098
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d4"
+      },
+      "detour_distance_km": 0.92,
+      "route_progress_ratio": 0.1499
+    },
+    {
+      "step": 22,
+      "pandal": {
+        "name": "Hindusthan Park",
+        "region": "South",
+        "cluster": "Gariahat-Ballygaunge Phari",
+        "location": {
+          "latitude": 22.5169831,
+          "longitude": 88.3633918
+        },
+        "nearest_metro": {
+          "name": "Kalighat",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Ballygunge Jn",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5d5"
+      },
+      "detour_distance_km": 1.14,
+      "route_progress_ratio": 0.1393
+    },
+    {
+      "step": 23,
+      "pandal": {
+        "name": "Entally Sarbojanin Sri Sri Durga Puja",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5545,
+          "longitude": 88.3705
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa602"
+      },
+      "detour_distance_km": 0.6,
+      "route_progress_ratio": 0.7905
+    },
+    {
+      "step": 24,
+      "pandal": {
+        "name": "14 Pally Udayan Sangha",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5575857,
+          "longitude": 88.3669753
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5fd"
+      },
+      "detour_distance_km": 0.14,
+      "route_progress_ratio": 0.8196
+    },
+    {
+      "step": 25,
+      "pandal": {
+        "name": "Entally Matribhumi Durga Puja",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5585486,
+          "longitude": 88.3674004
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa601"
+      },
+      "detour_distance_km": 0.14,
+      "route_progress_ratio": 0.8356
+    },
+    {
+      "step": 26,
+      "pandal": {
+        "name": "Taltala Sarbojonin",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.561418,
+          "longitude": 88.3583706
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5fc"
+      },
+      "detour_distance_km": 0.84,
+      "route_progress_ratio": 0.8276
+    },
+    {
+      "step": 27,
+      "pandal": {
+        "name": "Subodh Mallick Square",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5635842,
+          "longitude": 88.3595075
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5fb"
+      },
+      "detour_distance_km": 0.75,
+      "route_progress_ratio": 0.9523
+    },
+    {
+      "step": 28,
+      "pandal": {
+        "name": "Wellington Nagarik Kalyan Samity",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5645217,
+          "longitude": 88.3583834
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa609"
+      },
+      "detour_distance_km": 0.85,
+      "route_progress_ratio": 0.9523
+    },
+    {
+      "step": 29,
+      "pandal": {
+        "name": "Central Calcutta Youth Association",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.563699,
+          "longitude": 88.3622861
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa600"
+      },
+      "detour_distance_km": 0.47,
+      "route_progress_ratio": 0.9523
+    },
+    {
+      "step": 30,
+      "pandal": {
+        "name": "Shishu Palan Foundation",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5652,
+          "longitude": 88.3625
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa608"
+      },
+      "detour_distance_km": 0.43,
+      "route_progress_ratio": 0.9523
+    }
+  ],
+  "route_geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [
+        88.342359,
+        22.516805
+      ],
+      [
+        88.342236,
+        22.516802
+      ],
+      [
+        88.342235,
+        22.516874
+      ],
+      [
+        88.342672,
+        22.516883
+      ],
+      [
+        88.342788,
+        22.516886
+      ],
+      [
+        88.342923,
+        22.516889
+      ],
+      [
+        88.343072,
+        22.516893
+      ],
+      [
+        88.343187,
+        22.516906
+      ],
+      [
+        88.343277,
+        22.516907
+      ],
+      [
+        88.343675,
+        22.516926
+      ],
+      [
+        88.343925,
+        22.516932
+      ],
+      [
+        88.344751,
+        22.516977
+      ],
+      [
+        88.345009,
+        22.516996
+      ],
+      [
+        88.34571,
+        22.517059
+      ],
+      [
+        88.345768,
+        22.51706
+      ],
+      [
+        88.345797,
+        22.517061
+      ],
+      [
+        88.345921,
+        22.517065
+      ],
+      [
+        88.345931,
+        22.517065
+      ],
+      [
+        88.345978,
+        22.517065
+      ],
+      [
+        88.346155,
+        22.517067
+      ],
+      [
+        88.346923,
+        22.517101
+      ],
+      [
+        88.347343,
+        22.517061
+      ],
+      [
+        88.347755,
+        22.51699
+      ],
+      [
+        88.348155,
+        22.516909
+      ],
+      [
+        88.348398,
+        22.516862
+      ],
+      [
+        88.3485,
+        22.516847
+      ],
+      [
+        88.348612,
+        22.51685
+      ],
+      [
+        88.348838,
+        22.516881
+      ],
+      [
+        88.34901,
+        22.516904
+      ],
+      [
+        88.349198,
+        22.516925
+      ],
+      [
+        88.349922,
+        22.517041
+      ],
+      [
+        88.350863,
+        22.517198
+      ],
+      [
+        88.352307,
+        22.517447
+      ],
+      [
+        88.352247,
+        22.517788
+      ],
+      [
+        88.352193,
+        22.51811
+      ],
+      [
+        88.352096,
+        22.518615
+      ],
+      [
+        88.352024,
+        22.519036
+      ],
+      [
+        88.352001,
+        22.519128
+      ],
+      [
+        88.35197,
+        22.519324
+      ],
+      [
+        88.351914,
+        22.519658
+      ],
+      [
+        88.351893,
+        22.519762
+      ],
+      [
+        88.35186,
+        22.519985
+      ],
+      [
+        88.351761,
+        22.520512
+      ],
+      [
+        88.351741,
+        22.520618
+      ],
+      [
+        88.351714,
+        22.52074
+      ],
+      [
+        88.351701,
+        22.520798
+      ],
+      [
+        88.351682,
+        22.520881
+      ],
+      [
+        88.351628,
+        22.521414
+      ],
+      [
+        88.351651,
+        22.521531
+      ],
+      [
+        88.351678,
+        22.521665
+      ],
+      [
+        88.351732,
+        22.521871
+      ],
+      [
+        88.351775,
+        22.522032
+      ],
+      [
+        88.351823,
+        22.52221
+      ],
+      [
+        88.351895,
+        22.522493
+      ],
+      [
+        88.351944,
+        22.522656
+      ],
+      [
+        88.351979,
+        22.522796
+      ],
+      [
+        88.352028,
+        22.522956
+      ],
+      [
+        88.352168,
+        22.523521
+      ],
+      [
+        88.352244,
+        22.523883
+      ],
+      [
+        88.35233,
+        22.524352
+      ],
+      [
+        88.352359,
+        22.524512
+      ],
+      [
+        88.352381,
+        22.524655
+      ],
+      [
+        88.352437,
+        22.525075
+      ],
+      [
+        88.352482,
+        22.52543
+      ],
+      [
+        88.3525,
+        22.525716
+      ],
+      [
+        88.352533,
+        22.525878
+      ],
+      [
+        88.352543,
+        22.525973
+      ],
+      [
+        88.352581,
+        22.526514
+      ],
+      [
+        88.352595,
+        22.526672
+      ],
+      [
+        88.352598,
+        22.526742
+      ],
+      [
+        88.352612,
+        22.527094
+      ],
+      [
+        88.352634,
+        22.527298
+      ],
+      [
+        88.352668,
+        22.527646
+      ],
+      [
+        88.35268,
+        22.527777
+      ],
+      [
+        88.352689,
+        22.527869
+      ],
+      [
+        88.352706,
+        22.528088
+      ],
+      [
+        88.352759,
+        22.528612
+      ],
+      [
+        88.352759,
+        22.528692
+      ],
+      [
+        88.352772,
+        22.529001
+      ],
+      [
+        88.352807,
+        22.529207
+      ],
+      [
+        88.352814,
+        22.529395
+      ],
+      [
+        88.352837,
+        22.52968
+      ],
+      [
+        88.352846,
+        22.529807
+      ],
+      [
+        88.352861,
+        22.530072
+      ],
+      [
+        88.352947,
+        22.531138
+      ],
+      [
+        88.352962,
+        22.53149
+      ],
+      [
+        88.352997,
+        22.532028
+      ],
+      [
+        88.353007,
+        22.532173
+      ],
+      [
+        88.353009,
+        22.532268
+      ],
+      [
+        88.353214,
+        22.53336
+      ],
+      [
+        88.353255,
+        22.533674
+      ],
+      [
+        88.353343,
+        22.534097
+      ],
+      [
+        88.353455,
+        22.534618
+      ],
+      [
+        88.353488,
+        22.534762
+      ],
+      [
+        88.353586,
+        22.535114
+      ],
+      [
+        88.353647,
+        22.535327
+      ],
+      [
+        88.353708,
+        22.535508
+      ],
+      [
+        88.353863,
+        22.535832
+      ],
+      [
+        88.353976,
+        22.536057
+      ],
+      [
+        88.354024,
+        22.536177
+      ],
+      [
+        88.354136,
+        22.536522
+      ],
+      [
+        88.354202,
+        22.536889
+      ],
+      [
+        88.354245,
+        22.537294
+      ],
+      [
+        88.354268,
+        22.537511
+      ],
+      [
+        88.35429,
+        22.537749
+      ],
+      [
+        88.354299,
+        22.537842
+      ],
+      [
+        88.354404,
+        22.538373
+      ],
+      [
+        88.354481,
+        22.53874
+      ],
+      [
+        88.354514,
+        22.538894
+      ],
+      [
+        88.354539,
+        22.539027
+      ],
+      [
+        88.354565,
+        22.539221
+      ],
+      [
+        88.35462,
+        22.539533
+      ],
+      [
+        88.354663,
+        22.5398
+      ],
+      [
+        88.354738,
+        22.540272
+      ],
+      [
+        88.354795,
+        22.540558
+      ],
+      [
+        88.35484,
+        22.540833
+      ],
+      [
+        88.35486,
+        22.54108
+      ],
+      [
+        88.354869,
+        22.541139
+      ],
+      [
+        88.354884,
+        22.541319
+      ],
+      [
+        88.355012,
+        22.541312
+      ],
+      [
+        88.355303,
+        22.541278
+      ],
+      [
+        88.355959,
+        22.541235
+      ],
+      [
+        88.356772,
+        22.541181
+      ],
+      [
+        88.357064,
+        22.541163
+      ],
+      [
+        88.357291,
+        22.541148
+      ],
+      [
+        88.357573,
+        22.54113
+      ],
+      [
+        88.358166,
+        22.541106
+      ],
+      [
+        88.358171,
+        22.541106
+      ],
+      [
+        88.358572,
+        22.54109
+      ],
+      [
+        88.358955,
+        22.541087
+      ],
+      [
+        88.358986,
+        22.541126
+      ],
+      [
+        88.359068,
+        22.541201
+      ],
+      [
+        88.359154,
+        22.541287
+      ],
+      [
+        88.359327,
+        22.541469
+      ],
+      [
+        88.359365,
+        22.541523
+      ],
+      [
+        88.359401,
+        22.541574
+      ],
+      [
+        88.359536,
+        22.541867
+      ],
+      [
+        88.359579,
+        22.541979
+      ],
+      [
+        88.359588,
+        22.542003
+      ],
+      [
+        88.359687,
+        22.54226
+      ],
+      [
+        88.359738,
+        22.542389
+      ],
+      [
+        88.359912,
+        22.542829
+      ],
+      [
+        88.360045,
+        22.54317
+      ],
+      [
+        88.360152,
+        22.543446
+      ],
+      [
+        88.3603,
+        22.543705
+      ],
+      [
+        88.360447,
+        22.544095
+      ],
+      [
+        88.360507,
+        22.544246
+      ],
+      [
+        88.360664,
+        22.5447
+      ],
+      [
+        88.360793,
+        22.545035
+      ],
+      [
+        88.360826,
+        22.545119
+      ],
+      [
+        88.360917,
+        22.545374
+      ],
+      [
+        88.36101,
+        22.545634
+      ],
+      [
+        88.361176,
+        22.546063
+      ],
+      [
+        88.361262,
+        22.546296
+      ],
+      [
+        88.361365,
+        22.546607
+      ],
+      [
+        88.361401,
+        22.54674
+      ],
+      [
+        88.361449,
+        22.546923
+      ],
+      [
+        88.361634,
+        22.547385
+      ],
+      [
+        88.361809,
+        22.547789
+      ],
+      [
+        88.361925,
+        22.548102
+      ],
+      [
+        88.36217,
+        22.548786
+      ],
+      [
+        88.362402,
+        22.549484
+      ],
+      [
+        88.36246,
+        22.549658
+      ],
+      [
+        88.362748,
+        22.550395
+      ],
+      [
+        88.362786,
+        22.550487
+      ],
+      [
+        88.36286,
+        22.550679
+      ],
+      [
+        88.363007,
+        22.551031
+      ],
+      [
+        88.363279,
+        22.551707
+      ],
+      [
+        88.363549,
+        22.552363
+      ],
+      [
+        88.363767,
+        22.552908
+      ],
+      [
+        88.364124,
+        22.55385
+      ],
+      [
+        88.364247,
+        22.554205
+      ],
+      [
+        88.36432,
+        22.554412
+      ],
+      [
+        88.364327,
+        22.55443
+      ],
+      [
+        88.364396,
+        22.554606
+      ],
+      [
+        88.364488,
+        22.554841
+      ],
+      [
+        88.364595,
+        22.555113
+      ],
+      [
+        88.364967,
+        22.556146
+      ],
+      [
+        88.365204,
+        22.556732
+      ],
+      [
+        88.365291,
+        22.556973
+      ],
+      [
+        88.365469,
+        22.557418
+      ],
+      [
+        88.365888,
+        22.55851
+      ],
+      [
+        88.366109,
+        22.559071
+      ],
+      [
+        88.366226,
+        22.559386
+      ],
+      [
+        88.366699,
+        22.560649
+      ],
+      [
+        88.366738,
+        22.560753
+      ],
+      [
+        88.366898,
+        22.561188
+      ],
+      [
+        88.366935,
+        22.561289
+      ],
+      [
+        88.366986,
+        22.561424
+      ],
+      [
+        88.367121,
+        22.561725
+      ],
+      [
+        88.36719,
+        22.561879
+      ],
+      [
+        88.367216,
+        22.561945
+      ],
+      [
+        88.367249,
+        22.562028
+      ],
+      [
+        88.367281,
+        22.562109
+      ],
+      [
+        88.367536,
+        22.562754
+      ],
+      [
+        88.367819,
+        22.563529
+      ],
+      [
+        88.367964,
+        22.563872
+      ],
+      [
+        88.368003,
+        22.563965
+      ],
+      [
+        88.368133,
+        22.564285
+      ],
+      [
+        88.368251,
+        22.564588
+      ],
+      [
+        88.368319,
+        22.564762
+      ],
+      [
+        88.368234,
+        22.564788
+      ],
+      [
+        88.367777,
+        22.564806
+      ],
+      [
+        88.367492,
+        22.564826
+      ],
+      [
+        88.367239,
+        22.56484
+      ],
+      [
+        88.367097,
+        22.564847
+      ],
+      [
+        88.366834,
+        22.564802
+      ],
+      [
+        88.366634,
+        22.564921
+      ],
+      [
+        88.366644,
+        22.565118
+      ],
+      [
+        88.366674,
+        22.565266
+      ],
+      [
+        88.366722,
+        22.565348
+      ],
+      [
+        88.366747,
+        22.565497
+      ],
+      [
+        88.366784,
+        22.565693
+      ],
+      [
+        88.366711,
+        22.565726
+      ],
+      [
+        88.366705,
+        22.565759
+      ],
+      [
+        88.366776,
+        22.565945
+      ],
+      [
+        88.366865,
+        22.566219
+      ],
+      [
+        88.366947,
+        22.566447
+      ],
+      [
+        88.366958,
+        22.566466
+      ],
+      [
+        88.367058,
+        22.566507
+      ],
+      [
+        88.367067,
+        22.566526
+      ],
+      [
+        88.367359,
+        22.567455
+      ],
+      [
+        88.36748,
+        22.56742
+      ],
+      [
+        88.367682,
+        22.567353
+      ],
+      [
+        88.367615,
+        22.567119
+      ]
+    ]
+  }
+}

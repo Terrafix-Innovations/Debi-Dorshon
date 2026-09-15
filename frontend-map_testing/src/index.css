@@ -1,0 +1,112 @@
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Custom Scrollbar for Drawer & Menus */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ddc1b3;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #897267;
+}
+
+/* Leaflet Custom Pin Markers */
+.custom-pin-icon {
+  background: transparent;
+  border: none;
+}
+
+.pin-s {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 2px solid #059669;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25), 0 2px 4px rgba(0,0,0,0.1);
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pin-e {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff1f2;
+  color: #9f1239;
+  border: 2px solid #e11d48;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25), 0 2px 4px rgba(0,0,0,0.1);
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pin-pandal {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #b45309;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(180, 83, 9, 0.35), 0 2px 6px rgba(0,0,0,0.15);
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pin-pandal.active-pin {
+  background: #903f00;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 6px rgba(144, 63, 0, 0.25), 0 6px 16px rgba(0,0,0,0.25);
+  z-index: 1000 !important;
+}
+
+.pin-s:hover, .pin-e:hover, .pin-pandal:hover {
+  transform: scale(1.15);
+}
+
+/* Custom Leaflet Popup */
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #1b1c1a !important;
+  border-radius: 12px !important;
+  border: 1px solid #ddc1b3 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.leaflet-popup-content {
+  margin: 14px !important;
+  line-height: 1.4 !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff !important;
+  border: 1px solid #ddc1b3;
+}

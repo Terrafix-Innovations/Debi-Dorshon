@@ -1,0 +1,1596 @@
+{
+  "origin": {
+    "latitude": 22.5412272,
+    "longitude": 88.3337602
+  },
+  "destination": {
+    "latitude": 22.5994909,
+    "longitude": 88.3480458
+  },
+  "total_pandals": 19,
+  "estimated_distance_km": 13.64,
+  "max_detour_km": 2.5,
+  "itinerary": [
+    {
+      "step": 1,
+      "pandal": {
+        "name": "Pally Sharadiya",
+        "region": "South",
+        "cluster": "Khidirpur",
+        "location": {
+          "latitude": 22.5432531,
+          "longitude": 88.3215038
+        },
+        "nearest_metro": null,
+        "nearest_stations": [
+          {
+            "name": "Khidirpur",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5f5"
+      },
+      "detour_distance_km": 0.85,
+      "route_progress_ratio": 0.1031
+    },
+    {
+      "step": 2,
+      "pandal": {
+        "name": "Nabarag",
+        "region": "South",
+        "cluster": "Khidirpur",
+        "location": {
+          "latitude": 22.5417107,
+          "longitude": 88.3212546
+        },
+        "nearest_metro": null,
+        "nearest_stations": [
+          {
+            "name": "Khidirpur",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa5f2"
+      },
+      "detour_distance_km": 0.91,
+      "route_progress_ratio": 0.1017
+    },
+    {
+      "step": 3,
+      "pandal": {
+        "name": "Chowringhee High School Sarbojanin Durgotsav",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5577853,
+          "longitude": 88.3530608
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa603"
+      },
+      "detour_distance_km": 2.19,
+      "route_progress_ratio": 0.18
+    },
+    {
+      "step": 4,
+      "pandal": {
+        "name": "New Market Sarbojanin Sri Sri Durga Puja",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5604449,
+          "longitude": 88.3550866
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa606"
+      },
+      "detour_distance_km": 2.48,
+      "route_progress_ratio": 0.18
+    },
+    {
+      "step": 5,
+      "pandal": {
+        "name": "Machua Bazar Sarbajanik Durga Puja Samity",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5812141,
+          "longitude": 88.3572457
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa605"
+      },
+      "detour_distance_km": 2.26,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 6,
+      "pandal": {
+        "name": "Jorasanko 7 er Pally",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5839891,
+          "longitude": 88.3613312
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa60a"
+      },
+      "detour_distance_km": 2.22,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 7,
+      "pandal": {
+        "name": "Jorasanko Sadharon Durgotsav Samity",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5862387,
+          "longitude": 88.3605571
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa60b"
+      },
+      "detour_distance_km": 1.98,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 8,
+      "pandal": {
+        "name": "Kundu Bari",
+        "region": "Bonedi Bari",
+        "cluster": "Kolkata Bonedi Bari",
+        "location": {
+          "latitude": 22.5854637,
+          "longitude": 88.3617916
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa616"
+      },
+      "detour_distance_km": 2.13,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 9,
+      "pandal": {
+        "name": "Shyamaldhan Dutta Bari",
+        "region": "Bonedi Bari",
+        "cluster": "Kolkata Bonedi Bari",
+        "location": {
+          "latitude": 22.5877273,
+          "longitude": 88.362069
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa615"
+      },
+      "detour_distance_km": 1.97,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 10,
+      "pandal": {
+        "name": "Nimtala Sarbojonin",
+        "region": "North",
+        "cluster": "Ahiritola-Kumartuli-Bagbazar",
+        "location": {
+          "latitude": 22.5918418,
+          "longitude": 88.3586946
+        },
+        "nearest_metro": {
+          "name": "Sovabazar-Sutanuti",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Sovabazar Ahiritola",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": {
+          "name": "Ahiritola Ferry",
+          "line": null
+        },
+        "_id": "6aa4a0f0713f2c197b3aa5a4"
+      },
+      "detour_distance_km": 1.41,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 11,
+      "pandal": {
+        "name": "Darpanarayan Sarbojonin",
+        "region": "Central",
+        "cluster": "Central Kolkata",
+        "location": {
+          "latitude": 22.5918418,
+          "longitude": 88.3586946
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa60c"
+      },
+      "detour_distance_km": 1.41,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 12,
+      "pandal": {
+        "name": "Ahiritola Yubak Brinda",
+        "region": "North",
+        "cluster": "Ahiritola-Kumartuli-Bagbazar",
+        "location": {
+          "latitude": 22.5946791,
+          "longitude": 88.3602117
+        },
+        "nearest_metro": {
+          "name": "Sovabazar-Sutanuti",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Sovabazar Ahiritola",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": {
+          "name": "Ahiritola Ferry",
+          "line": null
+        },
+        "_id": "6aa4a0f0713f2c197b3aa59e"
+      },
+      "detour_distance_km": 1.38,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 13,
+      "pandal": {
+        "name": "Beniatola",
+        "region": "North",
+        "cluster": "Ahiritola-Kumartuli-Bagbazar",
+        "location": {
+          "latitude": 22.5951394,
+          "longitude": 88.3591439
+        },
+        "nearest_metro": {
+          "name": "Sovabazar-Sutanuti",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Sovabazar Ahiritola",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": {
+          "name": "Ahiritola Ferry",
+          "line": null
+        },
+        "_id": "6aa4a0f0713f2c197b3aa59f"
+      },
+      "detour_distance_km": 1.26,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 14,
+      "pandal": {
+        "name": "Ahiritola Sarbojonin",
+        "region": "North",
+        "cluster": "Ahiritola-Kumartuli-Bagbazar",
+        "location": {
+          "latitude": 22.5943514,
+          "longitude": 88.3548955
+        },
+        "nearest_metro": {
+          "name": "Sovabazar-Sutanuti",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Sovabazar Ahiritola",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": {
+          "name": "Ahiritola Ferry",
+          "line": null
+        },
+        "_id": "6aa4a0f0713f2c197b3aa59d"
+      },
+      "detour_distance_km": 0.93,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 15,
+      "pandal": {
+        "name": "Kumartuli Park",
+        "region": "North",
+        "cluster": "Ahiritola-Kumartuli-Bagbazar",
+        "location": {
+          "latitude": 22.5989827,
+          "longitude": 88.3614663
+        },
+        "nearest_metro": {
+          "name": "Sovabazar-Sutanuti",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Bagbazar",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": {
+          "name": "Sovabazar Ferry",
+          "line": null
+        },
+        "_id": "6aa4a0f0713f2c197b3aa5a0"
+      },
+      "detour_distance_km": 1.35,
+      "route_progress_ratio": 0.9846
+    },
+    {
+      "step": 16,
+      "pandal": {
+        "name": "Sovabazar Rajbari - Chhoto Torof",
+        "region": "Bonedi Bari",
+        "cluster": "Kolkata Bonedi Bari",
+        "location": {
+          "latitude": 22.5958452,
+          "longitude": 88.3611126
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa60e"
+      },
+      "detour_distance_km": 1.42,
+      "route_progress_ratio": 0.9846
+    },
+    {
+      "step": 17,
+      "pandal": {
+        "name": "Sovabazar Rajbari - Boro Torof",
+        "region": "Bonedi Bari",
+        "cluster": "Kolkata Bonedi Bari",
+        "location": {
+          "latitude": 22.5962644,
+          "longitude": 88.3673797
+        },
+        "nearest_metro": null,
+        "nearest_stations": [],
+        "nearest_station": null,
+        "nearest_ferry": null,
+        "_id": "6aa4a0f0713f2c197b3aa60d"
+      },
+      "detour_distance_km": 2.01,
+      "route_progress_ratio": 0.9846
+    },
+    {
+      "step": 18,
+      "pandal": {
+        "name": "Dorjipara Sarbojonin",
+        "region": "North",
+        "cluster": "Shyambazar",
+        "location": {
+          "latitude": 22.5922343,
+          "longitude": 88.3664257
+        },
+        "nearest_metro": {
+          "name": "Shyambazar",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Bagbazar",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": {
+          "name": "Bagbazar Ferry",
+          "line": null
+        },
+        "_id": "6aa4a0f0713f2c197b3aa594"
+      },
+      "detour_distance_km": 2.07,
+      "route_progress_ratio": 1.0
+    },
+    {
+      "step": 19,
+      "pandal": {
+        "name": "Kashi Bose Lane",
+        "region": "North",
+        "cluster": "Shyambazar",
+        "location": {
+          "latitude": 22.5908979,
+          "longitude": 88.3689174
+        },
+        "nearest_metro": {
+          "name": "Shyambazar",
+          "line": "Blue"
+        },
+        "nearest_stations": [
+          {
+            "name": "Bagbazar",
+            "line": null
+          }
+        ],
+        "nearest_station": null,
+        "nearest_ferry": {
+          "name": "Bagbazar Ferry",
+          "line": null
+        },
+        "_id": "6aa4a0f0713f2c197b3aa593"
+      },
+      "detour_distance_km": 2.37,
+      "route_progress_ratio": 1.0
+    }
+  ],
+  "route_geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [
+        88.333785,
+        22.541267
+      ],
+      [
+        88.334649,
+        22.540802
+      ],
+      [
+        88.334763,
+        22.540746
+      ],
+      [
+        88.336177,
+        22.540049
+      ],
+      [
+        88.33654,
+        22.539977
+      ],
+      [
+        88.336956,
+        22.539997
+      ],
+      [
+        88.337659,
+        22.540133
+      ],
+      [
+        88.337694,
+        22.540025
+      ],
+      [
+        88.33697,
+        22.539882
+      ],
+      [
+        88.33653,
+        22.539861
+      ],
+      [
+        88.336134,
+        22.53994
+      ],
+      [
+        88.33469,
+        22.540631
+      ],
+      [
+        88.334581,
+        22.54069
+      ],
+      [
+        88.33446,
+        22.540749
+      ],
+      [
+        88.334275,
+        22.540853
+      ],
+      [
+        88.333637,
+        22.541193
+      ],
+      [
+        88.333419,
+        22.54131
+      ],
+      [
+        88.333276,
+        22.541388
+      ],
+      [
+        88.332304,
+        22.54192
+      ],
+      [
+        88.331698,
+        22.542242
+      ],
+      [
+        88.33135,
+        22.542427
+      ],
+      [
+        88.331038,
+        22.542592
+      ],
+      [
+        88.330719,
+        22.54279
+      ],
+      [
+        88.330392,
+        22.543052
+      ],
+      [
+        88.330065,
+        22.543405
+      ],
+      [
+        88.329852,
+        22.543787
+      ],
+      [
+        88.329771,
+        22.543995
+      ],
+      [
+        88.329688,
+        22.544399
+      ],
+      [
+        88.329655,
+        22.544699
+      ],
+      [
+        88.329652,
+        22.544953
+      ],
+      [
+        88.329661,
+        22.545179
+      ],
+      [
+        88.329882,
+        22.546435
+      ],
+      [
+        88.329997,
+        22.547368
+      ],
+      [
+        88.330068,
+        22.547649
+      ],
+      [
+        88.330183,
+        22.547947
+      ],
+      [
+        88.330326,
+        22.548183
+      ],
+      [
+        88.330566,
+        22.54859
+      ],
+      [
+        88.330807,
+        22.548997
+      ],
+      [
+        88.331052,
+        22.549351
+      ],
+      [
+        88.33151,
+        22.550087
+      ],
+      [
+        88.331947,
+        22.550863
+      ],
+      [
+        88.332286,
+        22.551523
+      ],
+      [
+        88.332388,
+        22.551806
+      ],
+      [
+        88.332447,
+        22.552127
+      ],
+      [
+        88.332451,
+        22.55237
+      ],
+      [
+        88.332425,
+        22.552593
+      ],
+      [
+        88.332387,
+        22.552834
+      ],
+      [
+        88.332301,
+        22.5531
+      ],
+      [
+        88.332081,
+        22.553467
+      ],
+      [
+        88.331816,
+        22.553894
+      ],
+      [
+        88.330724,
+        22.55483
+      ],
+      [
+        88.329974,
+        22.555403
+      ],
+      [
+        88.32786,
+        22.557095
+      ],
+      [
+        88.326324,
+        22.558272
+      ],
+      [
+        88.325193,
+        22.559129
+      ],
+      [
+        88.324557,
+        22.559604
+      ],
+      [
+        88.324008,
+        22.56
+      ],
+      [
+        88.321488,
+        22.561412
+      ],
+      [
+        88.320485,
+        22.561949
+      ],
+      [
+        88.319418,
+        22.562691
+      ],
+      [
+        88.318322,
+        22.563447
+      ],
+      [
+        88.318157,
+        22.563564
+      ],
+      [
+        88.317824,
+        22.563805
+      ],
+      [
+        88.316802,
+        22.564468
+      ],
+      [
+        88.316564,
+        22.564623
+      ],
+      [
+        88.316181,
+        22.564893
+      ],
+      [
+        88.315905,
+        22.565088
+      ],
+      [
+        88.315368,
+        22.565474
+      ],
+      [
+        88.314601,
+        22.566094
+      ],
+      [
+        88.314347,
+        22.566254
+      ],
+      [
+        88.314188,
+        22.566341
+      ],
+      [
+        88.314005,
+        22.566442
+      ],
+      [
+        88.313758,
+        22.566578
+      ],
+      [
+        88.313156,
+        22.566842
+      ],
+      [
+        88.312238,
+        22.567107
+      ],
+      [
+        88.31176,
+        22.56719
+      ],
+      [
+        88.31158,
+        22.567221
+      ],
+      [
+        88.309608,
+        22.567566
+      ],
+      [
+        88.309492,
+        22.567586
+      ],
+      [
+        88.308822,
+        22.567704
+      ],
+      [
+        88.30861,
+        22.567765
+      ],
+      [
+        88.308329,
+        22.567845
+      ],
+      [
+        88.308127,
+        22.56792
+      ],
+      [
+        88.307985,
+        22.567978
+      ],
+      [
+        88.307891,
+        22.568017
+      ],
+      [
+        88.307557,
+        22.568163
+      ],
+      [
+        88.307044,
+        22.568488
+      ],
+      [
+        88.306364,
+        22.569115
+      ],
+      [
+        88.305965,
+        22.569636
+      ],
+      [
+        88.305503,
+        22.570399
+      ],
+      [
+        88.304419,
+        22.572188
+      ],
+      [
+        88.303869,
+        22.57304
+      ],
+      [
+        88.303596,
+        22.573462
+      ],
+      [
+        88.303356,
+        22.57375
+      ],
+      [
+        88.302856,
+        22.574352
+      ],
+      [
+        88.301804,
+        22.575372
+      ],
+      [
+        88.301773,
+        22.575402
+      ],
+      [
+        88.301841,
+        22.575464
+      ],
+      [
+        88.301907,
+        22.575572
+      ],
+      [
+        88.302022,
+        22.575738
+      ],
+      [
+        88.302136,
+        22.575887
+      ],
+      [
+        88.302229,
+        22.57602
+      ],
+      [
+        88.302369,
+        22.576248
+      ],
+      [
+        88.302435,
+        22.576343
+      ],
+      [
+        88.302544,
+        22.576519
+      ],
+      [
+        88.30275,
+        22.576861
+      ],
+      [
+        88.302842,
+        22.577
+      ],
+      [
+        88.30295,
+        22.577129
+      ],
+      [
+        88.303091,
+        22.577282
+      ],
+      [
+        88.303195,
+        22.577406
+      ],
+      [
+        88.303236,
+        22.577454
+      ],
+      [
+        88.303393,
+        22.57772
+      ],
+      [
+        88.303586,
+        22.578026
+      ],
+      [
+        88.303744,
+        22.578254
+      ],
+      [
+        88.304016,
+        22.578636
+      ],
+      [
+        88.304338,
+        22.579083
+      ],
+      [
+        88.304625,
+        22.579506
+      ],
+      [
+        88.304828,
+        22.579823
+      ],
+      [
+        88.304959,
+        22.580029
+      ],
+      [
+        88.305294,
+        22.580529
+      ],
+      [
+        88.305551,
+        22.580912
+      ],
+      [
+        88.305685,
+        22.58112
+      ],
+      [
+        88.30597,
+        22.581536
+      ],
+      [
+        88.306261,
+        22.582001
+      ],
+      [
+        88.306441,
+        22.58231
+      ],
+      [
+        88.306602,
+        22.5826
+      ],
+      [
+        88.306642,
+        22.582672
+      ],
+      [
+        88.307079,
+        22.58336
+      ],
+      [
+        88.307104,
+        22.583398
+      ],
+      [
+        88.307727,
+        22.584382
+      ],
+      [
+        88.308321,
+        22.585288
+      ],
+      [
+        88.309077,
+        22.586519
+      ],
+      [
+        88.309139,
+        22.586614
+      ],
+      [
+        88.309432,
+        22.587065
+      ],
+      [
+        88.309577,
+        22.587288
+      ],
+      [
+        88.310245,
+        22.5884
+      ],
+      [
+        88.310999,
+        22.589617
+      ],
+      [
+        88.311435,
+        22.590291
+      ],
+      [
+        88.311783,
+        22.590814
+      ],
+      [
+        88.312,
+        22.591185
+      ],
+      [
+        88.312337,
+        22.591735
+      ],
+      [
+        88.312654,
+        22.592255
+      ],
+      [
+        88.312679,
+        22.592296
+      ],
+      [
+        88.312947,
+        22.592729
+      ],
+      [
+        88.313024,
+        22.592852
+      ],
+      [
+        88.313225,
+        22.593171
+      ],
+      [
+        88.31326,
+        22.593226
+      ],
+      [
+        88.313408,
+        22.593456
+      ],
+      [
+        88.313746,
+        22.593984
+      ],
+      [
+        88.313944,
+        22.594293
+      ],
+      [
+        88.31409,
+        22.594521
+      ],
+      [
+        88.314339,
+        22.59493
+      ],
+      [
+        88.314744,
+        22.595618
+      ],
+      [
+        88.314787,
+        22.595694
+      ],
+      [
+        88.314979,
+        22.596035
+      ],
+      [
+        88.315101,
+        22.596221
+      ],
+      [
+        88.315306,
+        22.596496
+      ],
+      [
+        88.315546,
+        22.596784
+      ],
+      [
+        88.315617,
+        22.596868
+      ],
+      [
+        88.315727,
+        22.596997
+      ],
+      [
+        88.315883,
+        22.597156
+      ],
+      [
+        88.315999,
+        22.597256
+      ],
+      [
+        88.31623,
+        22.597417
+      ],
+      [
+        88.316552,
+        22.597607
+      ],
+      [
+        88.31682,
+        22.597758
+      ],
+      [
+        88.317185,
+        22.597925
+      ],
+      [
+        88.317397,
+        22.597994
+      ],
+      [
+        88.317654,
+        22.598062
+      ],
+      [
+        88.317932,
+        22.598107
+      ],
+      [
+        88.318067,
+        22.598123
+      ],
+      [
+        88.318215,
+        22.598122
+      ],
+      [
+        88.318422,
+        22.598128
+      ],
+      [
+        88.318491,
+        22.59814
+      ],
+      [
+        88.318474,
+        22.598228
+      ],
+      [
+        88.318462,
+        22.598402
+      ],
+      [
+        88.31845,
+        22.59871
+      ],
+      [
+        88.318462,
+        22.598812
+      ],
+      [
+        88.318587,
+        22.599281
+      ],
+      [
+        88.31863,
+        22.599368
+      ],
+      [
+        88.318765,
+        22.599598
+      ],
+      [
+        88.3189,
+        22.599827
+      ],
+      [
+        88.318951,
+        22.599915
+      ],
+      [
+        88.319042,
+        22.600057
+      ],
+      [
+        88.319353,
+        22.600255
+      ],
+      [
+        88.319493,
+        22.600317
+      ],
+      [
+        88.319736,
+        22.60043
+      ],
+      [
+        88.320023,
+        22.600554
+      ],
+      [
+        88.320343,
+        22.600629
+      ],
+      [
+        88.32091,
+        22.600693
+      ],
+      [
+        88.321054,
+        22.600845
+      ],
+      [
+        88.321216,
+        22.601663
+      ],
+      [
+        88.321331,
+        22.601795
+      ],
+      [
+        88.321374,
+        22.601844
+      ],
+      [
+        88.321473,
+        22.601893
+      ],
+      [
+        88.3216,
+        22.601955
+      ],
+      [
+        88.321793,
+        22.602111
+      ],
+      [
+        88.321865,
+        22.602456
+      ],
+      [
+        88.321848,
+        22.602669
+      ],
+      [
+        88.321607,
+        22.602976
+      ],
+      [
+        88.321635,
+        22.603249
+      ],
+      [
+        88.321684,
+        22.603409
+      ],
+      [
+        88.321918,
+        22.60416
+      ],
+      [
+        88.322331,
+        22.603995
+      ],
+      [
+        88.323335,
+        22.60367
+      ],
+      [
+        88.323606,
+        22.603607
+      ],
+      [
+        88.324048,
+        22.603504
+      ],
+      [
+        88.324558,
+        22.603432
+      ],
+      [
+        88.324611,
+        22.603425
+      ],
+      [
+        88.324944,
+        22.603378
+      ],
+      [
+        88.325232,
+        22.603337
+      ],
+      [
+        88.325581,
+        22.603308
+      ],
+      [
+        88.326527,
+        22.603229
+      ],
+      [
+        88.32723,
+        22.603171
+      ],
+      [
+        88.329412,
+        22.602989
+      ],
+      [
+        88.32985,
+        22.602989
+      ],
+      [
+        88.330339,
+        22.603068
+      ],
+      [
+        88.331412,
+        22.603258
+      ],
+      [
+        88.33187,
+        22.603329
+      ],
+      [
+        88.332081,
+        22.603361
+      ],
+      [
+        88.33224,
+        22.603363
+      ],
+      [
+        88.332432,
+        22.603365
+      ],
+      [
+        88.332777,
+        22.603369
+      ],
+      [
+        88.333299,
+        22.603412
+      ],
+      [
+        88.333455,
+        22.603425
+      ],
+      [
+        88.333861,
+        22.603486
+      ],
+      [
+        88.333978,
+        22.603504
+      ],
+      [
+        88.334193,
+        22.603623
+      ],
+      [
+        88.33439,
+        22.60371
+      ],
+      [
+        88.334563,
+        22.603783
+      ],
+      [
+        88.33469,
+        22.603819
+      ],
+      [
+        88.334798,
+        22.603821
+      ],
+      [
+        88.334927,
+        22.603803
+      ],
+      [
+        88.335489,
+        22.603646
+      ],
+      [
+        88.335737,
+        22.603622
+      ],
+      [
+        88.336035,
+        22.603648
+      ],
+      [
+        88.336845,
+        22.603718
+      ],
+      [
+        88.337034,
+        22.603718
+      ],
+      [
+        88.33724,
+        22.603678
+      ],
+      [
+        88.337281,
+        22.603663
+      ],
+      [
+        88.337499,
+        22.603584
+      ],
+      [
+        88.338291,
+        22.603299
+      ],
+      [
+        88.33889,
+        22.603082
+      ],
+      [
+        88.33937,
+        22.602909
+      ],
+      [
+        88.339742,
+        22.6028
+      ],
+      [
+        88.34016,
+        22.602678
+      ],
+      [
+        88.340424,
+        22.602593
+      ],
+      [
+        88.34078,
+        22.60244
+      ],
+      [
+        88.341094,
+        22.60228
+      ],
+      [
+        88.341153,
+        22.602252
+      ],
+      [
+        88.341266,
+        22.602199
+      ],
+      [
+        88.341385,
+        22.602134
+      ],
+      [
+        88.342023,
+        22.601909
+      ],
+      [
+        88.342052,
+        22.601859
+      ],
+      [
+        88.34297,
+        22.601744
+      ],
+      [
+        88.343068,
+        22.601735
+      ],
+      [
+        88.343179,
+        22.601726
+      ],
+      [
+        88.34369,
+        22.601642
+      ],
+      [
+        88.344368,
+        22.601532
+      ],
+      [
+        88.344464,
+        22.601524
+      ],
+      [
+        88.345319,
+        22.601408
+      ],
+      [
+        88.345399,
+        22.601396
+      ],
+      [
+        88.345771,
+        22.601437
+      ],
+      [
+        88.346579,
+        22.601611
+      ],
+      [
+        88.34703,
+        22.601714
+      ],
+      [
+        88.347295,
+        22.601731
+      ],
+      [
+        88.347593,
+        22.601705
+      ],
+      [
+        88.347729,
+        22.601683
+      ],
+      [
+        88.348187,
+        22.60158
+      ],
+      [
+        88.348513,
+        22.601507
+      ],
+      [
+        88.348498,
+        22.60137
+      ],
+      [
+        88.348512,
+        22.601201
+      ],
+      [
+        88.348486,
+        22.601016
+      ],
+      [
+        88.348447,
+        22.600922
+      ],
+      [
+        88.348387,
+        22.600775
+      ],
+      [
+        88.348188,
+        22.600472
+      ],
+      [
+        88.348135,
+        22.600391
+      ],
+      [
+        88.348095,
+        22.600342
+      ],
+      [
+        88.348031,
+        22.600254
+      ],
+      [
+        88.347847,
+        22.600001
+      ],
+      [
+        88.347801,
+        22.599946
+      ],
+      [
+        88.3477,
+        22.599771
+      ],
+      [
+        88.347926,
+        22.599675
+      ]
+    ]
+  }
+}
