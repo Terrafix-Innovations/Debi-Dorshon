@@ -1,65 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import MapView from './components/MapView';
 import ItineraryPanel from './components/ItineraryPanel';
 import './App.css';
 
-const PRESETS = {
-  ahiritola: {
-    origin: { latitude: 22.596474, longitude: 88.353293, name: 'Ahiritola Ghat, Kolkata' },
-    destination: { latitude: 22.618676, longitude: 88.373191, name: 'Maniktala More, Kolkata' },
-    detour: 2.5
-  },
-  dumdum: {
-    origin: { latitude: 22.620117, longitude: 88.391848, name: 'Dum Dum Metro Station' },
-    destination: { latitude: 22.618676, longitude: 88.373191, name: 'Maniktala More, Kolkata' },
-    detour: 2.5
-  },
-  bagbazar: {
-    origin: { latitude: 22.603500, longitude: 88.368500, name: 'Bagbazar, Kolkata' },
-    destination: { latitude: 22.573100, longitude: 88.364300, name: 'College Street, Kolkata' },
-    detour: 2.0
-  }
-};
-
 export default function App() {
-  const [origin, setOrigin] = useState(PRESETS.ahiritola.origin);
-  const [destination, setDestination] = useState(PRESETS.ahiritola.destination);
+  const [origin, setOrigin] = useState(null);
+  const [destination, setDestination] = useState(null);
   const [maxDetour, setMaxDetour] = useState(2.5);
   const [apiBaseUrl, setApiBaseUrl] = useState('http://localhost:8000');
-  const [backendStatus, setBackendStatus] = useState('checking');
   const [routeData, setRouteData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activePandal, setActivePandal] = useState(null);
-
-  // Check backend health on mount
-  useEffect(() => {
-    async function checkHealth() {
-      try {
-        const cleanUrl = apiBaseUrl.trim().replace(/\/+$/, '');
-        const res = await fetch(`${cleanUrl}/api/v1/health`);
-        if (res.ok) {
-          setBackendStatus('online');
-        } else {
-          setBackendStatus('offline');
-        }
-      } catch (err) {
-        setBackendStatus('offline');
-      }
-    }
-    checkHealth();
-  }, [apiBaseUrl]);
-
-  // Handle Preset selection
-  const handleSelectPreset = (key) => {
-    const p = PRESETS[key];
-    if (!p) return;
-    setOrigin(p.origin);
-    setDestination(p.destination);
-    setMaxDetour(p.detour);
-    setRouteData(null);
-    setActivePandal(null);
-  };
 
   // Swap endpoints
   const handleSwap = () => {
@@ -73,19 +25,49 @@ export default function App() {
   // Handle Map Click
   const handleMapClick = (lat, lng) => {
     if (!origin) {
-      setOrigin({ latitude: lat, longitude: lng, name: `Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})` });
+      setOrigin({ latitude: lat, longitude: lng, name: `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` });
     } else if (!destination) {
-      setDestination({ latitude: lat, longitude: lng, name: `Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})` });
+      setDestination({ latitude: lat, longitude: lng, name: `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` });
     } else {
-      setDestination({ latitude: lat, longitude: lng, name: `Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})` });
+      setDestination({ latitude: lat, longitude: lng, name: `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` });
     }
     setRouteData(null);
+  };
+
+  // Handle Drag Updates
+  const handleUpdateOrigin = (lat, lng) => {
+    setOrigin(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+      name: prev?.name?.startsWith('Location') ? `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` : prev?.name || `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`
+    }));
+    setRouteData(null);
+    setActivePandal(null);
+  };
+
+  const handleUpdateDestination = (lat, lng) => {
+    setDestination(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+      name: prev?.name?.startsWith('Location') ? `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` : prev?.name || `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`
+    }));
+    setRouteData(null);
+    setActivePandal(null);
   };
 
   // Plan Route API
   const handlePlanRoute = async () => {
     if (!origin || !destination) {
-      alert('Please select both Origin and Destination');
+      alert('Please select both Start and End locations');
+      return;
+    }
+
+    const dLat = Math.abs(origin.latitude - destination.latitude);
+    const dLng = Math.abs(origin.longitude - destination.longitude);
+    if (dLat < 0.0005 && dLng < 0.0005) {
+      alert('Start and destination locations are identical or too close together. Please select distinct locations.');
       return;
     }
 
@@ -128,22 +110,19 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      <Navbar 
-        onSelectPreset={handleSelectPreset} 
-        backendStatus={backendStatus} 
-      />
+      <Navbar />
 
       <div className="main-content">
         <ItineraryPanel
           origin={origin}
           destination={destination}
-          onSelectOrigin={(pt) => { setOrigin(pt); setRouteData(null); }}
-          onSelectDestination={(pt) => { setDestination(pt); setRouteData(null); }}
-          onClearOrigin={() => { setOrigin(null); setRouteData(null); }}
-          onClearDestination={() => { setDestination(null); setRouteData(null); }}
+          onSelectOrigin={(pt) => { setOrigin(pt); setRouteData(null); setActivePandal(null); }}
+          onSelectDestination={(pt) => { setDestination(pt); setRouteData(null); setActivePandal(null); }}
+          onClearOrigin={() => { setOrigin(null); setRouteData(null); setActivePandal(null); }}
+          onClearDestination={() => { setDestination(null); setRouteData(null); setActivePandal(null); }}
           onSwap={handleSwap}
           maxDetour={maxDetour}
-          setMaxDetour={setMaxDetour}
+          setMaxDetour={(val) => { setMaxDetour(val); setRouteData(null); setActivePandal(null); }}
           apiBaseUrl={apiBaseUrl}
           setApiBaseUrl={setApiBaseUrl}
           onPlanRoute={handlePlanRoute}
@@ -161,8 +140,9 @@ export default function App() {
           setActivePandal={setActivePandal}
           loading={loading}
           onMapClick={handleMapClick}
-          onUpdateOrigin={(lat, lng) => setOrigin(prev => ({ ...prev, latitude: lat, longitude: lng }))}
-          onUpdateDestination={(lat, lng) => setDestination(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+          onUpdateOrigin={handleUpdateOrigin}
+          onUpdateDestination={handleUpdateDestination}
+          apiBaseUrl={apiBaseUrl}
         />
       </div>
     </div>

@@ -23,14 +23,18 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    volumes:
+      - ./data:/app/data:ro
+    env_file:
+      - ./backend/.env
     environment:
       - PROJECT_NAME=Debi-Dorshon API
       - API_V1_STR=/api/v1
       - HOST=0.0.0.0
       - PORT=8000
-      - MONGODB_URL=mongodb://mongodb:27017
-      - MONGODB_DB_NAME=debi_dorshon_db
-      - PANDAL_COLLECTION_NAME=pandals
+      - MONGODB_URL=${MONGODB_URL:-mongodb://mongodb:27017}
+      - MONGODB_DB_NAME=${MONGODB_DB_NAME:-debi_dorshon_db}
+      - PANDAL_COLLECTION_NAME=${PANDAL_COLLECTION_NAME:-pandals}
     depends_on:
       mongodb:
         condition: service_healthy

@@ -72,6 +72,40 @@ class OSRMClient:
 
         return coordinates, distance_km
 
+    async def get_multi_stop_route(
+        self, waypoints: List[Tuple[float, float]]
+    ) -> Optional[Tuple[List[List[float]], float]]:
+        """
+        Query OSRM API for driving route geometry passing through all waypoints in sequence.
+        waypoints: List of (longitude, latitude) tuples [Start, Stop 1, Stop 2, ..., End].
+        Returns (coordinates, distance_km) or None if calculation fails.
+        """
+        if len(waypoints) < 2:
+            return None
+
+        # OSRM expects {longitude},{latitude};{longitude},{latitude}...
+        coords_str = ";".join(f"{round(lng, 6)},{round(lat, 6)}" for lng, lat in waypoints)
+        url = (
+            f"{self.base_url}/route/v1/driving/{coords_str}"
+            "?overview=full&geometries=geojson"
+        )
+
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                res = await client.get(url)
+            if res.status_code == 200:
+                data = res.json()
+                if data.get("code") == "Ok" and data.get("routes"):
+                    route = data["routes"][0]
+                    coordinates = route["geometry"]["coordinates"]
+                    distance_meters = route.get("distance", 0.0)
+                    distance_km = round(distance_meters / 1000.0, 2)
+                    return coordinates, distance_km
+        except Exception:
+            pass
+
+        return None
+
 
 class RoutePlannerService:
     def __init__(
@@ -86,7 +120,7 @@ class RoutePlannerService:
         """
         Plan an A -> B road route Puja Parikrama itinerary.
         """
-        # 1. Fetch road route geometry from OSRM
+        # 1. Fetch base road route geometry from OSRM to establish corridor
         coordinates, base_distance_km = await self.osrm_client.get_route(
             request.origin, request.destination
         )
@@ -120,8 +154,26 @@ class RoutePlannerService:
         else:
             selected_candidates = ordered_candidates
 
+        # 5. Generate Curated Google Maps-style Road Route from S -> 1 -> 2 -> ... -> E
+        final_coordinates = coordinates
+        final_distance_km = base_distance_km
 
-        # 5. Build itinerary items
+        if selected_candidates:
+            waypoints = [(request.origin.longitude, request.origin.latitude)]
+            for item in selected_candidates:
+                loc = item.get("location") or {}
+                p_lng = loc.get("longitude")
+                p_lat = loc.get("latitude")
+                if p_lng is not None and p_lat is not None:
+                    waypoints.append((float(p_lng), float(p_lat)))
+            waypoints.append((request.destination.longitude, request.destination.latitude))
+
+            # Query multi-stop curated road route
+            multi_route = await self.osrm_client.get_multi_stop_route(waypoints)
+            if multi_route:
+                final_coordinates, final_distance_km = multi_route
+
+        # 6. Build itinerary items
         itinerary = []
         for idx, item in enumerate(selected_candidates, start=1):
             detour_dist = item.pop("detour_distance_km", 0.0)
@@ -140,8 +192,8 @@ class RoutePlannerService:
             origin=request.origin,
             destination=request.destination,
             total_pandals=len(itinerary),
-            estimated_distance_km=base_distance_km,
+            estimated_distance_km=final_distance_km,
             max_detour_km=request.max_detour_km,
             itinerary=itinerary,
-            route_geometry=RouteGeometry(type="LineString", coordinates=coordinates),
+            route_geometry=RouteGeometry(type="LineString", coordinates=final_coordinates),
         )

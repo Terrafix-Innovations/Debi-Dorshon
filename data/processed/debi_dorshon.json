@@ -513,27 +513,6 @@
     }
   },
   {
-    "name": "Dakhindari Youth",
-    "region": "North",
-    "cluster": "Ultadanga",
-    "location": {
-      "latitude": 22.5953004,
-      "longitude": 88.39385
-    },
-    "nearest_metro": {
-      "name": "Shyambazar",
-      "line": "Blue"
-    },
-    "nearest_stations": [
-      {
-        "name": "Bidhannagar Road"
-      }
-    ],
-    "nearest_ferry": {
-      "name": "Bagbazar Ferry"
-    }
-  },
-  {
     "name": "Ultadanga Pallyshree",
     "region": "North",
     "cluster": "Ultadanga",

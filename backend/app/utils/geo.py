@@ -182,8 +182,11 @@ def order_pandals_along_polyline(
     route_length_km = cum_dists[-1] if cum_dists else 1.0
 
     # Dynamic Lateral Detour Cap:
-    # Scales lateral detour with route length: max 0.5km for very short routes, scaling up to 1.35km.
-    adaptive_max_detour = max(0.5, min(max_detour_km, 0.25 * route_length_km + 0.35, 1.35))
+    # Scales lateral detour with route length: max 1.4km for short corridors (<2.5km) to prevent
+    # lateral divergence into adjacent neighborhoods, while allowing wider exploration up to user's max_detour_km
+    # on longer routes.
+    max_lateral_bound = max(1.4, 0.35 * route_length_km + 0.5)
+    adaptive_max_detour = max(0.4, min(max_detour_km, max_lateral_bound))
 
     a_lat, a_lng = origin
     b_lat, b_lng = destination
@@ -223,17 +226,10 @@ def order_pandals_along_polyline(
         d_orig = haversine_distance(origin[0], origin[1], float(p_lat), float(p_lng))
         d_dest = haversine_distance(destination[0], destination[1], float(p_lat), float(p_lng))
 
-        # Check projection along overall vector AB
-        if ab_sq > 0:
-            ap_x, ap_y = float(p_lng) - a_lng, float(p_lat) - a_lat
-            t_proj = (ap_x * ab_x + ap_y * ab_y) / ab_sq
-        else:
-            t_proj = 0.5
-
-        # Pandal must not lie past destination or before origin
-        if t_proj > 1.05 and d_dest > 0.4:
+        # Prevent points behind origin or past destination from wandering
+        if progress <= 0.005 and d_orig > min(adaptive_max_detour, 0.85):
             continue
-        if t_proj < -0.05 and d_orig > 0.4:
+        if progress >= 0.995 and d_dest > min(adaptive_max_detour, 0.85):
             continue
 
         # Filter candidates within adaptive lateral corridor distance
@@ -307,9 +303,16 @@ def order_pandals_along_polyline(
         curr_lng = next_p["location"]["longitude"]
         max_reached_prog = max(max_reached_prog, next_p["route_progress_ratio"])
 
-        # Stop condition: destination area reached (d_dest <= 0.65 or max_reached_prog >= 0.88)
+        # Stop condition: destination vicinity reached
         d_curr_to_dest = haversine_distance(curr_lat, curr_lng, destination[0], destination[1])
-        if d_curr_to_dest <= 0.65 or max_reached_prog >= 0.88:
+        if d_curr_to_dest <= 0.35:
+            remaining_dest = [
+                p for p in candidates
+                if p.get("d_dest", float("inf")) <= 0.35 and p["route_progress_ratio"] >= (max_reached_prog - 0.10)
+            ]
+            if not remaining_dest:
+                break
+        elif max_reached_prog >= 0.95 and d_curr_to_dest <= 0.65:
             remaining_dest = [
                 p for p in candidates
                 if p.get("d_dest", float("inf")) <= 0.70 and p["route_progress_ratio"] >= (max_reached_prog - 0.15)

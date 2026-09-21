@@ -8,6 +8,7 @@ Your FastAPI dev friend can easily add JWT keys, CORS origins, Redis URLs here l
 
 import os
 from pathlib import Path
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
@@ -33,6 +34,9 @@ class Settings(BaseSettings):
     # Routing Engine Settings (OSRM)
     OSRM_BASE_URL: str = "http://router.project-osrm.org"
     OSRM_TIMEOUT_SECONDS: float = 10.0
+
+    # Optional Mapbox Access Token (kept securely on backend)
+    MAPBOX_ACCESS_TOKEN: Optional[str] = None
 
     # Configure Pydantic to read from `.env` file
     model_config = SettingsConfigDict(

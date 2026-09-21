@@ -313,3 +313,20 @@ def test_no_khidirpur_jump_after_netaji_bhavan():
     assert pandal_ids[-1] == "75_pally_bhowanipur"
 
 
+def test_map_config_endpoint():
+    """12. Verify /api/v1/route/config returns public map configuration."""
+    response = client.get("/api/v1/route/config")
+    assert response.status_code == 200
+    data = response.json()
+    assert "mapbox_configured" in data
+    assert "default_center" in data
+    assert "default_zoom" in data
+
+
+def test_route_autocomplete_endpoint():
+    """13. Verify /api/v1/route/autocomplete handles query parameter."""
+    response = client.get("/api/v1/route/autocomplete?q=Ahiritola&limit=5")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+
