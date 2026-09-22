@@ -7,6 +7,7 @@ Health check endpoint to verify server status and MongoDB connection.
 from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.database import get_database
+from app.core.cache import cache
 
 router = APIRouter()
 
@@ -21,8 +22,11 @@ async def health_check(db: AsyncIOMotorDatabase = Depends(get_database)):
     except Exception as e:
         db_status = f"unhealthy: {str(e)}"
 
+    cache_status = "redis_connected" if cache.is_redis_active else "in_memory_fallback"
+
     return {
         "status": "online",
         "database": db_status,
+        "cache": cache_status,
         "service": "Debi-Dorshon Backend API"
     }

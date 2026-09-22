@@ -27,10 +27,13 @@ This document provides a comprehensive reference for all available API endpoints
 | `GET` | `/api/v1/transit/train/stations` | Ride by Train: List all Railway stations | ❌ No |
 | `GET` | `/api/v1/transit/train/pandals` | Ride by Train: Get pandals near a Railway station | ❌ No |
 | `POST` | `/api/v1/trip/plan` | Puja Parikrama: Generate itinerary from GPS origin | ❌ No |
-| `POST` | `/api/v1/route/plan` | A → B Route Planner: OSRM road route-based itinerary & polyline | ❌ No |
+| `GET` | `/api/v1/route/autocomplete` | Search places and pandals (Rate limited: 60/min) | ❌ No |
+| `POST` | `/api/v1/route/plan` | A → B Route Planner: Road route itinerary & polyline (Rate limited: 7/min) | ❌ No |
 
 > [!NOTE]
-> Pandal data is managed exclusively via internal database seeding scripts. Public mutation endpoints (`POST/PUT/DELETE /pandals`) are disabled.
+> - Pandal data is managed exclusively via internal database seeding scripts. Public mutation endpoints (`POST/PUT/DELETE /pandals`) are disabled.
+> - High-performance caching is enabled (Redis with seamless in-memory fallback) across transit hubs, pandal lookups, and route plans.
+> - `/api/v1/route/plan` enforces a strict rate limit of **7 requests per minute** to protect downstream routing resources.
 
 ---
 

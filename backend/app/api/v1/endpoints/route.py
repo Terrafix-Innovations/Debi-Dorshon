@@ -1,13 +1,15 @@
 from typing import Any, Dict, List, Optional
 import httpx
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Request, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.config import settings
 from app.core.database import get_database
+from app.core.cache import cache
+from app.core.http_client import get_http_client
+from app.core.rate_limit import limiter
 from app.schemas.route import RoutePlanRequest, RoutePlanResponse
 from app.services.route_planner import RoutePlannerService
-
 from app.core.transit_data import search_kolkata_transit_hubs
 
 router = APIRouter()
@@ -42,7 +44,9 @@ async def get_map_config() -> Dict[str, Any]:
     "/autocomplete",
     summary="Search places and pandals securely via backend proxy",
 )
+@limiter.limit(settings.RATE_LIMIT_AUTOCOMPLETE)
 async def autocomplete_places(
+    request: Request,
     q: str = Query(..., min_length=1, description="Search query string"),
     limit: int = Query(6, ge=1, le=10, description="Max suggestions to return"),
     db: AsyncIOMotorDatabase = Depends(get_database),
@@ -55,6 +59,11 @@ async def autocomplete_places(
     trimmed = q.strip()
     if not trimmed:
         return []
+
+    cache_key = f"cache:autocomplete:{trimmed.lower()}:{limit}"
+    cached = await cache.get_json(cache_key)
+    if cached is not None:
+        return cached
 
     results: List[Dict[str, Any]] = []
     seen_coords = set()
@@ -115,35 +124,38 @@ async def autocomplete_places(
                 "types": "poi,address,neighborhood,locality,place",
                 "limit": str(limit),
             }
-            async with httpx.AsyncClient(timeout=4.0) as client:
-                res = await client.get(
-                    f"https://api.mapbox.com/geocoding/v5/mapbox.places/{trimmed}.json",
-                    params=params,
-                )
-                if res.status_code == 200:
-                    data = res.json()
-                    for f in data.get("features", []):
-                        center = f.get("center", [])
-                        if len(center) == 2:
-                            lng, lat = center[0], center[1]
-                            key = (round(lat, 4), round(lng, 4))
-                            if key not in seen_coords:
-                                seen_coords.add(key)
-                                text = f.get("text") or f.get("place_name", "").split(",")[0]
-                                is_metro = "metro" in text.lower()
-                                results.append({
-                                    "id": f.get("id"),
-                                    "title": text,
-                                    "subtitle": f.get("place_name"),
-                                    "latitude": lat,
-                                    "longitude": lng,
-                                    "category": "metro" if is_metro else "place",
-                                    "badge": "🚇 Metro" if is_metro else "📍 Place",
-                                })
+            client = get_http_client()
+            res = await client.get(
+                f"https://api.mapbox.com/geocoding/v5/mapbox.places/{trimmed}.json",
+                params=params,
+                timeout=4.0,
+            )
+            if res.status_code == 200:
+                data = res.json()
+                for f in data.get("features", []):
+                    center = f.get("center", [])
+                    if len(center) == 2:
+                        lng, lat = center[0], center[1]
+                        key = (round(lat, 4), round(lng, 4))
+                        if key not in seen_coords:
+                            seen_coords.add(key)
+                            text = f.get("text") or f.get("place_name", "").split(",")[0]
+                            is_metro = "metro" in text.lower()
+                            results.append({
+                                "id": f.get("id"),
+                                "title": text,
+                                "subtitle": f.get("place_name"),
+                                "latitude": lat,
+                                "longitude": lng,
+                                "category": "metro" if is_metro else "place",
+                                "badge": "🚇 Metro" if is_metro else "📍 Place",
+                            })
         except Exception:
             pass
 
-    return results[:limit]
+    final_results = results[:limit]
+    await cache.set_json(cache_key, final_results, expire=settings.CACHE_TTL_AUTOCOMPLETE)
+    return final_results
 
 
 @router.post(
@@ -152,8 +164,10 @@ async def autocomplete_places(
     status_code=status.HTTP_200_OK,
     summary="Plan an A -> B road route Puja Parikrama itinerary",
 )
+@limiter.limit(settings.RATE_LIMIT_ROUTE_PLAN)
 async def plan_route(
-    request: RoutePlanRequest,
+    request: Request,
+    route_plan_request: RoutePlanRequest,
     service: RoutePlannerService = Depends(get_route_planner_service),
 ):
     """
@@ -164,4 +178,4 @@ async def plan_route(
     - Orders selected pandals sequentially along the path of travel from Point A toward Point B.
     - Returns full route polyline geometry for map rendering.
     """
-    return await service.plan_route(request)
+    return await service.plan_route(route_plan_request)

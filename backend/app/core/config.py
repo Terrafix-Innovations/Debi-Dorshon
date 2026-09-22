@@ -38,6 +38,21 @@ class Settings(BaseSettings):
     # Optional Mapbox Access Token (kept securely on backend)
     MAPBOX_ACCESS_TOKEN: Optional[str] = None
 
+    # Redis & Caching Settings
+    REDIS_URL: Optional[str] = "redis://localhost:6379/0"
+    CACHE_TTL_TRANSIT: int = 3600        # 1 hour for station lists
+    CACHE_TTL_STATION_PANDALS: int = 1800 # 30 mins for pandals at station
+    CACHE_TTL_AUTOCOMPLETE: int = 900    # 15 mins for search suggestions
+    CACHE_TTL_ROUTE_PLAN: int = 1800      # 30 mins for identical route requests
+
+    # Rate Limiting Settings
+    RATE_LIMIT_ROUTE_PLAN: str = "7/minute"
+    RATE_LIMIT_AUTOCOMPLETE: str = "60/minute"
+    RATE_LIMIT_DEFAULT: str = "120/minute"
+
+    # Concurrency / Multi-worker Setting (Render / Docker)
+    WEB_CONCURRENCY: int = 2
+
     # Configure Pydantic to read from `.env` file
     model_config = SettingsConfigDict(
         env_file=[str(p) for p in _ENV_FILES if p.exists()] or [".env"],

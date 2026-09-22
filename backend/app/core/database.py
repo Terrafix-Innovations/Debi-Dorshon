@@ -23,12 +23,38 @@ db = Database()
 import json
 from pathlib import Path
 
+async def ensure_indexes():
+    """Ensure high-performance indexes are created on pandals collection."""
+    try:
+        col = db.db[settings.PANDAL_COLLECTION_NAME]
+        # Text index for pandal search and autocomplete
+        await col.create_index([("name", "text"), ("cluster", "text"), ("zone", "text")], background=True)
+        # B-Tree indexes for fast exact/prefix lookups and sorting
+        await col.create_index("name", background=True)
+        await col.create_index([("region", 1), ("cluster", 1)], background=True)
+        await col.create_index("nearest_stations.name", background=True)
+        await col.create_index("nearest_metro.name", background=True)
+        await col.create_index([("location.latitude", 1), ("location.longitude", 1)], background=True)
+        logger.info("MongoDB collection indexes ensured successfully.")
+    except Exception as e:
+        logger.warning("Index creation notice: %s", e)
+
+
 async def connect_to_mongo():
-    """Initializes MongoDB connection on FastAPI app startup."""
+    """Initializes MongoDB connection with connection pooling on FastAPI app startup."""
     logger.info("Connecting to MongoDB at: %s", settings.MONGODB_URL)
-    db.client = AsyncIOMotorClient(settings.MONGODB_URL)
+    db.client = AsyncIOMotorClient(
+        settings.MONGODB_URL,
+        maxPoolSize=50,
+        minPoolSize=5,
+        maxIdleTimeMS=45000,
+        serverSelectionTimeoutMS=5000,
+    )
     db.db = db.client[settings.MONGODB_DB_NAME]
     logger.info("Successfully connected to database: %s", settings.MONGODB_DB_NAME)
+
+    # Ensure collection indexes
+    await ensure_indexes()
 
     # Auto-seed if collection is empty
     try:
@@ -49,8 +75,7 @@ async def connect_to_mongo():
                         data = json.load(f)
                     if data:
                         await col.insert_many(data)
-                        await col.create_index("nearest_stations.name")
-                        await col.create_index("nearest_metro.name")
+                        await ensure_indexes()
                         logger.info("Auto-seeded %d pandals into MongoDB!", len(data))
                     break
     except Exception as e:

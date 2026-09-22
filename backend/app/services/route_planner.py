@@ -13,6 +13,8 @@ from fastapi import HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.config import settings
+from app.core.http_client import get_http_client
+from app.core.cache import cache
 from app.schemas.route import (
     PointSchema,
     RoutePlanRequest,
@@ -34,8 +36,16 @@ class OSRMClient:
     ) -> Tuple[List[List[float]], float]:
         """
         Query OSRM API for driving route geometry (GeoJSON LineString coordinates)
-        and distance in km.
+        and distance in km with caching and connection pooling.
         """
+        cache_key = (
+            f"cache:osrm:route:{round(origin.latitude, 4)},{round(origin.longitude, 4)}"
+            f"->{round(destination.latitude, 4)},{round(destination.longitude, 4)}"
+        )
+        cached = await cache.get_json(cache_key)
+        if cached is not None:
+            return cached["coordinates"], cached["distance_km"]
+
         url = (
             f"{self.base_url}/route/v1/driving/"
             f"{origin.longitude},{origin.latitude};"
@@ -44,8 +54,8 @@ class OSRMClient:
         )
 
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                res = await client.get(url)
+            client = get_http_client()
+            res = await client.get(url, timeout=self.timeout)
         except (httpx.RequestError, httpx.TimeoutException) as e:
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
@@ -70,6 +80,12 @@ class OSRMClient:
         distance_meters = route.get("distance", 0.0)
         distance_km = round(distance_meters / 1000.0, 2)
 
+        await cache.set_json(
+            cache_key,
+            {"coordinates": coordinates, "distance_km": distance_km},
+            expire=settings.CACHE_TTL_ROUTE_PLAN,
+        )
+
         return coordinates, distance_km
 
     async def get_multi_stop_route(
@@ -85,14 +101,19 @@ class OSRMClient:
 
         # OSRM expects {longitude},{latitude};{longitude},{latitude}...
         coords_str = ";".join(f"{round(lng, 6)},{round(lat, 6)}" for lng, lat in waypoints)
+        cache_key = f"cache:osrm:multi:{coords_str}"
+        cached = await cache.get_json(cache_key)
+        if cached is not None:
+            return cached["coordinates"], cached["distance_km"]
+
         url = (
             f"{self.base_url}/route/v1/driving/{coords_str}"
             "?overview=full&geometries=geojson"
         )
 
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                res = await client.get(url)
+            client = get_http_client()
+            res = await client.get(url, timeout=self.timeout)
             if res.status_code == 200:
                 data = res.json()
                 if data.get("code") == "Ok" and data.get("routes"):
@@ -100,6 +121,11 @@ class OSRMClient:
                     coordinates = route["geometry"]["coordinates"]
                     distance_meters = route.get("distance", 0.0)
                     distance_km = round(distance_meters / 1000.0, 2)
+                    await cache.set_json(
+                        cache_key,
+                        {"coordinates": coordinates, "distance_km": distance_km},
+                        expire=settings.CACHE_TTL_ROUTE_PLAN,
+                    )
                     return coordinates, distance_km
         except Exception:
             pass
@@ -110,16 +136,25 @@ class OSRMClient:
 class RoutePlannerService:
     def __init__(
         self,
-        db: AsyncIOMotorDatabase,
+        db: Optional[AsyncIOMotorDatabase] = None,
         osrm_client: Optional[OSRMClient] = None,
     ):
-        self.collection = db[settings.PANDAL_COLLECTION_NAME]
+        self.collection = db[settings.PANDAL_COLLECTION_NAME] if db is not None else None
         self.osrm_client = osrm_client or OSRMClient()
 
     async def plan_route(self, request: RoutePlanRequest) -> RoutePlanResponse:
         """
-        Plan an A -> B road route Puja Parikrama itinerary.
+        Plan an A -> B road route Puja Parikrama itinerary with Redis result caching.
         """
+        cache_key = (
+            f"cache:route:plan:{round(request.origin.latitude, 4)},{round(request.origin.longitude, 4)}"
+            f"->{round(request.destination.latitude, 4)},{round(request.destination.longitude, 4)}"
+            f":{request.max_detour_km}:{request.max_pandals or 'all'}:{request.region or ''}:{request.cluster or ''}"
+        )
+        cached = await cache.get_json(cache_key)
+        if cached is not None:
+            return RoutePlanResponse(**cached)
+
         # 1. Fetch base road route geometry from OSRM to establish corridor
         coordinates, base_distance_km = await self.osrm_client.get_route(
             request.origin, request.destination
@@ -188,7 +223,7 @@ class RoutePlannerService:
                 )
             )
 
-        return RoutePlanResponse(
+        response = RoutePlanResponse(
             origin=request.origin,
             destination=request.destination,
             total_pandals=len(itinerary),
@@ -197,3 +232,6 @@ class RoutePlannerService:
             itinerary=itinerary,
             route_geometry=RouteGeometry(type="LineString", coordinates=final_coordinates),
         )
+
+        await cache.set_json(cache_key, response.model_dump(), expire=settings.CACHE_TTL_ROUTE_PLAN)
+        return response
