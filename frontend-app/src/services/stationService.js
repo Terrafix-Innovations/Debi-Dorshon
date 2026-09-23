@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 import { API_BASE_URL, API_HOST_CANDIDATES, API_ENDPOINTS } from '../config/env';
+import { MOCK_PANDALS } from '../data/mockData';
 
 // Fallback dummy stations for Metro
 const FALLBACK_METRO_STATIONS = [
@@ -24,14 +25,21 @@ const FALLBACK_METRO_STATIONS = [
 
 // Fallback dummy stations for Train
 const FALLBACK_TRAIN_STATIONS = [
-  { name: 'Howrah Junction', line: 'Eastern Railway', pandal_count: 14 },
-  { name: 'Sealdah Junction', line: 'Eastern Railway', pandal_count: 12 },
-  { name: 'Bidhannagar Road', line: 'Eastern Railway', pandal_count: 8 },
-  { name: 'Dum Dum Junction', line: 'Eastern Railway', pandal_count: 7 },
-  { name: 'Majerhat', line: 'Circular Railway', pandal_count: 5 },
-  { name: 'Ballygunge Junction', line: 'Eastern Railway', pandal_count: 6 },
-  { name: 'Shalimar', line: 'South Eastern Railway', pandal_count: 4 },
-  { name: 'Kolkata Terminal', line: 'Eastern Railway', pandal_count: 4 },
+  { name: 'New Alipur', pandal_count: 15 },
+  { name: 'Ballygunge Jn', pandal_count: 15 },
+  { name: 'Bagbazar', pandal_count: 11 },
+  { name: 'Bidhannagar Road', pandal_count: 10 },
+  { name: 'Majherhat', pandal_count: 10 },
+  { name: 'Tollygunj', pandal_count: 8 },
+  { name: 'Khidirpur', pandal_count: 6 },
+  { name: 'Dum Dum Cant.', pandal_count: 5 },
+  { name: 'Dhakuria', pandal_count: 5 },
+  { name: 'Sovabazar Ahiritola', pandal_count: 4 },
+  { name: 'Tala', pandal_count: 4 },
+  { name: 'Lake Gardens', pandal_count: 3 },
+  { name: 'Dumdum', pandal_count: 1 },
+  { name: 'New Garia', pandal_count: 1 },
+  { name: 'Jadabpur', pandal_count: 1 },
 ];
 
 function extractErrorInfo(error, targetPath) {
@@ -119,38 +127,18 @@ export async function fetchMetroPandalsApi(stationName) {
     return { success: true, data: res.data };
   }
   console.warn('[StationService] Metro pandals fetch failed across all hosts:', res.error);
+  const cleanName = (stationName || '').toLowerCase().trim();
+  const matchedPandals = MOCK_PANDALS.filter((p) => {
+    const mName = (p.nearest_metro?.name || '').toLowerCase().trim();
+    return mName === cleanName;
+  });
   return {
     success: false,
     error: res.error,
     data: {
       station_name: stationName,
-      total_pandals: 3,
-      pandals: [
-        {
-          _id: 'p1',
-          name: 'Badamtala Asar Sanagha',
-          region: 'South',
-          cluster: 'Hajra-Kalighat',
-          location: { latitude: 22.5179668, longitude: 88.3437245 },
-          nearest_metro: { name: stationName, line: 'Blue' },
-        },
-        {
-          _id: 'p2',
-          name: 'Mudiali Club',
-          region: 'South',
-          cluster: 'Southern Avenue',
-          location: { latitude: 22.5098, longitude: 88.349 },
-          nearest_metro: { name: stationName, line: 'Blue' },
-        },
-        {
-          _id: 'p3',
-          name: 'Tridhara Sammilani',
-          region: 'South',
-          cluster: 'Manoharpukur',
-          location: { latitude: 22.5225, longitude: 88.362 },
-          nearest_metro: { name: stationName, line: 'Blue' },
-        },
-      ],
+      total_pandals: matchedPandals.length,
+      pandals: matchedPandals,
     },
   };
 }
@@ -162,38 +150,22 @@ export async function fetchTrainPandalsApi(stationName) {
     return { success: true, data: res.data };
   }
   console.warn('[StationService] Train pandals fetch failed across all hosts:', res.error);
+  const cleanName = (stationName || '').toLowerCase().trim();
+  const matchedPandals = MOCK_PANDALS.filter((p) => {
+    const stations = p.nearest_stations || [];
+    return stations.some((s) => {
+      const sName = (s.name || '').toLowerCase().trim();
+      return sName === cleanName;
+    });
+  });
   return {
     success: false,
     error: res.error,
     data: {
       station_name: stationName,
-      total_pandals: 3,
-      pandals: [
-        {
-          _id: 'tp1',
-          name: 'College Square Sarbojanin',
-          region: 'Central',
-          cluster: 'College Street',
-          location: { latitude: 22.5746, longitude: 88.3638 },
-          nearest_metro: { name: stationName, line: 'Eastern Railway' },
-        },
-        {
-          _id: 'tp2',
-          name: 'Mohammad Ali Park',
-          region: 'Central',
-          cluster: 'MG Road',
-          location: { latitude: 22.5768, longitude: 88.3601 },
-          nearest_metro: { name: stationName, line: 'Eastern Railway' },
-        },
-        {
-          _id: 'tp3',
-          name: 'Sree Bhumi Sporting Club',
-          region: 'North',
-          cluster: 'Lake Town',
-          location: { latitude: 22.6022, longitude: 88.3985 },
-          nearest_metro: { name: stationName, line: 'Eastern Railway' },
-        },
-      ],
+      total_pandals: matchedPandals.length,
+      pandals: matchedPandals,
     },
   };
 }
+

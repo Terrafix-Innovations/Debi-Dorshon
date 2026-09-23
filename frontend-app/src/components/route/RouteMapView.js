@@ -1,6 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+let MapView, Marker, Polyline;
+if (Platform.OS !== 'web') {
+  try {
+    const Maps = require('react-native-maps');
+    MapView = Maps.default;
+    Marker = Maps.Marker;
+    Polyline = Maps.Polyline;
+  } catch (e) {
+    MapView = null;
+  }
+}
 import { colors } from '../../theme/colors';
 import { getRegionForCoordinates } from '../../utils/mapHelpers';
 

@@ -1,0 +1,2107 @@
+[
+  {
+    "name": "Shikdar Bagan",
+    "region": "North",
+    "cluster": "Shyambazar",
+    "location": {
+      "latitude": 22.5954834,
+      "longitude": 88.3727205
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Kashi Bose Lane",
+    "region": "North",
+    "cluster": "Shyambazar",
+    "location": {
+      "latitude": 22.5908979,
+      "longitude": 88.3689174
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Dorjipara Sarbojonin",
+    "region": "North",
+    "cluster": "Shyambazar",
+    "location": {
+      "latitude": 22.5922343,
+      "longitude": 88.3664257
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Hati Bagan Sarbojonin",
+    "region": "North",
+    "cluster": "Shyambazar",
+    "location": {
+      "latitude": 22.5974903,
+      "longitude": 88.3706729
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Hati Bagan Nabin Pally",
+    "region": "North",
+    "cluster": "Shyambazar",
+    "location": {
+      "latitude": 22.5974903,
+      "longitude": 88.3706729
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Nalin Sarkar Street",
+    "region": "North",
+    "cluster": "Shyambazar",
+    "location": {
+      "latitude": 22.5955614,
+      "longitude": 88.3734788
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "North Tridhara",
+    "region": "North",
+    "cluster": "Shyambazar",
+    "location": {
+      "latitude": 22.5958155,
+      "longitude": 88.3745568
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Vivekananda Sarbojonin",
+    "region": "North",
+    "cluster": "Manicktala-Girish Park",
+    "location": {
+      "latitude": 22.5863743,
+      "longitude": 88.376133
+    },
+    "nearest_metro": {
+      "name": "Girish Park",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
+  },
+  {
+    "name": "Lalabagan",
+    "region": "North",
+    "cluster": "Manicktala-Girish Park",
+    "location": {
+      "latitude": 22.5883732,
+      "longitude": 88.3767567
+    },
+    "nearest_metro": {
+      "name": "Girish Park",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
+  },
+  {
+    "name": "Lalabagan Nabankur",
+    "region": "North",
+    "cluster": "Manicktala-Girish Park",
+    "location": {
+      "latitude": 22.5883732,
+      "longitude": 88.3767567
+    },
+    "nearest_metro": {
+      "name": "Girish Park",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
+  },
+  {
+    "name": "Chalta Bagan Lohapatty",
+    "region": "North",
+    "cluster": "Manicktala-Girish Park",
+    "location": {
+      "latitude": 22.5848905,
+      "longitude": 88.3721509
+    },
+    "nearest_metro": {
+      "name": "Girish Park",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ]
+  },
+  {
+    "name": "Ahiritola Sarbojonin",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.5943514,
+      "longitude": 88.3548955
+    },
+    "nearest_metro": {
+      "name": "Sovabazar-Sutanuti",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Ahiritola Ferry"
+    }
+  },
+  {
+    "name": "Ahiritola Yubak Brinda",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.5946791,
+      "longitude": 88.3602117
+    },
+    "nearest_metro": {
+      "name": "Sovabazar-Sutanuti",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Ahiritola Ferry"
+    }
+  },
+  {
+    "name": "Beniatola",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.5951394,
+      "longitude": 88.3591439
+    },
+    "nearest_metro": {
+      "name": "Sovabazar-Sutanuti",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Ahiritola Ferry"
+    }
+  },
+  {
+    "name": "Kumartuli Park",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.5989827,
+      "longitude": 88.3614663
+    },
+    "nearest_metro": {
+      "name": "Sovabazar-Sutanuti",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Sovabazar Ferry"
+    }
+  },
+  {
+    "name": "Kumartuli Sarbojonin",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.6000017,
+      "longitude": 88.3612679
+    },
+    "nearest_metro": {
+      "name": "Sovabazar-Sutanuti",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Sovabazar Ferry"
+    }
+  },
+  {
+    "name": "Jagat Mukherjee Park",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.5994903,
+      "longitude": 88.3660388
+    },
+    "nearest_metro": {
+      "name": "Sovabazar-Sutanuti",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Sovabazar Ferry"
+    }
+  },
+  {
+    "name": "Bagbazar Sarbojonin",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.6038115,
+      "longitude": 88.3679355
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bagbazar"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Nimtala Sarbojonin",
+    "region": "North",
+    "cluster": "Ahiritola-Kumartuli-Bagbazar",
+    "location": {
+      "latitude": 22.5918418,
+      "longitude": 88.3586946
+    },
+    "nearest_metro": {
+      "name": "Sovabazar-Sutanuti",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Sovabazar Ahiritola"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Ahiritola Ferry"
+    }
+  },
+  {
+    "name": "Tala Barowari",
+    "region": "North",
+    "cluster": "Tala",
+    "location": {
+      "latitude": 22.6072038,
+      "longitude": 88.3760758
+    },
+    "nearest_metro": {
+      "name": "Belgachhia",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Tala Prottoy",
+    "region": "North",
+    "cluster": "Tala",
+    "location": {
+      "latitude": 22.6104572,
+      "longitude": 88.3846031
+    },
+    "nearest_metro": {
+      "name": "Belgachhia",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Belgachhia Sadharan",
+    "region": "North",
+    "cluster": "Tala",
+    "location": {
+      "latitude": 22.6077319,
+      "longitude": 88.3827393
+    },
+    "nearest_metro": {
+      "name": "Belgachhia",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Tala Pally Sadharan",
+    "region": "North",
+    "cluster": "Tala",
+    "location": {
+      "latitude": 22.6069052,
+      "longitude": 88.3746504
+    },
+    "nearest_metro": {
+      "name": "Belgachhia",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tala"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Gauri Bari Sarbojonin",
+    "region": "North",
+    "cluster": "Ultadanga",
+    "location": {
+      "latitude": 22.5944481,
+      "longitude": 88.3790857
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Telenga Bagan",
+    "region": "North",
+    "cluster": "Ultadanga",
+    "location": {
+      "latitude": 22.5940824,
+      "longitude": 88.3835636
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Ultadanga Pallyshree",
+    "region": "North",
+    "cluster": "Ultadanga",
+    "location": {
+      "latitude": 22.5958298,
+      "longitude": 88.3844134
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Karbagan Sarbojonin",
+    "region": "North",
+    "cluster": "Ultadanga",
+    "location": {
+      "latitude": 22.595241,
+      "longitude": 88.3842775
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Surir Bagan Sarbojonin",
+    "region": "North",
+    "cluster": "Ultadanga",
+    "location": {
+      "latitude": 22.5949974,
+      "longitude": 88.3876018
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Jagarani Sangha",
+    "region": "North",
+    "cluster": "Ultadanga",
+    "location": {
+      "latitude": 22.5944516,
+      "longitude": 88.3835325
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Sreebhumi Sporting Club",
+    "region": "North",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "location": {
+      "latitude": 22.5988987,
+      "longitude": 88.4029328
+    },
+    "nearest_metro": {
+      "name": "Jessore Road",
+      "line": "Yellow"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
+  },
+  {
+    "name": "Dumdum Park Sarbojonin",
+    "region": "North",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "location": {
+      "latitude": 22.6094363,
+      "longitude": 88.4164052
+    },
+    "nearest_metro": {
+      "name": "Jessore Road",
+      "line": "Yellow"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
+  },
+  {
+    "name": "Dumdum Park Bharat Chakra",
+    "region": "North",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "location": {
+      "latitude": 22.6108213,
+      "longitude": 88.4146001
+    },
+    "nearest_metro": {
+      "name": "Jessore Road",
+      "line": "Yellow"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
+  },
+  {
+    "name": "Dumdum Park Tarun Dal",
+    "region": "North",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "location": {
+      "latitude": 22.611486,
+      "longitude": 88.418626
+    },
+    "nearest_metro": {
+      "name": "Jessore Road",
+      "line": "Yellow"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
+  },
+  {
+    "name": "DumDum Mall Palli",
+    "region": "North",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "location": {
+      "latitude": 22.6281119,
+      "longitude": 88.4221371
+    },
+    "nearest_metro": {
+      "name": "Jessore Road",
+      "line": "Yellow"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dum Dum Cant."
+      }
+    ]
+  },
+  {
+    "name": "Dadabhai Sangha",
+    "region": "North",
+    "cluster": "Laketown-Dumdum-Noapara",
+    "location": {
+      "latitude": 22.6416696,
+      "longitude": 88.3886567
+    },
+    "nearest_metro": {
+      "name": "Noapara",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dumdum"
+      }
+    ]
+  },
+  {
+    "name": "Hajra Park",
+    "region": "South",
+    "cluster": "Hajra-Kalighat",
+    "location": {
+      "latitude": 22.5228058,
+      "longitude": 88.3500398
+    },
+    "nearest_metro": {
+      "name": "Jatin Das Park",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "Kalighat Milan Sangha",
+    "region": "South",
+    "cluster": "Hajra-Kalighat",
+    "location": {
+      "latitude": 22.5243173,
+      "longitude": 88.3410395
+    },
+    "nearest_metro": {
+      "name": "Jatin Das Park",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "Badamtala Asar Sanagha",
+    "region": "South",
+    "cluster": "Hajra-Kalighat",
+    "location": {
+      "latitude": 22.5179668,
+      "longitude": 88.3437245
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "66 Pally",
+    "region": "South",
+    "cluster": "Hajra-Kalighat",
+    "location": {
+      "latitude": 22.5180613,
+      "longitude": 88.3427526
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "Nepal Bhattacharjee Street",
+    "region": "South",
+    "cluster": "Hajra-Kalighat",
+    "location": {
+      "latitude": 22.5176514,
+      "longitude": 88.3427551
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "Protapadityo Tricone Park",
+    "region": "South",
+    "cluster": "Hajra-Kalighat",
+    "location": {
+      "latitude": 22.5134551,
+      "longitude": 88.3447357
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "29 Pally",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.506987,
+      "longitude": 88.322693
+    },
+    "nearest_metro": {
+      "name": "Taratala",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Tarun Matri Sebak Samity",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.5020659,
+      "longitude": 88.3219608
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Behala Natun Dal",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.5002078,
+      "longitude": 88.320287
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Behala Friends Club",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.5013531,
+      "longitude": 88.3198079
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "11 Pally",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.4984807,
+      "longitude": 88.3214726
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Behala Young Men's Association",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.5073293,
+      "longitude": 88.3248569
+    },
+    "nearest_metro": {
+      "name": "Taratala",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Debdaru Fotok Club",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.5015719,
+      "longitude": 88.3209437
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Behala Club",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.5052597,
+      "longitude": 88.3140807
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Behala Natun Sangha",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.5015719,
+      "longitude": 88.3209437
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Behala Adorsho Pally",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.4998456,
+      "longitude": 88.3277163
+    },
+    "nearest_metro": {
+      "name": "Behala Bazar",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      },
+      {
+        "name": "Majherhat"
+      }
+    ]
+  },
+  {
+    "name": "Thakurpukur SB Park",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.4677772,
+      "longitude": 88.3090707
+    },
+    "nearest_metro": {
+      "name": "Sakher Bazar",
+      "line": "Purple"
+    }
+  },
+  {
+    "name": "Barisha Club",
+    "region": "South",
+    "cluster": "Behala",
+    "location": {
+      "latitude": 22.4812859,
+      "longitude": 88.3132412
+    },
+    "nearest_metro": {
+      "name": "Sakher Bazar",
+      "line": "Purple"
+    }
+  },
+  {
+    "name": "Chetla Agrani",
+    "region": "South",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "location": {
+      "latitude": 22.5163878,
+      "longitude": 88.337111
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
+  },
+  {
+    "name": "Alipore Sarbojonin",
+    "region": "South",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "location": {
+      "latitude": 22.5191675,
+      "longitude": 88.333401
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
+  },
+  {
+    "name": "Akal Bodhon",
+    "region": "South",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "location": {
+      "latitude": 22.5156046,
+      "longitude": 88.3364179
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
+  },
+  {
+    "name": "Suruchi Sangha",
+    "region": "South",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "location": {
+      "latitude": 22.5089855,
+      "longitude": 88.3339522
+    },
+    "nearest_metro": {
+      "name": "Rabindra Sarobar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
+  },
+  {
+    "name": "Buro Shibtola",
+    "region": "South",
+    "cluster": "Chetla-Alipore-NewAlipore",
+    "location": {
+      "latitude": 22.5025165,
+      "longitude": 88.3324332
+    },
+    "nearest_metro": {
+      "name": "Taratala",
+      "line": "Purple"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Alipur"
+      }
+    ]
+  },
+  {
+    "name": "Rajdanga Nobo Uday Sangha",
+    "region": "South",
+    "cluster": "Kasba",
+    "location": {
+      "latitude": 22.5131325,
+      "longitude": 88.3896665
+    },
+    "nearest_metro": {
+      "name": "Hemanta Mukhopadhyay",
+      "line": "Orange"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Bosepukur Sitala Mandir",
+    "region": "South",
+    "cluster": "Kasba",
+    "location": {
+      "latitude": 22.5192181,
+      "longitude": 88.3848576
+    },
+    "nearest_metro": {
+      "name": "Hemanta Mukhopadhyay",
+      "line": "Orange"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Bosepukur Talbagan",
+    "region": "South",
+    "cluster": "Kasba",
+    "location": {
+      "latitude": 22.5183226,
+      "longitude": 88.3855348
+    },
+    "nearest_metro": {
+      "name": "Hemanta Mukhopadhyay",
+      "line": "Orange"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "New Ballygunge Durga Puja",
+    "region": "South",
+    "cluster": "Kasba",
+    "location": {
+      "latitude": 22.5197708,
+      "longitude": 88.3761156
+    },
+    "nearest_metro": {
+      "name": "Hemanta Mukhopadhyay",
+      "line": "Orange"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Ekdalia Evergreen",
+    "region": "South",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "location": {
+      "latitude": 22.5212187,
+      "longitude": 88.3665629
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Falguni Sangha",
+    "region": "South",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "location": {
+      "latitude": 22.5220333,
+      "longitude": 88.3656673
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Singhi Park",
+    "region": "South",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "location": {
+      "latitude": 22.5209489,
+      "longitude": 88.3627281
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Hindusthan Club",
+    "region": "South",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "location": {
+      "latitude": 22.5201571,
+      "longitude": 88.3609098
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Hindusthan Park",
+    "region": "South",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "location": {
+      "latitude": 22.5169831,
+      "longitude": 88.3633918
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Ballygaunge 21 Pally",
+    "region": "South",
+    "cluster": "Gariahat-Ballygaunge Phari",
+    "location": {
+      "latitude": 22.529175,
+      "longitude": 88.3688163
+    },
+    "nearest_metro": {
+      "name": "Jatin Das Park",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Triangular Park",
+    "region": "South",
+    "cluster": "Rashbehari Avenue",
+    "location": {
+      "latitude": 22.5178665,
+      "longitude": 88.3586887
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Deshapriya Park",
+    "region": "South",
+    "cluster": "Rashbehari Avenue",
+    "location": {
+      "latitude": 22.5185819,
+      "longitude": 88.3534607
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Ballygunge Cultural",
+    "region": "South",
+    "cluster": "Rashbehari Avenue",
+    "location": {
+      "latitude": 22.5162122,
+      "longitude": 88.3558059
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Samaj Sebi Sangha",
+    "region": "South",
+    "cluster": "Rashbehari Avenue",
+    "location": {
+      "latitude": 22.5157267,
+      "longitude": 88.3562977
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Tridhara Sammilani",
+    "region": "South",
+    "cluster": "Rashbehari Avenue",
+    "location": {
+      "latitude": 22.5195286,
+      "longitude": 88.3554398
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Ballygunge Jn"
+      }
+    ]
+  },
+  {
+    "name": "Mudiali",
+    "region": "South",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "location": {
+      "latitude": 22.510194,
+      "longitude": 88.3463122
+    },
+    "nearest_metro": {
+      "name": "Rabindra Sarobar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "Shib Mandir",
+    "region": "South",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "location": {
+      "latitude": 22.5109975,
+      "longitude": 88.3498496
+    },
+    "nearest_metro": {
+      "name": "Rabindra Sarobar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "Naktala Udoyon Sangha",
+    "region": "South",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "location": {
+      "latitude": 22.4742929,
+      "longitude": 88.3665898
+    },
+    "nearest_metro": {
+      "name": "Gitanjali",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "Haridevpur Ajeya Sanghati",
+    "region": "South",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "location": {
+      "latitude": 22.4808597,
+      "longitude": 88.3377053
+    },
+    "nearest_metro": {
+      "name": "Netaji",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "41 Pally",
+    "region": "South",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "location": {
+      "latitude": 22.4828575,
+      "longitude": 88.3384255
+    },
+    "nearest_metro": {
+      "name": "Netaji",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "Vivekananda Athletic",
+    "region": "South",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "location": {
+      "latitude": 22.479414,
+      "longitude": 88.3355732
+    },
+    "nearest_metro": {
+      "name": "Netaji",
+      "line": "Blue"
+    }
+  },
+  {
+    "name": "Kendua Shanti Sangha",
+    "region": "South",
+    "cluster": "Tollygunge-Haridevpur-Patuli",
+    "location": {
+      "latitude": 22.471984,
+      "longitude": 88.381501
+    },
+    "nearest_metro": {
+      "name": "Kavi Nazrul",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "New Garia"
+      }
+    ]
+  },
+  {
+    "name": "Taltala Durga Puja (EEDF)",
+    "region": "South",
+    "cluster": "Jadavpur-Dhakuria",
+    "location": {
+      "latitude": 22.5030022,
+      "longitude": 88.3646841
+    },
+    "nearest_metro": {
+      "name": "Rabindra Sarobar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Lake Gardens"
+      },
+      {
+        "name": "Dhakuria"
+      }
+    ]
+  },
+  {
+    "name": "95 Pally",
+    "region": "South",
+    "cluster": "Jadavpur-Dhakuria",
+    "location": {
+      "latitude": 22.508235,
+      "longitude": 88.3627602
+    },
+    "nearest_metro": {
+      "name": "Rabindra Sarobar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Lake Gardens"
+      },
+      {
+        "name": "Dhakuria"
+      }
+    ]
+  },
+  {
+    "name": "Jodhpur Park",
+    "region": "South",
+    "cluster": "Jadavpur-Dhakuria",
+    "location": {
+      "latitude": 22.5050586,
+      "longitude": 88.3623379
+    },
+    "nearest_metro": {
+      "name": "Rabindra Sarobar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Lake Gardens"
+      },
+      {
+        "name": "Dhakuria"
+      }
+    ]
+  },
+  {
+    "name": "Selimpur Pally",
+    "region": "South",
+    "cluster": "Jadavpur-Dhakuria",
+    "location": {
+      "latitude": 22.5046776,
+      "longitude": 88.3683663
+    },
+    "nearest_metro": {
+      "name": "Rabindra Sarobar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dhakuria"
+      }
+    ]
+  },
+  {
+    "name": "Babubagan",
+    "region": "South",
+    "cluster": "Jadavpur-Dhakuria",
+    "location": {
+      "latitude": 22.5084823,
+      "longitude": 88.3697628
+    },
+    "nearest_metro": {
+      "name": "Kalighat",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Dhakuria"
+      }
+    ]
+  },
+  {
+    "name": "Santoshpur Lake Pally",
+    "region": "South",
+    "cluster": "Jadavpur-Dhakuria",
+    "location": {
+      "latitude": 22.4914713,
+      "longitude": 88.3827705
+    },
+    "nearest_stations": [
+      {
+        "name": "Jadabpur"
+      }
+    ]
+  },
+  {
+    "name": "Santoshpur Trikon Park",
+    "region": "South",
+    "cluster": "Jadavpur-Dhakuria",
+    "location": {
+      "latitude": 22.4931559,
+      "longitude": 88.3784752
+    }
+  },
+  {
+    "name": "75 Pally",
+    "region": "South",
+    "cluster": "Bhowanipur",
+    "location": {
+      "latitude": 22.533319,
+      "longitude": 88.3457086
+    },
+    "nearest_metro": {
+      "name": "Netaji Bhavan",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "Chakraberia Sarbojonin",
+    "region": "South",
+    "cluster": "Bhowanipur",
+    "location": {
+      "latitude": 22.5336065,
+      "longitude": 88.3519214
+    },
+    "nearest_metro": {
+      "name": "Netaji Bhavan",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "Bhawanipur Abasar",
+    "region": "South",
+    "cluster": "Bhowanipur",
+    "location": {
+      "latitude": 22.5278699,
+      "longitude": 88.3489227
+    },
+    "nearest_metro": {
+      "name": "Netaji Bhavan",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "Maddox Square",
+    "region": "South",
+    "cluster": "Bhowanipur",
+    "location": {
+      "latitude": 22.5265634,
+      "longitude": 88.3546477
+    },
+    "nearest_metro": {
+      "name": "Netaji Bhavan",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "64 Pally",
+    "region": "South",
+    "cluster": "Bhowanipur",
+    "location": {
+      "latitude": 22.5205584,
+      "longitude": 88.3475801
+    },
+    "nearest_metro": {
+      "name": "Netaji Bhavan",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "Bakul Bagan",
+    "region": "South",
+    "cluster": "Bhowanipur",
+    "location": {
+      "latitude": 22.5267621,
+      "longitude": 88.34826
+    },
+    "nearest_metro": {
+      "name": "Netaji Bhavan",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ]
+  },
+  {
+    "name": "75 Pally",
+    "region": "South",
+    "cluster": "Khidirpur",
+    "location": {
+      "latitude": 22.5402695,
+      "longitude": 88.3205241
+    },
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
+  },
+  {
+    "name": "25 Pally",
+    "region": "South",
+    "cluster": "Khidirpur",
+    "location": {
+      "latitude": 22.5391961,
+      "longitude": 88.3264565
+    },
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
+  },
+  {
+    "name": "Nabarag",
+    "region": "South",
+    "cluster": "Khidirpur",
+    "location": {
+      "latitude": 22.5417107,
+      "longitude": 88.3212546
+    },
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
+  },
+  {
+    "name": "Kabi Tirtha Sarani",
+    "region": "South",
+    "cluster": "Khidirpur",
+    "location": {
+      "latitude": 22.5406238,
+      "longitude": 88.3223506
+    },
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
+  },
+  {
+    "name": "Jubak Sangha Club",
+    "region": "South",
+    "cluster": "Khidirpur",
+    "location": {
+      "latitude": 22.5411941,
+      "longitude": 88.319591
+    },
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
+  },
+  {
+    "name": "Pally Sharadiya",
+    "region": "South",
+    "cluster": "Khidirpur",
+    "location": {
+      "latitude": 22.5432531,
+      "longitude": 88.3215038
+    },
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ]
+  },
+  {
+    "name": "Mohammad Ali Park",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5771888,
+      "longitude": 88.3607369
+    }
+  },
+  {
+    "name": "Sealdah Athletic Club",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5705774,
+      "longitude": 88.37194
+    }
+  },
+  {
+    "name": "College Square Sarbojanin Durgotsav",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5743114,
+      "longitude": 88.3615713
+    }
+  },
+  {
+    "name": "Santosh Mitra Square",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5660201,
+      "longitude": 88.3656532
+    }
+  },
+  {
+    "name": "Lebutala",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5660201,
+      "longitude": 88.3656532
+    }
+  },
+  {
+    "name": "Subodh Mallick Square",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5635842,
+      "longitude": 88.3595075
+    }
+  },
+  {
+    "name": "Taltala Sarbojonin",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.561418,
+      "longitude": 88.3583706
+    }
+  },
+  {
+    "name": "14 Pally Udayan Sangha",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5575857,
+      "longitude": 88.3669753
+    }
+  },
+  {
+    "name": "37 Pally Sarbojanin Durgotsab",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5746858,
+      "longitude": 88.3693988
+    }
+  },
+  {
+    "name": "47 Pally Jubak Brinda Durga Puja",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5714699,
+      "longitude": 88.3587305
+    }
+  },
+  {
+    "name": "Central Calcutta Youth Association",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.563699,
+      "longitude": 88.3622861
+    }
+  },
+  {
+    "name": "Entally Matribhumi Durga Puja",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5585486,
+      "longitude": 88.3674004
+    }
+  },
+  {
+    "name": "Entally Sarbojanin Sri Sri Durga Puja",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5545,
+      "longitude": 88.3705
+    }
+  },
+  {
+    "name": "Chowringhee High School Sarbojanin Durgotsav",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5577853,
+      "longitude": 88.3530608
+    }
+  },
+  {
+    "name": "Kanai Dhar Lane Adhibasi Brinda",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.572337,
+      "longitude": 88.365265
+    }
+  },
+  {
+    "name": "Machua Bazar Sarbajanik Durga Puja Samity",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5812141,
+      "longitude": 88.3572457
+    }
+  },
+  {
+    "name": "New Market Sarbojanin Sri Sri Durga Puja",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5604449,
+      "longitude": 88.3550866
+    }
+  },
+  {
+    "name": "Pallir Yubak Brinda Durga Puja",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5761009,
+      "longitude": 88.3669929
+    }
+  },
+  {
+    "name": "Shishu Palan Foundation",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5652,
+      "longitude": 88.3625
+    }
+  },
+  {
+    "name": "Wellington Nagarik Kalyan Samity",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5645217,
+      "longitude": 88.3583834
+    }
+  },
+  {
+    "name": "Jorasanko 7 er Pally",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5839891,
+      "longitude": 88.3613312
+    }
+  },
+  {
+    "name": "Jorasanko Sadharon Durgotsav Samity",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5862387,
+      "longitude": 88.3605571
+    }
+  },
+  {
+    "name": "Darpanarayan Sarbojonin",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5918418,
+      "longitude": 88.3586946
+    }
+  },
+  {
+    "name": "Sovabazar Rajbari - Boro Torof",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5962644,
+      "longitude": 88.3673797
+    }
+  },
+  {
+    "name": "Sovabazar Rajbari - Chhoto Torof",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5958452,
+      "longitude": 88.3611126
+    }
+  },
+  {
+    "name": "Lokmata Rani Rashmoni Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5625179,
+      "longitude": 88.3552648
+    }
+  },
+  {
+    "name": "Hazra Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.6061219,
+      "longitude": 88.3486629
+    }
+  },
+  {
+    "name": "Mathur Mohan Biswas Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5818,
+      "longitude": 88.3702
+    }
+  },
+  {
+    "name": "Bowbazar Dutta Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5663214,
+      "longitude": 88.3599007
+    }
+  },
+  {
+    "name": "Motilal Seal Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5755874,
+      "longitude": 88.3591392
+    }
+  },
+  {
+    "name": "Badan Chandra Roy Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5749652,
+      "longitude": 88.3581126
+    }
+  },
+  {
+    "name": "Shyamaldhan Dutta Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5877273,
+      "longitude": 88.362069
+    }
+  },
+  {
+    "name": "Kundu Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5854637,
+      "longitude": 88.3617916
+    }
+  },
+  {
+    "name": "Atta Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.6075307,
+      "longitude": 88.3491879
+    }
+  }
+]

@@ -9,7 +9,7 @@ import CheckpointList from '../../components/route/CheckpointList';
 import LoadingState from '../../components/common/LoadingState';
 import EmptyState from '../../components/common/EmptyState';
 import StationMapView from '../../components/stations/StationMapView';
-import { fetchMetroStations, fetchMetroRoute } from '../../services/metroService';
+import { fetchMetroStations, fetchMetroRoute, fetchPandalsByMetro } from '../../services/metroService';
 import { MOCK_PANDALS } from '../../data/mockData';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
@@ -18,6 +18,7 @@ export default function MetroStationsPanel() {
   const [stations, setStations] = useState([]);
   const [selectedStationId, setSelectedStationId] = useState('m9'); // Default: Park Street
   const [loadingStations, setLoadingStations] = useState(true);
+  const [nearbyPandals, setNearbyPandals] = useState([]);
 
   // Optional route calculation between 2 stations
   const [route, setRoute] = useState(null);
@@ -37,6 +38,24 @@ export default function MetroStationsPanel() {
     })();
   }, []);
 
+  const selectedStation = stations.find((s) => s._id === selectedStationId) || stations[0];
+
+  useEffect(() => {
+    async function loadStationPandals() {
+      if (!selectedStation?.name) {
+        setNearbyPandals([]);
+        return;
+      }
+      try {
+        const data = await fetchPandalsByMetro(selectedStation.name, selectedStation.line);
+        setNearbyPandals(data || []);
+      } catch (e) {
+        setNearbyPandals([]);
+      }
+    }
+    loadStationPandals();
+  }, [selectedStation?.name]);
+
   const handleRouteSubmit = async (sourceId, destinationId) => {
     setLoadingRoute(true);
     setError(null);
@@ -51,7 +70,7 @@ export default function MetroStationsPanel() {
 
   if (loadingStations) return <LoadingState message="Loading metro stations..." />;
 
-  const selectedStation = stations.find((s) => s._id === selectedStationId) || stations[0];
+  const displayPandals = nearbyPandals;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -91,13 +110,13 @@ export default function MetroStationsPanel() {
           <StationMapView
             stationName={selectedStation.name}
             stationObj={selectedStation}
-            pandals={MOCK_PANDALS}
+            pandals={displayPandals}
             mode="metro"
           />
           <CollapsiblePandalsList
             title={`Pandals Near ${selectedStation.name}`}
             subtitle={`Pandals around ${selectedStation.name} (${selectedStation.line || 'Metro'})`}
-            pandals={MOCK_PANDALS}
+            pandals={displayPandals}
             referenceLocation={selectedStation}
             defaultExpanded={false}
           />

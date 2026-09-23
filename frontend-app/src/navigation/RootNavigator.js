@@ -8,7 +8,6 @@ import AuthScreen from '../screens/auth/AuthScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import RecommendationsScreen from '../screens/info/RecommendationsScreen';
 import { AboutScreen, ContactScreen } from '../screens/info/AboutContactScreen';
-import FloatingGpsWidget from '../components/common/FloatingGpsWidget';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +23,6 @@ export default function RootNavigator() {
           <Stack.Screen name="About" component={AboutScreen} />
           <Stack.Screen name="Contact" component={ContactScreen} />
         </Stack.Navigator>
-        <FloatingGpsWidget />
       </View>
     </NavigationContainer>
   );

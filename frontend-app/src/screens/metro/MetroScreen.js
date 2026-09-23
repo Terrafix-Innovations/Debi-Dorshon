@@ -55,10 +55,12 @@ export default function MetroScreen({ navigation, route }) {
       }
       setLoadingPandals(true);
       try {
+        const stationName = typeof selectedStation === 'string' ? selectedStation : (selectedStation?.name || selectedStation?._id);
+        const stationLine = typeof selectedStation === 'object' ? selectedStation?.line : null;
         const data = activeTab === 'metro'
-          ? await fetchPandalsByMetro(selectedStation.name, selectedStation.line)
-          : await fetchPandalsByTrain(selectedStation.name);
-        setPandals(data);
+          ? await fetchPandalsByMetro(stationName, stationLine)
+          : await fetchPandalsByTrain(stationName);
+        setPandals(data || []);
       } catch (error) {
         console.error('Failed to fetch pandals for station:', error);
       } finally {
@@ -67,6 +69,8 @@ export default function MetroScreen({ navigation, route }) {
     }
     loadPandals();
   }, [selectedStation, activeTab]);
+
+  const selectedStationName = typeof selectedStation === 'string' ? selectedStation : selectedStation?.name;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -118,13 +122,17 @@ export default function MetroScreen({ navigation, route }) {
             <ActivityIndicator color={colors.primaryMaroon} />
           ) : (
             <SearchableDropdown
+              items={stationsList}
               data={stationsList}
-              value={selectedStation?._id || selectedStation?.name}
+              value={selectedStation?._id || selectedStationName}
               onSelect={(val) => {
-                const station = stationsList.find((s) => (s._id || s.name) === val);
+                let station = stationsList.find((s) => (s._id || s.name) === val || s.name === val);
+                if (!station && typeof val === 'string') {
+                  station = { name: val };
+                }
                 setSelectedStation(station);
               }}
-              placeholder={selectedStation ? selectedStation.name : 'No station selected'}
+              placeholder={selectedStationName ? selectedStationName : 'No station selected'}
             />
           )}
         </View>
@@ -132,8 +140,8 @@ export default function MetroScreen({ navigation, route }) {
         {/* Nearest Pandals Display */}
         <View style={styles.pandalsSection}>
           <Text style={styles.sectionTitle}>
-            {selectedStation
-              ? `Nearest Pandals to ${selectedStation.name}`
+            {selectedStationName
+              ? `Nearest Pandals to ${selectedStationName}`
               : 'Select a station to see nearest pandals'}
           </Text>
 
@@ -153,7 +161,7 @@ export default function MetroScreen({ navigation, route }) {
                     {pandal.region || pandal.cluster} • {
                       activeTab === 'metro' 
                         ? (pandal.nearest_metro?.distance || 'Nearby')
-                        : (pandal.nearest_stations?.find(s => s.name === selectedStation.name)?.distance || 'Nearby')
+                        : (pandal.nearest_stations?.find(s => s.name === selectedStationName)?.distance || 'Nearby')
                     }
                   </Text>
                 </View>

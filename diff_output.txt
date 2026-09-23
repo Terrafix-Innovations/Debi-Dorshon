@@ -1,0 +1,1521 @@
+diff --git a/frontend-app/src/components/common/SearchableDropdown.js b/frontend-app/src/components/common/SearchableDropdown.js
+index 5d8a53a..241ceb7 100644
+--- a/frontend-app/src/components/common/SearchableDropdown.js
++++ b/frontend-app/src/components/common/SearchableDropdown.js
+@@ -6,22 +6,24 @@ import { radius, spacing } from '../../theme/spacing';
+ 
+ // Generic searchable single-select used for every source/destination/station field.
+ // `items` can be [{ _id?, name, line?, pandal_count?, nameBn? }] as returned by the backend.
+-export default function SearchableDropdown({ label, items = [], value, onSelect, placeholder }) {
++export default function SearchableDropdown({ label, items, data, value, onSelect, placeholder }) {
+   const [open, setOpen] = useState(false);
+   const [query, setQuery] = useState('');
+ 
++  const itemList = items || data || [];
++
+   const getItemId = (item) => item._id || item.name;
+ 
+   const filtered = useMemo(() => {
+-    if (!query.trim()) return items;
++    if (!query.trim()) return itemList;
+     const q = query.toLowerCase();
+-    return items.filter((i) => i.name && i.name.toLowerCase().includes(q));
+-  }, [items, query]);
++    return itemList.filter((i) => i.name && i.name.toLowerCase().includes(q));
++  }, [itemList, query]);
+ 
+   const selected = useMemo(() => {
+     if (!value) return null;
+-    return items.find((i) => getItemId(i) === value || i.name === value);
+-  }, [items, value]);
++    return itemList.find((i) => getItemId(i) === value || i.name === value);
++  }, [itemList, value]);
+ 
+   const renderSubtitle = (item) => {
+     if (item.line) {
+diff --git a/frontend-app/src/components/map/CustomMapMarker.js b/frontend-app/src/components/map/CustomMapMarker.js
+index 20c7174..2bbe76f 100644
+--- a/frontend-app/src/components/map/CustomMapMarker.js
++++ b/frontend-app/src/components/map/CustomMapMarker.js
+@@ -1,9 +1,18 @@
+ import React, { memo } from 'react';
+-import { View, Text, StyleSheet } from 'react-native';
+-import { Marker } from 'react-native-maps';
++import { View, Text, StyleSheet, Platform } from 'react-native';
+ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+ import { colors } from '../../theme/colors';
+ 
++let Marker;
++if (Platform.OS !== 'web') {
++  try {
++    const Maps = require('react-native-maps');
++    Marker = Maps.Marker;
++  } catch (e) {
++    Marker = null;
++  }
++}
++
+ /**
+  * CustomMapMarker: Distinct stylized markers for Debi-Dorshon map
+  * Types:
+@@ -21,7 +30,7 @@ function CustomMapMarkerComponent({
+   isSelected = false,
+   onPress,
+ }) {
+-  if (!coordinate || typeof coordinate.latitude !== 'number' || typeof coordinate.longitude !== 'number') {
++  if (!coordinate || typeof coordinate.latitude !== 'number' || typeof coordinate.longitude !== 'number' || !Marker) {
+     return null;
+   }
+ 
+diff --git a/frontend-app/src/components/route/RouteMapView.js b/frontend-app/src/components/route/RouteMapView.js
+index a593ba9..371283e 100644
+--- a/frontend-app/src/components/route/RouteMapView.js
++++ b/frontend-app/src/components/route/RouteMapView.js
+@@ -1,6 +1,16 @@
+ import React from 'react';
+ import { View, StyleSheet, Platform } from 'react-native';
+-import MapView, { Marker, Polyline } from 'react-native-maps';
++let MapView, Marker, Polyline;
++if (Platform.OS !== 'web') {
++  try {
++    const Maps = require('react-native-maps');
++    MapView = Maps.default;
++    Marker = Maps.Marker;
++    Polyline = Maps.Polyline;
++  } catch (e) {
++    MapView = null;
++  }
++}
+ import { colors } from '../../theme/colors';
+ import { getRegionForCoordinates } from '../../utils/mapHelpers';
+ 
+diff --git a/frontend-app/src/data/mockData.js b/frontend-app/src/data/mockData.js
+index 8f6c4a5..2259c22 100644
+--- a/frontend-app/src/data/mockData.js
++++ b/frontend-app/src/data/mockData.js
+@@ -1,32 +1,42 @@
+ // Comprehensive mock data and fallbacks for Debi-Dorshon app when backend is unreachable
++import debiDorshonData from './debi_dorshon.json';
+ 
+ export const MOCK_METRO_STATIONS = [
+-  { _id: 'm1', name: 'Dakshineswar', nameBn: 'দক্ষিণেশ্বর', lat: 22.6548, lng: 88.3582, line: 'Blue Line' },
+-  { _id: 'm2', name: 'Dum Dum', nameBn: 'দমদম', lat: 22.6221, lng: 88.3780, line: 'Blue Line' },
+-  { _id: 'm3', name: 'Shyambazar', nameBn: 'শ্যামবাজার', lat: 22.6006, lng: 88.3698, line: 'Blue Line' },
+-  { _id: 'm4', name: 'Sovabazar Sutanuti', nameBn: 'শোভাবাজার সুতানুটি', lat: 22.5960, lng: 88.3640, line: 'Blue Line' },
+-  { _id: 'm5', name: 'Girish Park', nameBn: 'গিরিশ পার্ক', lat: 22.5855, lng: 88.3602, line: 'Blue Line' },
+-  { _id: 'm6', name: 'Mahatma Gandhi Road', nameBn: 'মহাত্মা গান্ধী রোড', lat: 22.5802, lng: 88.3590, line: 'Blue Line' },
+-  { _id: 'm7', name: 'Central', nameBn: 'সেন্ট্রাল', lat: 22.5694, lng: 88.3596, line: 'Blue Line' },
+-  { _id: 'm8', name: 'Esplanade', nameBn: 'এসপ্ল্যানেড', lat: 22.5649, lng: 88.3517, line: 'Blue Line' },
+-  { _id: 'm9', name: 'Park Street', nameBn: 'পার্ক স্ট্রিট', lat: 22.5539, lng: 88.3512, line: 'Blue Line' },
+-  { _id: 'm10', name: 'Kalighat', nameBn: 'কালীঘাট', lat: 22.5186, lng: 88.3468, line: 'Blue Line' },
+-  { _id: 'm11', name: 'Rabindra Sarobar', nameBn: 'রবীন্দ্র সরোবর', lat: 22.5082, lng: 88.3458, line: 'Blue Line' },
+-  { _id: 'm12', name: 'Kavi Subhash (New Garia)', nameBn: 'কবি সুভাষ', lat: 22.4690, lng: 88.3965, line: 'Blue Line' },
+-  { _id: 'm13', name: 'Sealdah Metro', nameBn: 'শিয়ালদহ মেট্ৰো', lat: 22.5670, lng: 88.3712, line: 'Green Line' },
+-  { _id: 'm14', name: 'Salt Lake Sector V', nameBn: 'সল্টলেক সেক্টর ৫', lat: 22.5808, lng: 88.4346, line: 'Green Line' },
+-  { _id: 'm15', name: 'Karunamoyee', nameBn: 'করুণাময়ী', lat: 22.5862, lng: 88.4191, line: 'Green Line' },
++  { _id: 'm1', name: 'Kalighat', nameBn: 'কালীঘাট', lat: 22.5186, lng: 88.3468, line: 'Blue Line', pandal_count: 18 },
++  { _id: 'm2', name: 'Shyambazar', nameBn: 'শ্যামবাজার', lat: 22.6006, lng: 88.3698, line: 'Blue Line', pandal_count: 14 },
++  { _id: 'm3', name: 'Behala Bazar', nameBn: 'বেহালা বাজার', lat: 22.5020, lng: 88.3180, line: 'Purple Line', pandal_count: 8 },
++  { _id: 'm4', name: 'Rabindra Sarobar', nameBn: 'রবীন্দ্র সরোবর', lat: 22.5082, lng: 88.3458, line: 'Blue Line', pandal_count: 7 },
++  { _id: 'm5', name: 'Sovabazar-Sutanuti', nameBn: 'শোভাবাজার-সুতানুটি', lat: 22.5960, lng: 88.3640, line: 'Blue Line', pandal_count: 7 },
++  { _id: 'm6', name: 'Netaji Bhavan', nameBn: 'নেতাজি ভবন', lat: 22.5350, lng: 88.3440, line: 'Blue Line', pandal_count: 6 },
++  { _id: 'm7', name: 'Jessore Road', nameBn: 'যশোর রোড', lat: 22.6280, lng: 88.4050, line: 'Yellow Line', pandal_count: 5 },
++  { _id: 'm8', name: 'Belgachhia', nameBn: 'বেলগাছিয়া', lat: 22.6080, lng: 88.3800, line: 'Blue Line', pandal_count: 4 },
++  { _id: 'm9', name: 'Girish Park', nameBn: 'গিরিশ পার্ক', lat: 22.5855, lng: 88.3602, line: 'Blue Line', pandal_count: 4 },
++  { _id: 'm10', name: 'Hemanta Mukhopadhyay', nameBn: 'হেমন্ত মুখোপাধ্যায়', lat: 22.5180, lng: 88.3980, line: 'Orange Line', pandal_count: 4 },
++  { _id: 'm11', name: 'Jatin Das Park', nameBn: 'জতিন দাস পার্ক', lat: 22.5260, lng: 88.3450, line: 'Blue Line', pandal_count: 3 },
++  { _id: 'm12', name: 'Netaji', nameBn: 'নেতাজি', lat: 22.4820, lng: 88.3580, line: 'Blue Line', pandal_count: 3 },
++  { _id: 'm13', name: 'Taratala', nameBn: 'তারা তলা', lat: 22.5130, lng: 88.3120, line: 'Purple Line', pandal_count: 3 },
++  { _id: 'm14', name: 'Sakher Bazar', nameBn: 'সখের বাজার', lat: 22.4900, lng: 88.3140, line: 'Purple Line', pandal_count: 2 },
++  { _id: 'm15', name: 'Gitanjali', nameBn: 'গীতাঞ্জলি', lat: 22.4630, lng: 88.3750, line: 'Blue Line', pandal_count: 1 },
++  { _id: 'm16', name: 'Kavi Nazrul', nameBn: 'কবি নজরুল', lat: 22.4550, lng: 88.3850, line: 'Blue Line', pandal_count: 1 },
++  { _id: 'm17', name: 'Noapara', nameBn: 'নোয়াপাড়া', lat: 22.6390, lng: 88.3810, line: 'Blue Line', pandal_count: 1 },
+ ];
+ 
+ export const MOCK_TRAIN_STATIONS = [
+-  { _id: 't1', name: 'Howrah Junction', nameBn: 'হাওড়া জংশন', lat: 22.5839, lng: 88.3426, zone: 'Eastern Railway' },
+-  { _id: 't2', name: 'Sealdah Junction', nameBn: 'শিয়ালদহ জংশন', lat: 22.5670, lng: 88.3712, zone: 'Eastern Railway' },
+-  { _id: 't3', name: 'Bidhannagar Road', nameBn: 'বিধাননগর রোড', lat: 22.5937, lng: 88.3887, zone: 'Eastern Railway' },
+-  { _id: 't4', name: 'Dum Dum Junction', nameBn: 'দমদম জংশন', lat: 22.6221, lng: 88.3780, zone: 'Eastern Railway' },
+-  { _id: 't5', name: 'Majerhat', nameBn: 'মাঝেরহাট', lat: 22.5181, lng: 88.3242, zone: 'Circular Railway' },
+-  { _id: 't6', name: 'Ballygunge Junction', nameBn: 'বালিগঞ্জ জংশন', lat: 22.5278, lng: 88.3667, zone: 'Eastern Railway' },
+-  { _id: 't7', name: 'Shalimar', nameBn: 'শালিমার', lat: 22.5540, lng: 88.3180, zone: 'South Eastern Railway' },
+-  { _id: 't8', name: 'Kolkata Terminal', nameBn: 'কলকাতা টার্মিনাল', lat: 22.6033, lng: 88.3710, zone: 'Eastern Railway' },
++  { _id: 't1', name: 'New Alipur', nameBn: 'নিউ আলিপুর', lat: 22.5200, lng: 88.3280, zone: 'Circular Railway', pandal_count: 15 },
++  { _id: 't2', name: 'Ballygunge Jn', nameBn: 'বালিগঞ্জ জংশন', lat: 22.5278, lng: 88.3667, zone: 'Eastern Railway', pandal_count: 15 },
++  { _id: 't3', name: 'Bagbazar', nameBn: 'বাগবাজার', lat: 22.6020, lng: 88.3610, zone: 'Circular Railway', pandal_count: 11 },
++  { _id: 't4', name: 'Bidhannagar Road', nameBn: 'বিধাননগর রোড', lat: 22.5937, lng: 88.3887, zone: 'Eastern Railway', pandal_count: 10 },
++  { _id: 't5', name: 'Majherhat', nameBn: 'মাঝেরহাট', lat: 22.5181, lng: 88.3242, zone: 'Circular Railway', pandal_count: 10 },
++  { _id: 't6', name: 'Tollygunj', nameBn: 'টালিগঞ্জ', lat: 22.5020, lng: 88.3450, zone: 'Eastern Railway', pandal_count: 8 },
++  { _id: 't7', name: 'Khidirpur', nameBn: 'খিদিরপুর', lat: 22.5390, lng: 88.3260, zone: 'Circular Railway', pandal_count: 6 },
++  { _id: 't8', name: 'Dum Dum Cant.', nameBn: 'দমদম ক্যান্টনমেন্ট', lat: 22.6280, lng: 88.3900, zone: 'Eastern Railway', pandal_count: 5 },
++  { _id: 't9', name: 'Dhakuria', nameBn: 'ঢাকুরিয়া', lat: 22.5120, lng: 88.3680, zone: 'Eastern Railway', pandal_count: 5 },
++  { _id: 't10', name: 'Sovabazar Ahiritola', nameBn: 'শোভাবাজার অহিরীটোলা', lat: 22.5950, lng: 88.3580, zone: 'Circular Railway', pandal_count: 4 },
++  { _id: 't11', name: 'Tala', nameBn: 'টালা', lat: 22.6080, lng: 88.3720, zone: 'Circular Railway', pandal_count: 4 },
++  { _id: 't12', name: 'Lake Gardens', nameBn: 'লেক গার্ডেনস', lat: 22.5080, lng: 88.3580, zone: 'Eastern Railway', pandal_count: 3 },
++  { _id: 't13', name: 'Dumdum', nameBn: 'দমদম', lat: 22.6221, lng: 88.3780, zone: 'Eastern Railway', pandal_count: 1 },
++  { _id: 't14', name: 'New Garia', nameBn: 'নিউ গড়িয়া', lat: 22.4690, lng: 88.3965, zone: 'Eastern Railway', pandal_count: 1 },
++  { _id: 't15', name: 'Jadabpur', nameBn: 'যাদবপুর', lat: 22.4950, lng: 88.3720, zone: 'Eastern Railway', pandal_count: 1 },
+ ];
+ 
+ export const DUMMY_USER_LOCATION = {
+@@ -36,21 +46,23 @@ export const DUMMY_USER_LOCATION = {
+   accuracy: '12m',
+ };
+ 
+-export const MOCK_PANDALS = [
+-  { _id: 'p1', name: 'Sree Bhumi Sporting Club', nameBn: 'শ্রীভূমি স্পোর্টিং ক্লাব', lat: 22.6022, lng: 88.3985, area: 'Lake Town', zone: 'North Kolkata', rating: 4.9 },
+-  { _id: 'p2', name: 'College Square Sarbojanin', nameBn: 'কলেজ স্কয়ার সর্বজনীন', lat: 22.5746, lng: 88.3638, area: 'College Street', zone: 'Central Kolkata', rating: 4.8 },
+-  { _id: 'p3', name: 'Mohammad Ali Park', nameBn: 'মহম্মদ আলী পার্ক', lat: 22.5768, lng: 88.3601, area: 'MG Road', zone: 'Central Kolkata', rating: 4.7 },
+-  { _id: 'p4', name: 'Chetla Agrani Club', nameBn: 'চেতলা অগ্রণী ক্লাব', lat: 22.5195, lng: 88.3412, area: 'Chetla', zone: 'South Kolkata', rating: 4.8 },
+-  { _id: 'p5', name: 'Ekdalia Evergreen', nameBn: 'একডালিয়া এভারগ্রিন', lat: 22.5180, lng: 88.3685, area: 'Gariahat', zone: 'South Kolkata', rating: 4.9 },
+-  { _id: 'p6', name: 'Singhi Park', nameBn: 'সিংহি পার্ক', lat: 22.5198, lng: 88.3662, area: 'Gariahat', zone: 'South Kolkata', rating: 4.6 },
+-  { _id: 'p7', name: 'Suruchi Sangha', nameBn: 'সুরুচি সংঘ', lat: 22.5140, lng: 88.3305, area: 'New Alipore', zone: 'South Kolkata', rating: 4.9 },
+-  { _id: 'p8', name: 'Maddox Square', nameBn: 'ম্যাডক্স স্কয়ার', lat: 22.5332, lng: 88.3615, area: 'Ballygunge', zone: 'South Kolkata', rating: 4.7 },
+-  { _id: 'p9', name: 'FD Block Salt Lake', nameBn: 'এফডি ব্লক সল্টলেক', lat: 22.5815, lng: 88.4110, area: 'Salt Lake', zone: 'East Kolkata', rating: 4.5 },
+-  { _id: 'p10', name: 'Mudiali Club', nameBn: 'মুদিয়ালী ক্লাব', lat: 22.5098, lng: 88.3490, area: 'Southern Avenue', zone: 'South Kolkata', rating: 4.6 },
+-  { _id: 'p11', name: 'Badamtala Ashar Sangha', nameBn: 'বাদামতলা আষাঢ় সংঘ', lat: 22.5170, lng: 88.3498, area: 'Kalighat', zone: 'South Kolkata', rating: 4.7 },
+-  { _id: 'p12', name: 'Tridhara Sammilani', nameBn: 'ত্রিধারা সম্মিলনী', lat: 22.5225, lng: 88.3620, area: 'Manoharpukur', zone: 'South Kolkata', rating: 4.8 },
+-  { _id: 'p13', name: 'Sovabazar Rajbari', nameBn: 'শোভাবাজার রাজবাড়ি', lat: 22.5950, lng: 88.3628, area: 'Sovabazar', zone: 'North Kolkata', rating: 4.6 },
+-];
++export const MOCK_PANDALS = debiDorshonData.map((p, idx) => ({
++  _id: p._id || `p_${idx + 1}`,
++  id: p._id || `p_${idx + 1}`,
++  name: p.name,
++  nameBn: p.nameBn || p.name,
++  region: p.region || 'Kolkata',
++  cluster: p.cluster || p.region || 'Kolkata',
++  area: p.cluster || p.region || 'Kolkata',
++  zone: p.region || 'Kolkata',
++  location: p.location || { latitude: 22.5726, longitude: 88.3639 },
++  lat: p.location?.latitude || 22.5726,
++  lng: p.location?.longitude || 88.3639,
++  nearest_metro: p.nearest_metro || null,
++  nearest_stations: p.nearest_stations || [],
++  nearest_ferry: p.nearest_ferry || null,
++  rating: p.rating || 4.8,
++}));
+ 
+ // Helper to generate a polyline path between points
+ function generatePolyline(start, end, steps = 8) {
+diff --git a/frontend-app/src/screens/metro/MetroScreen.js b/frontend-app/src/screens/metro/MetroScreen.js
+index db24d42..d7fbb52 100644
+--- a/frontend-app/src/screens/metro/MetroScreen.js
++++ b/frontend-app/src/screens/metro/MetroScreen.js
+@@ -55,10 +55,12 @@ export default function MetroScreen({ navigation, route }) {
+       }
+       setLoadingPandals(true);
+       try {
++        const stationName = typeof selectedStation === 'string' ? selectedStation : (selectedStation?.name || selectedStation?._id);
++        const stationLine = typeof selectedStation === 'object' ? selectedStation?.line : null;
+         const data = activeTab === 'metro'
+-          ? await fetchPandalsByMetro(selectedStation.name, selectedStation.line)
+-          : await fetchPandalsByTrain(selectedStation.name);
+-        setPandals(data);
++          ? await fetchPandalsByMetro(stationName, stationLine)
++          : await fetchPandalsByTrain(stationName);
++        setPandals(data || []);
+       } catch (error) {
+         console.error('Failed to fetch pandals for station:', error);
+       } finally {
+@@ -68,6 +70,8 @@ export default function MetroScreen({ navigation, route }) {
+     loadPandals();
+   }, [selectedStation, activeTab]);
+ 
++  const selectedStationName = typeof selectedStation === 'string' ? selectedStation : selectedStation?.name;
++
+   return (
+     <SafeAreaView style={styles.safeArea}>
+       <HeaderNavbar navigation={navigation} title="দেবী দর্শন" />
+@@ -118,13 +122,17 @@ export default function MetroScreen({ navigation, route }) {
+             <ActivityIndicator color={colors.primaryMaroon} />
+           ) : (
+             <SearchableDropdown
++              items={stationsList}
+               data={stationsList}
+-              value={selectedStation?._id || selectedStation?.name}
++              value={selectedStation?._id || selectedStationName}
+               onSelect={(val) => {
+-                const station = stationsList.find((s) => (s._id || s.name) === val);
++                let station = stationsList.find((s) => (s._id || s.name) === val || s.name === val);
++                if (!station && typeof val === 'string') {
++                  station = { name: val };
++                }
+                 setSelectedStation(station);
+               }}
+-              placeholder={selectedStation ? selectedStation.name : 'No station selected'}
++              placeholder={selectedStationName ? selectedStationName : 'No station selected'}
+             />
+           )}
+         </View>
+@@ -132,8 +140,8 @@ export default function MetroScreen({ navigation, route }) {
+         {/* Nearest Pandals Display */}
+         <View style={styles.pandalsSection}>
+           <Text style={styles.sectionTitle}>
+-            {selectedStation
+-              ? `Nearest Pandals to ${selectedStation.name}`
++            {selectedStationName
++              ? `Nearest Pandals to ${selectedStationName}`
+               : 'Select a station to see nearest pandals'}
+           </Text>
+ 
+@@ -153,7 +161,7 @@ export default function MetroScreen({ navigation, route }) {
+                     {pandal.region || pandal.cluster} • {
+                       activeTab === 'metro' 
+                         ? (pandal.nearest_metro?.distance || 'Nearby')
+-                        : (pandal.nearest_stations?.find(s => s.name === selectedStation.name)?.distance || 'Nearby')
++                        : (pandal.nearest_stations?.find(s => s.name === selectedStationName)?.distance || 'Nearby')
+                     }
+                   </Text>
+                 </View>
+diff --git a/frontend-app/src/screens/metro/MetroStationsPanel.js b/frontend-app/src/screens/metro/MetroStationsPanel.js
+index dd066f8..870986e 100644
+--- a/frontend-app/src/screens/metro/MetroStationsPanel.js
++++ b/frontend-app/src/screens/metro/MetroStationsPanel.js
+@@ -9,7 +9,7 @@ import CheckpointList from '../../components/route/CheckpointList';
+ import LoadingState from '../../components/common/LoadingState';
+ import EmptyState from '../../components/common/EmptyState';
+ import StationMapView from '../../components/stations/StationMapView';
+-import { fetchMetroStations, fetchMetroRoute } from '../../services/metroService';
++import { fetchMetroStations, fetchMetroRoute, fetchPandalsByMetro } from '../../services/metroService';
+ import { MOCK_PANDALS } from '../../data/mockData';
+ import { colors } from '../../theme/colors';
+ import { radius, spacing } from '../../theme/spacing';
+@@ -18,6 +18,7 @@ export default function MetroStationsPanel() {
+   const [stations, setStations] = useState([]);
+   const [selectedStationId, setSelectedStationId] = useState('m9'); // Default: Park Street
+   const [loadingStations, setLoadingStations] = useState(true);
++  const [nearbyPandals, setNearbyPandals] = useState([]);
+ 
+   // Optional route calculation between 2 stations
+   const [route, setRoute] = useState(null);
+@@ -37,6 +38,24 @@ export default function MetroStationsPanel() {
+     })();
+   }, []);
+ 
++  const selectedStation = stations.find((s) => s._id === selectedStationId) || stations[0];
++
++  useEffect(() => {
++    async function loadStationPandals() {
++      if (!selectedStation?.name) {
++        setNearbyPandals([]);
++        return;
++      }
++      try {
++        const data = await fetchPandalsByMetro(selectedStation.name, selectedStation.line);
++        setNearbyPandals(data || []);
++      } catch (e) {
++        setNearbyPandals([]);
++      }
++    }
++    loadStationPandals();
++  }, [selectedStation?.name]);
++
+   const handleRouteSubmit = async (sourceId, destinationId) => {
+     setLoadingRoute(true);
+     setError(null);
+@@ -51,7 +70,7 @@ export default function MetroStationsPanel() {
+ 
+   if (loadingStations) return <LoadingState message="Loading metro stations..." />;
+ 
+-  const selectedStation = stations.find((s) => s._id === selectedStationId) || stations[0];
++  const displayPandals = nearbyPandals;
+ 
+   return (
+     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+@@ -91,13 +110,13 @@ export default function MetroStationsPanel() {
+           <StationMapView
+             stationName={selectedStation.name}
+             stationObj={selectedStation}
+-            pandals={MOCK_PANDALS}
++            pandals={displayPandals}
+             mode="metro"
+           />
+           <CollapsiblePandalsList
+             title={`Pandals Near ${selectedStation.name}`}
+             subtitle={`Pandals around ${selectedStation.name} (${selectedStation.line || 'Metro'})`}
+-            pandals={MOCK_PANDALS}
++            pandals={displayPandals}
+             referenceLocation={selectedStation}
+             defaultExpanded={false}
+           />
+diff --git a/frontend-app/src/screens/route/RouteScreen.js b/frontend-app/src/screens/route/RouteScreen.js
+index 8a5d119..77c7b05 100644
+--- a/frontend-app/src/screens/route/RouteScreen.js
++++ b/frontend-app/src/screens/route/RouteScreen.js
+@@ -7,14 +7,16 @@ import { MOCK_PANDALS } from '../../data/mockData';
+ import { colors } from '../../theme/colors';
+ import { radius, spacing } from '../../theme/spacing';
+ 
+-// Conditionally require react-native-maps if available, or render visual map simulation
++// Conditionally require react-native-maps if available on native, or render visual map simulation
+ let MapView, Marker;
+-try {
+-  const Maps = require('react-native-maps');
+-  MapView = Maps.default;
+-  Marker = Maps.Marker;
+-} catch (e) {
+-  MapView = null;
++if (Platform.OS !== 'web') {
++  try {
++    const Maps = require('react-native-maps');
++    MapView = Maps.default;
++    Marker = Maps.Marker;
++  } catch (e) {
++    MapView = null;
++  }
+ }
+ 
+ export default function RouteScreen({ navigation }) {
+diff --git a/frontend-app/src/screens/train/TrainStationsPanel.js b/frontend-app/src/screens/train/TrainStationsPanel.js
+index ca5af7a..ea3cf52 100644
+--- a/frontend-app/src/screens/train/TrainStationsPanel.js
++++ b/frontend-app/src/screens/train/TrainStationsPanel.js
+@@ -9,7 +9,7 @@ import CheckpointList from '../../components/route/CheckpointList';
+ import LoadingState from '../../components/common/LoadingState';
+ import EmptyState from '../../components/common/EmptyState';
+ import StationMapView from '../../components/stations/StationMapView';
+-import { fetchTrainStations, fetchTrainRoute } from '../../services/trainService';
++import { fetchTrainStations, fetchTrainRoute, fetchPandalsByTrain } from '../../services/trainService';
+ import { MOCK_PANDALS } from '../../data/mockData';
+ import { colors } from '../../theme/colors';
+ import { radius, spacing } from '../../theme/spacing';
+@@ -18,6 +18,7 @@ export default function TrainStationsPanel() {
+   const [stations, setStations] = useState([]);
+   const [selectedStationId, setSelectedStationId] = useState('t1'); // Default: Howrah Junction
+   const [loadingStations, setLoadingStations] = useState(true);
++  const [nearbyPandals, setNearbyPandals] = useState([]);
+ 
+   // Optional route calculation between 2 train stations
+   const [route, setRoute] = useState(null);
+@@ -37,6 +38,24 @@ export default function TrainStationsPanel() {
+     })();
+   }, []);
+ 
++  const selectedStation = stations.find((s) => s._id === selectedStationId) || stations[0];
++
++  useEffect(() => {
++    async function loadStationPandals() {
++      if (!selectedStation?.name) {
++        setNearbyPandals([]);
++        return;
++      }
++      try {
++        const data = await fetchPandalsByTrain(selectedStation.name);
++        setNearbyPandals(data || []);
++      } catch (e) {
++        setNearbyPandals([]);
++      }
++    }
++    loadStationPandals();
++  }, [selectedStation?.name]);
++
+   const handleRouteSubmit = async (sourceId, destinationId) => {
+     setLoadingRoute(true);
+     setError(null);
+@@ -51,7 +70,7 @@ export default function TrainStationsPanel() {
+ 
+   if (loadingStations) return <LoadingState message="Loading railway stations..." />;
+ 
+-  const selectedStation = stations.find((s) => s._id === selectedStationId) || stations[0];
++  const displayPandals = nearbyPandals;
+ 
+   return (
+     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+@@ -91,13 +110,13 @@ export default function TrainStationsPanel() {
+           <StationMapView
+             stationName={selectedStation.name}
+             stationObj={selectedStation}
+-            pandals={MOCK_PANDALS}
++            pandals={displayPandals}
+             mode="train"
+           />
+           <CollapsiblePandalsList
+             title={`Pandals Near ${selectedStation.name}`}
+             subtitle={`Pandals around ${selectedStation.name} (${selectedStation.zone || 'Railway'})`}
+-            pandals={MOCK_PANDALS}
++            pandals={displayPandals}
+             referenceLocation={selectedStation}
+             defaultExpanded={false}
+           />
+diff --git a/frontend-app/src/screens/trip/TripScreen.js b/frontend-app/src/screens/trip/TripScreen.js
+index e2ffefe..eb61169 100644
+--- a/frontend-app/src/screens/trip/TripScreen.js
++++ b/frontend-app/src/screens/trip/TripScreen.js
+@@ -1,176 +1,483 @@
+-import React, { useState } from 'react';
++import React, { useState, useEffect, useRef, useMemo } from 'react';
+ import {
+   View,
+   Text,
+   StyleSheet,
+   SafeAreaView,
+-  TextInput,
+   TouchableOpacity,
+-  ScrollView,
++  Platform,
+   Alert,
++  Vibration,
++  ActivityIndicator,
+ } from 'react-native';
+-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
++import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
++
++let MapView, Marker, Polyline;
++if (Platform.OS !== 'web') {
++  try {
++    const Maps = require('react-native-maps');
++    MapView = Maps.default;
++    Marker = Maps.Marker;
++    Polyline = Maps.Polyline;
++  } catch (e) {
++    MapView = null;
++  }
++}
+ import HeaderNavbar from '../../components/common/HeaderNavbar';
+ import SideDrawer from '../../components/common/SideDrawer';
+-import CollapsiblePandalsList from '../../components/common/CollapsiblePandalsList';
++import FloatingRouteCard from '../../components/trip/FloatingRouteCard';
++import RouteSummaryChip from '../../components/trip/RouteSummaryChip';
++import PandalCarousel from '../../components/trip/PandalCarousel';
++import { fetchRoutePlan } from '../../services/routeService';
+ import { MOCK_PANDALS } from '../../data/mockData';
+ import { colors } from '../../theme/colors';
+ import { radius, spacing } from '../../theme/spacing';
+ 
++// Calculate distance in meters between two points
++function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
++  const R = 6371000; // Radius of Earth in meters
++  const dLat = ((lat2 - lat1) * Math.PI) / 180;
++  const dLon = ((lon2 - lon1) * Math.PI) / 180;
++  const a =
++    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
++    Math.cos((lat1 * Math.PI) / 180) *
++      Math.cos((lat2 * Math.PI) / 180) *
++      Math.sin(dLon / 2) *
++      Math.sin(dLon / 2);
++  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
++  return R * c;
++}
++
+ export default function TripScreen({ navigation }) {
+-  const [startLocation, setStartLocation] = useState('Dum Dum Metro Station');
+-  const [endLocation, setEndLocation] = useState('Kalighat Metro Station');
+-  const [isRouteGenerated, setIsRouteGenerated] = useState(false);
+-
+-  const handleStartTrip = () => {
+-    if (!startLocation.trim() || !endLocation.trim()) {
+-      Alert.alert('Location Required', 'Please enter both starting and ending locations.');
+-      return;
++  // Origin and Destination state
++  const [startPlace, setStartPlace] = useState({
++    id: 'start_def',
++    title: 'Shyambazar Metro Station',
++    latitude: 22.6033,
++    longitude: 88.3702,
++  });
++
++  const [endPlace, setEndPlace] = useState({
++    id: 'end_def',
++    title: 'Kalighat Metro Station',
++    latitude: 22.5186,
++    longitude: 88.3468,
++  });
++
++  const [startText, setStartText] = useState('Shyambazar Metro Station');
++  const [endText, setEndText] = useState('Kalighat Metro Station');
++
++  // Route calculation state
++  const [routePlan, setRoutePlan] = useState(null);
++  const [loadingRoute, setLoadingRoute] = useState(false);
++  const [activeIndex, setActiveIndex] = useState(0);
++
++  const mapRef = useRef(null);
++
++  // Auto-trigger route calculation when both Start and Destination are set
++  useEffect(() => {
++    async function calculateCorridorRoute() {
++      if (!startPlace?.latitude || !endPlace?.latitude) {
++        setRoutePlan(null);
++        return;
++      }
++
++      // Check distance validation: if < 50 meters, show toast/alert
++      const distMeters = calculateDistanceMeters(
++        startPlace.latitude,
++        startPlace.longitude,
++        endPlace.latitude,
++        endPlace.longitude
++      );
++
++      if (distMeters < 50) {
++        Alert.alert(
++          'Locations Too Close',
++          'Start and destination are too close together. Please pick locations further apart.'
++        );
++        return;
++      }
++
++      setLoadingRoute(true);
++      try {
++        const plan = await fetchRoutePlan(
++          {
++            name: startPlace.title || startText,
++            latitude: startPlace.latitude,
++            longitude: startPlace.longitude,
++          },
++          {
++            name: endPlace.title || endText,
++            latitude: endPlace.latitude,
++            longitude: endPlace.longitude,
++          },
++          2.5
++        );
++        setRoutePlan(plan);
++        setActiveIndex(0);
++      } catch (err) {
++        console.warn('[TripScreen] Route calculation error:', err);
++      } finally {
++        setLoadingRoute(false);
++      }
++    }
++
++    calculateCorridorRoute();
++  }, [startPlace?.latitude, startPlace?.longitude, endPlace?.latitude, endPlace?.longitude]);
++
++  // Handle Swap Start & End
++  const handleSwap = () => {
++    const tempPlace = startPlace;
++    const tempText = startText;
++    setStartPlace(endPlace);
++    setStartText(endText);
++    setEndPlace(tempPlace);
++    setEndText(tempText);
++  };
++
++  // Handle Current Location Quick Select
++  const handleUseCurrentLocation = () => {
++    const curr = {
++      id: 'curr_loc',
++      title: 'My Current Location (Kolkata)',
++      latitude: 22.5726,
++      longitude: 88.3639,
++    };
++    setStartPlace(curr);
++    setStartText(curr.title);
++  };
++
++  // Extract path coordinates and markers for map rendering
++  const polylineCoords = useMemo(() => {
++    if (routePlan?.path && routePlan.path.length > 0) {
++      return routePlan.path.map((p) => ({
++        latitude: p.latitude || p.lat,
++        longitude: p.longitude || p.lng,
++      }));
++    }
++    if (startPlace && endPlace) {
++      return [
++        { latitude: startPlace.latitude, longitude: startPlace.longitude },
++        { latitude: endPlace.latitude, longitude: endPlace.longitude },
++      ];
++    }
++    return [];
++  }, [routePlan, startPlace, endPlace]);
++
++  const itinerary = useMemo(() => {
++    return routePlan?.itinerary || [];
++  }, [routePlan]);
++
++  // Map camera centering on active card selection
++  const handleSelectCard = (index, item) => {
++    setActiveIndex(index);
++    const p = item.pandal || item;
++    const lat = p.location?.latitude ?? p.lat;
++    const lng = p.location?.longitude ?? p.lng;
++
++    if (mapRef.current && lat && lng) {
++      try {
++        if (Platform.OS === 'web') {
++          // Handled in Leaflet map view below
++        } else {
++          mapRef.current.animateCamera({
++            center: { latitude: lat, longitude: lng },
++            zoom: 15.5,
++          });
++        }
++      } catch (e) {}
+     }
+-    setIsRouteGenerated(true);
+   };
+ 
++  // Fit map bounds whenever route plan completes
++  useEffect(() => {
++    if (mapRef.current && polylineCoords.length > 1 && Platform.OS !== 'web') {
++      try {
++        mapRef.current.fitToCoordinates(polylineCoords, {
++          edgePadding: { top: 180, bottom: 220, left: 50, right: 50 },
++          animated: true,
++        });
++      } catch (e) {}
++    }
++  }, [polylineCoords]);
++
++  // Leaflet HTML generation for Web interactive preview
++  const leafletWebHtml = useMemo(() => {
++    const sLat = startPlace?.latitude || 22.5726;
++    const sLng = startPlace?.longitude || 88.3639;
++    const eLat = endPlace?.latitude || 22.5985;
++    const eLng = endPlace?.longitude || 88.3712;
++
++    const polyPoints = polylineCoords.map((c) => `[${c.latitude}, ${c.longitude}]`).join(',');
++    const markersJson = itinerary.map((item, idx) => {
++      const p = item.pandal;
++      return {
++        idx: idx + 1,
++        lat: p.location?.latitude || p.lat || 22.57,
++        lng: p.location?.longitude || p.lng || 88.36,
++        name: (p.name || 'Pandal').replace(/'/g, "\\'"),
++        cluster: (p.cluster || p.region || '').replace(/'/g, "\\'"),
++        isActive: idx === activeIndex,
++      };
++    });
++
++    return `
++      <!DOCTYPE html>
++      <html>
++      <head>
++        <meta charset="utf-8" />
++        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
++        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
++        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
++        <style>
++          * { margin: 0; padding: 0; box-sizing: border-box; }
++          html, body, #map { width: 100%; height: 100%; background: #FAF7F2; }
++          .pin {
++            font-weight: 900;
++            font-size: 11px;
++            width: 26px;
++            height: 26px;
++            border-radius: 13px;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            border: 2px solid #fff;
++            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
++            cursor: pointer;
++          }
++          .pin-active {
++            transform: scale(1.3);
++            border-color: #F4C430 !important;
++            box-shadow: 0 0 12px #903f00;
++          }
++        </style>
++      </head>
++      <body>
++        <div id="map"></div>
++        <script>
++          var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([${sLat}, ${sLng}], 13);
++          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
++
++          // Render Polyline Casing & Core
++          var pts = [${polyPoints}];
++          if (pts.length > 1) {
++            L.polyline(pts, { color: '#903f00', weight: 6, opacity: 0.8 }).addTo(map);
++            L.polyline(pts, { color: '#ffedd5', weight: 3, opacity: 1.0 }).addTo(map);
++            map.fitBounds(pts, { padding: [60, 60] });
++          }
++
++          // Start Marker (Gold ring)
++          var startIcon = L.divIcon({
++            html: '<div class="pin" style="background:#8a7a2e;color:#fff;">S</div>',
++            iconSize: [26, 26], iconAnchor: [13, 13]
++          });
++          L.marker([${sLat}, ${sLng}], { icon: startIcon }).addTo(map).bindPopup('<b>Start: ${startPlace?.title || 'Origin'}</b>');
++
++          // Destination Marker (Maroon pin)
++          var endIcon = L.divIcon({
++            html: '<div class="pin" style="background:#5a1512;color:#fff;">D</div>',
++            iconSize: [26, 26], iconAnchor: [13, 13]
++          });
++          L.marker([${eLat}, ${eLng}], { icon: endIcon }).addTo(map).bindPopup('<b>Destination: ${endPlace?.title || 'Destination'}</b>');
++
++          // Pandal Markers
++          var pandals = ${JSON.stringify(markersJson)};
++          pandals.forEach(function(p, i) {
++            var cls = p.isActive ? 'pin pin-active' : 'pin';
++            var bg = p.isActive ? '#b45309' : '#903f00';
++            var icon = L.divIcon({
++              html: '<div class="' + cls + '" style="background:' + bg + ';color:#ffedd5;">#' + p.idx + '</div>',
++              iconSize: [26, 26], iconAnchor: [13, 13]
++            });
++            var m = L.marker([p.lat, p.lng], { icon: icon }).addTo(map);
++            m.bindPopup('<b>#' + p.idx + ' ' + p.name + '</b><br/>' + p.cluster);
++            if (p.isActive) m.openPopup();
++          });
++        </script>
++      </body>
++      </html>
++    `;
++  }, [startPlace, endPlace, polylineCoords, itinerary, activeIndex]);
++
+   return (
+     <SafeAreaView style={styles.safeArea}>
+-      <HeaderNavbar navigation={navigation} title="Trip Planner" />
++      <HeaderNavbar navigation={navigation} title="Puja Parikrama Route Planner" />
+       <SideDrawer navigation={navigation} />
+ 
+-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+-        {/* Wireframe Section: Create Your Route */}
+-        <View style={styles.card}>
+-          <View style={styles.cardHeader}>
+-            <MaterialCommunityIcons name="routes" size={24} color={colors.primaryMaroon} />
+-            <Text style={styles.cardTitle}>Create Your Route</Text>
+-          </View>
+-          <Text style={styles.cardSub}>
+-            Enter starting and ending points to plan your custom Durga Puja route.
+-          </Text>
+-
+-          {/* Input 1: Starting Location */}
+-          <View style={styles.inputWrap}>
+-            <Ionicons name="location" size={20} color={colors.primaryMaroon} />
+-            <TextInput
+-              style={styles.input}
+-              placeholder="Enter your starting location"
+-              placeholderTextColor={`${colors.espresso}77`}
+-              value={startLocation}
+-              onChangeText={setStartLocation}
++      <View style={styles.rootContainer}>
++        {/* Fullscreen Map Layer */}
++        {Platform.OS === 'web' ? (
++          <View style={styles.webMapWrap}>
++            <iframe
++              srcDoc={leafletWebHtml}
++              width="100%"
++              height="100%"
++              style={{ border: 0, width: '100%', height: '100%' }}
++              title="Full Route Map"
+             />
+           </View>
++        ) : (
++          <MapView
++            ref={mapRef}
++            style={StyleSheet.absoluteFillObject}
++            initialRegion={{
++              latitude: startPlace?.latitude || 22.5726,
++              longitude: startPlace?.longitude || 88.3639,
++              latitudeDelta: 0.08,
++              longitudeDelta: 0.08,
++            }}
++          >
++            {/* Polyline Route Corridor Casing & Core */}
++            {polylineCoords.length > 1 && (
++              <>
++                <Polyline
++                  coordinates={polylineCoords}
++                  strokeColor="#903f00"
++                  strokeWidth={5}
++                />
++                <Polyline
++                  coordinates={polylineCoords}
++                  strokeColor="#ffedd5"
++                  strokeWidth={2}
++                />
++              </>
++            )}
+ 
+-          {/* Input 2: Ending Location */}
+-          <View style={styles.inputWrap}>
+-            <Ionicons name="flag" size={20} color={colors.secondaryRed} />
+-            <TextInput
+-              style={styles.input}
+-              placeholder="Enter your ending location"
+-              placeholderTextColor={`${colors.espresso}77`}
+-              value={endLocation}
+-              onChangeText={setEndLocation}
+-            />
+-          </View>
++            {/* Start Marker (Gold Ring) */}
++            {startPlace && (
++              <Marker
++                coordinate={{
++                  latitude: startPlace.latitude,
++                  longitude: startPlace.longitude,
++                }}
++                title={`Start: ${startPlace.title || 'Origin'}`}
++                pinColor="#8a7a2e"
++                draggable
++                onDragEnd={(e) => {
++                  const coord = e.nativeEvent.coordinate;
++                  setStartPlace((prev) => ({ ...prev, latitude: coord.latitude, longitude: coord.longitude }));
++                }}
++              />
++            )}
+ 
+-          {/* START TRIP Button */}
+-          <TouchableOpacity style={styles.startBtn} onPress={handleStartTrip}>
+-            <MaterialCommunityIcons name="navigation" size={22} color={colors.white} />
+-            <Text style={styles.startBtnText}>START TRIP</Text>
+-          </TouchableOpacity>
+-        </View>
++            {/* Destination Marker (Maroon Pin) */}
++            {endPlace && (
++              <Marker
++                coordinate={{
++                  latitude: endPlace.latitude,
++                  longitude: endPlace.longitude,
++                }}
++                title={`Destination: ${endPlace.title || 'Destination'}`}
++                pinColor="#5a1512"
++                draggable
++                onDragEnd={(e) => {
++                  const coord = e.nativeEvent.coordinate;
++                  setEndPlace((prev) => ({ ...prev, latitude: coord.latitude, longitude: coord.longitude }));
++                }}
++              />
++            )}
+ 
+-        {/* Wireframe Result: On Click a Customized Route Appears */}
+-        {isRouteGenerated && (
+-          <View style={styles.routeResultCard}>
+-            <View style={styles.routeHeader}>
+-              <MaterialCommunityIcons name="check-circle" size={24} color="#2E7D32" />
+-              <View style={styles.routeHeaderText}>
+-                <Text style={styles.routeTitle}>Customized Route Ready!</Text>
+-                <Text style={styles.routeSub}>
+-                  {startLocation} ➔ {endLocation}
+-                </Text>
+-              </View>
+-            </View>
++            {/* En-route Pandal Markers */}
++            {itinerary.map((item, idx) => {
++              const p = item.pandal;
++              const lat = p.location?.latitude ?? p.lat;
++              const lng = p.location?.longitude ?? p.lng;
++              const isSelected = idx === activeIndex;
+ 
+-            {/* Direct button to open zoomable navigation map */}
+-            <TouchableOpacity
+-              style={styles.viewMapBtn}
+-              onPress={() => navigation.navigate('Navigation')}
+-            >
+-              <MaterialCommunityIcons name="map-marker-path" size={20} color={colors.white} />
+-              <Text style={styles.viewMapText}>VIEW ROUTE ON MAP</Text>
+-            </TouchableOpacity>
+-
+-            <Text style={styles.pandalsOnRouteTitle}>En-route Pandals List</Text>
+-            <CollapsiblePandalsList pandals={MOCK_PANDALS.slice(0, 6)} />
+-          </View>
++              if (!lat || !lng) return null;
++
++              return (
++                <Marker
++                  key={p.id || p._id || `marker_${idx}`}
++                  coordinate={{ latitude: lat, longitude: lng }}
++                  title={`Stop #${item.step || idx + 1}: ${p.name}`}
++                  description={p.cluster || p.region}
++                  pinColor={isSelected ? '#b45309' : '#903f00'}
++                  onPress={() => handleSelectCard(idx, item)}
++                />
++              );
++            })}
++          </MapView>
+         )}
+-      </ScrollView>
++
++        {/* Top Floating Overlay: Route Input Card */}
++        <View style={styles.topOverlayCard}>
++          <FloatingRouteCard
++            startText={startText}
++            endText={endText}
++            onStartChange={setStartText}
++            onEndChange={setEndText}
++            onSelectStartPlace={(place) => {
++              if (place) {
++                setStartPlace(place);
++                setStartText(place.title);
++              }
++            }}
++            onSelectEndPlace={(place) => {
++              if (place) {
++                setEndPlace(place);
++                setEndText(place.title);
++              }
++            }}
++            onSwap={handleSwap}
++            onUseCurrentLocation={handleUseCurrentLocation}
++            loading={loadingRoute}
++          />
++
++          {/* Floating Route Summary Chip under top card */}
++          {routePlan ? (
++            <View style={{ marginTop: spacing.xs }}>
++              <RouteSummaryChip
++                distanceKm={routePlan.distanceKm}
++                pandalsCount={routePlan.totalPandals || itinerary.length}
++              />
++            </View>
++          ) : null}
++        </View>
++
++        {/* Bottom Horizontal Snapping Carousel */}
++        <View style={styles.bottomCarouselWrap}>
++          <PandalCarousel
++            itinerary={itinerary}
++            activeIndex={activeIndex}
++            onSelectCard={handleSelectCard}
++            loading={loadingRoute}
++            navigation={navigation}
++          />
++        </View>
++      </View>
+     </SafeAreaView>
+   );
+ }
+ 
+ const styles = StyleSheet.create({
+-  safeArea: { flex: 1, backgroundColor: colors.cream },
+-  container: { padding: spacing.md },
+-  card: {
+-    backgroundColor: colors.cardCream,
+-    padding: spacing.md,
+-    borderRadius: radius.lg,
+-    borderWidth: 1,
+-    borderColor: colors.goldMuted,
+-    elevation: 3,
+-    marginBottom: spacing.md,
++  safeArea: { flex: 1, backgroundColor: '#faf7f2' },
++  rootContainer: {
++    flex: 1,
++    position: 'relative',
++    backgroundColor: '#faf7f2',
+   },
+-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+-  cardTitle: { fontSize: 20, fontWeight: '900', color: colors.primaryMaroon },
+-  cardSub: { fontSize: 12, color: `${colors.espresso}99`, marginTop: 4, marginBottom: spacing.md },
+-  inputWrap: {
+-    flexDirection: 'row',
+-    alignItems: 'center',
+-    backgroundColor: colors.white,
+-    borderWidth: 1,
+-    borderColor: colors.goldMuted,
+-    borderRadius: radius.md,
+-    paddingHorizontal: spacing.md,
+-    height: 48,
+-    marginBottom: spacing.sm,
+-    gap: spacing.xs,
++  webMapWrap: {
++    width: '100%',
++    height: '100%',
++    backgroundColor: '#faf7f2',
+   },
+-  input: { flex: 1, fontSize: 14, color: colors.espresso, fontWeight: '600' },
+-  startBtn: {
+-    flexDirection: 'row',
+-    alignItems: 'center',
+-    justifyContent: 'center',
+-    backgroundColor: colors.primaryMaroon,
+-    paddingVertical: 14,
+-    borderRadius: radius.md,
+-    gap: spacing.xs,
+-    marginTop: spacing.xs,
+-    elevation: 2,
+-  },
+-  startBtnText: { color: colors.white, fontSize: 16, fontWeight: '900', letterSpacing: 1 },
+-
+-  routeResultCard: {
+-    backgroundColor: colors.cardCream,
+-    padding: spacing.md,
+-    borderRadius: radius.lg,
+-    borderWidth: 1.5,
+-    borderColor: colors.goldHighlight,
++
++  /* Top Overlay Card */
++  topOverlayCard: {
++    position: 'absolute',
++    top: spacing.sm,
++    left: spacing.sm,
++    right: spacing.sm,
++    zIndex: 10,
+   },
+-  routeHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+-  routeHeaderText: { flex: 1 },
+-  routeTitle: { fontSize: 16, fontWeight: '800', color: colors.espresso },
+-  routeSub: { fontSize: 12, color: colors.primaryMaroon, fontWeight: '700', marginTop: 2 },
+-  viewMapBtn: {
+-    flexDirection: 'row',
+-    alignItems: 'center',
+-    justifyContent: 'center',
+-    backgroundColor: colors.espresso,
+-    paddingVertical: 12,
+-    borderRadius: radius.md,
+-    gap: spacing.xs,
+-    marginTop: spacing.md,
+-    marginBottom: spacing.md,
++
++  /* Bottom Carousel Position */
++  bottomCarouselWrap: {
++    position: 'absolute',
++    bottom: spacing.md,
++    left: 0,
++    right: 0,
++    zIndex: 10,
+   },
+-  viewMapText: { color: colors.goldHighlight, fontSize: 13, fontWeight: '800' },
+-  pandalsOnRouteTitle: { fontSize: 14, fontWeight: '800', color: colors.espresso, marginBottom: spacing.xs },
+ });
+diff --git a/frontend-app/src/services/metroService.js b/frontend-app/src/services/metroService.js
+index 51f4cc3..98b50d8 100644
+--- a/frontend-app/src/services/metroService.js
++++ b/frontend-app/src/services/metroService.js
+@@ -1,45 +1,31 @@
+-import apiClient from './apiClient';
+-import { API_ENDPOINTS } from '../config/env';
+-import { getMockMetroStations, getMockMetroRoute, MOCK_METRO_STATIONS } from '../data/mockData';
++import { fetchMetroStationsApi, fetchMetroPandalsApi } from './stationService';
++import { getMockMetroStations, MOCK_METRO_STATIONS, MOCK_PANDALS } from '../data/mockData';
+ 
+ // GET /api/v1/transit/metro/stations
+ export async function fetchMetroStations() {
+   try {
+-    const res = await apiClient.get(API_ENDPOINTS.METRO_STATIONS);
++    const res = await fetchMetroStationsApi();
+     const liveStations = Array.isArray(res.data) ? res.data : [];
+-    
+-    // Create a map of live stations for quick lookup
+-    const liveMap = new Map(
+-      liveStations.map((s) => [s.name.toLowerCase(), s])
+-    );
+ 
+-    // Combine MOCK_METRO_STATIONS with any extra live stations not in mocks
+-    const combined = MOCK_METRO_STATIONS.map((mockStation) => {
+-      const live = liveMap.get(mockStation.name.toLowerCase());
+-      if (live) {
+-        liveMap.delete(mockStation.name.toLowerCase()); // Marked as handled
+-      }
+-      return {
+-        ...mockStation,
+-        pandal_count: live?.pandal_count || 0,
+-        line: live?.line ? (live.line.toLowerCase().includes('line') ? live.line : `${live.line} Line`) : mockStation.line,
+-      };
+-    });
++    if (liveStations.length > 0) {
++      const mockMap = new Map(
++        MOCK_METRO_STATIONS.map((s) => [s.name.toLowerCase().replace(/[^a-z0-9]/g, ''), s])
++      );
+ 
+-    // Add remaining live stations that weren't in mocks
+-    liveMap.forEach((live, name) => {
+-      combined.push({
+-        _id: `m_live_${combined.length + 1}`,
+-        name: live.name,
+-        nameBn: live.name, // Fallback
+-        line: live.line ? (live.line.toLowerCase().includes('line') ? live.line : `${live.line} Line`) : 'Metro Network',
+-        pandal_count: live.pandal_count || 0,
+-        lat: 22.5726, // Generic Kolkata
+-        lng: 88.3639,
++      return liveStations.map((live, idx) => {
++        const key = live.name.toLowerCase().replace(/[^a-z0-9]/g, '');
++        const mockMatch = mockMap.get(key);
++        return {
++          _id: mockMatch?._id || `m_live_${idx + 1}`,
++          name: live.name,
++          nameBn: mockMatch?.nameBn || live.name,
++          line: live.line ? (live.line.toLowerCase().includes('line') ? live.line : `${live.line} Line`) : (mockMatch?.line || 'Metro Network'),
++          pandal_count: live.pandal_count || 0,
++          lat: mockMatch?.lat || 22.5726,
++          lng: mockMatch?.lng || 88.3639,
++        };
+       });
+-    });
+-
+-    return combined;
++    }
+   } catch (err) {
+     console.warn('[metroService] fetchMetroStations backend failed, using mock data:', err?.message);
+   }
+@@ -48,15 +34,26 @@ export async function fetchMetroStations() {
+ 
+ // GET /api/v1/transit/metro/pandals
+ export async function fetchPandalsByMetro(stationName, line = null) {
++  const nameStr = typeof stationName === 'string' ? stationName : stationName?.name;
++  if (!nameStr) return [];
+   try {
+-    const params = { station_name: stationName };
+-    if (line) params.line = line.replace(' Line', '');
+-    const res = await apiClient.get(API_ENDPOINTS.METRO_PANDALS || '/transit/metro/pandals', { params });
+-    if (res.data && res.data.pandals) {
+-      return res.data.pandals;
++    const res = await fetchMetroPandalsApi(nameStr);
++    if (res && res.data) {
++      let list = [];
++      if (Array.isArray(res.data)) list = res.data;
++      else if (Array.isArray(res.data.pandals)) list = res.data.pandals;
++      if (list.length > 0) return list;
+     }
+   } catch (err) {
+-    console.warn('[metroService] fetchPandalsByMetro failed:', err?.message);
++    console.warn('[metroService] fetchPandalsByMetro API error:', err?.message);
+   }
+-  return [];
++
++  // Fallback: match directly from complete MOCK_PANDALS dataset strictly by nearest_metro
++  const cleanName = nameStr.toLowerCase().trim();
++  const matched = MOCK_PANDALS.filter((p) => {
++    const mName = (p.nearest_metro?.name || '').toLowerCase().trim();
++    return mName === cleanName;
++  });
++  return matched;
+ }
++
+diff --git a/frontend-app/src/services/routeService.js b/frontend-app/src/services/routeService.js
+index 7901fde..c0dcb74 100644
+--- a/frontend-app/src/services/routeService.js
++++ b/frontend-app/src/services/routeService.js
+@@ -145,6 +145,105 @@ function getMockRouteFallback(origin, destination) {
+   };
+ }
+ 
++export async function fetchMapConfig() {
++  const path = '/api/v1/route/config';
++  for (const host of API_HOST_CANDIDATES) {
++    try {
++      const res = await fetch(`${host}${path}`);
++      if (res.ok) {
++        return await res.json();
++      }
++    } catch (e) {}
++  }
++  return { mapbox_configured: false, default_center: [88.375, 22.595], default_zoom: 13 };
++}
++
++export async function fetchAutocompletePlaces(query, limit = 6) {
++  const trimmed = (query || '').trim();
++  if (!trimmed) return [];
++
++  const path = `/api/v1/route/autocomplete?q=${encodeURIComponent(trimmed)}&limit=${limit}`;
++
++  for (const host of API_HOST_CANDIDATES) {
++    try {
++      const res = await fetch(`${host}${path}`);
++      if (res.ok) {
++        const data = await res.json();
++        if (Array.isArray(data) && data.length > 0) return data;
++      }
++    } catch (e) {}
++  }
++
++  // Fallback 1: Search local MOCK_PANDALS and MOCK_METRO_STATIONS
++  const cleanQ = trimmed.toLowerCase();
++  const results = [];
++  const seen = new Set();
++
++  MOCK_PANDALS.forEach((p) => {
++    if (results.length >= limit) return;
++    if (p.name && p.name.toLowerCase().includes(cleanQ)) {
++      const lat = p.location?.latitude || p.lat;
++      const lng = p.location?.longitude || p.lng;
++      const key = `${lat}_${lng}`;
++      if (!seen.has(key)) {
++        seen.add(key);
++        results.append?.({
++          id: p._id || p.id,
++          title: p.name,
++          subtitle: `${p.region || 'Kolkata'} • ${p.cluster || 'Pandals'}`,
++          latitude: lat,
++          longitude: lng,
++          category: 'pandal',
++          badge: '🛕 Pandal',
++        }) || results.push({
++          id: p._id || p.id,
++          title: p.name,
++          subtitle: `${p.region || 'Kolkata'} • ${p.cluster || 'Pandals'}`,
++          latitude: lat,
++          longitude: lng,
++          category: 'pandal',
++          badge: '🛕 Pandal',
++        });
++      }
++    }
++  });
++
++  if (results.length >= limit) return results;
++
++  // Fallback 2: Photon Geocoder
++  try {
++    const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(trimmed)}&lat=22.5726&lon=88.3639&limit=5`;
++    const res = await fetch(photonUrl);
++    if (res.ok) {
++      const data = await res.json();
++      (data.features || []).forEach((f) => {
++        const coords = f.geometry?.coordinates;
++        if (coords && coords.length === 2) {
++          const lng = coords[0];
++          const lat = coords[1];
++          const name = f.properties?.name || f.properties?.street || trimmed;
++          const key = `${lat}_${lng}`;
++          if (!seen.has(key)) {
++            seen.add(key);
++            const isMetro = name.toLowerCase().includes('metro');
++            results.push({
++              id: `photon_${f.properties?.osm_id || Math.random()}`,
++              title: name,
++              subtitle: f.properties?.city || f.properties?.state || 'Kolkata Region',
++              latitude: lat,
++              longitude: lng,
++              category: isMetro ? 'metro' : 'place',
++              badge: isMetro ? '🚇 Metro' : '📍 Place',
++            });
++          }
++        }
++      });
++    }
++  } catch (e) {}
++
++  return results.slice(0, limit);
++}
++
+ export async function fetchMultiStopRoute(stopIds) {
+   return getMockMultiStopRoute(stopIds);
+ }
+diff --git a/frontend-app/src/services/stationService.js b/frontend-app/src/services/stationService.js
+index 77d6c43..6223428 100644
+--- a/frontend-app/src/services/stationService.js
++++ b/frontend-app/src/services/stationService.js
+@@ -1,5 +1,6 @@
+ import apiClient from './apiClient';
+ import { API_BASE_URL, API_HOST_CANDIDATES, API_ENDPOINTS } from '../config/env';
++import { MOCK_PANDALS } from '../data/mockData';
+ 
+ // Fallback dummy stations for Metro
+ const FALLBACK_METRO_STATIONS = [
+@@ -24,14 +25,21 @@ const FALLBACK_METRO_STATIONS = [
+ 
+ // Fallback dummy stations for Train
+ const FALLBACK_TRAIN_STATIONS = [
+-  { name: 'Howrah Junction', line: 'Eastern Railway', pandal_count: 14 },
+-  { name: 'Sealdah Junction', line: 'Eastern Railway', pandal_count: 12 },
+-  { name: 'Bidhannagar Road', line: 'Eastern Railway', pandal_count: 8 },
+-  { name: 'Dum Dum Junction', line: 'Eastern Railway', pandal_count: 7 },
+-  { name: 'Majerhat', line: 'Circular Railway', pandal_count: 5 },
+-  { name: 'Ballygunge Junction', line: 'Eastern Railway', pandal_count: 6 },
+-  { name: 'Shalimar', line: 'South Eastern Railway', pandal_count: 4 },
+-  { name: 'Kolkata Terminal', line: 'Eastern Railway', pandal_count: 4 },
++  { name: 'New Alipur', pandal_count: 15 },
++  { name: 'Ballygunge Jn', pandal_count: 15 },
++  { name: 'Bagbazar', pandal_count: 11 },
++  { name: 'Bidhannagar Road', pandal_count: 10 },
++  { name: 'Majherhat', pandal_count: 10 },
++  { name: 'Tollygunj', pandal_count: 8 },
++  { name: 'Khidirpur', pandal_count: 6 },
++  { name: 'Dum Dum Cant.', pandal_count: 5 },
++  { name: 'Dhakuria', pandal_count: 5 },
++  { name: 'Sovabazar Ahiritola', pandal_count: 4 },
++  { name: 'Tala', pandal_count: 4 },
++  { name: 'Lake Gardens', pandal_count: 3 },
++  { name: 'Dumdum', pandal_count: 1 },
++  { name: 'New Garia', pandal_count: 1 },
++  { name: 'Jadabpur', pandal_count: 1 },
+ ];
+ 
+ function extractErrorInfo(error, targetPath) {
+@@ -119,38 +127,18 @@ export async function fetchMetroPandalsApi(stationName) {
+     return { success: true, data: res.data };
+   }
+   console.warn('[StationService] Metro pandals fetch failed across all hosts:', res.error);
++  const cleanName = (stationName || '').toLowerCase().trim();
++  const matchedPandals = MOCK_PANDALS.filter((p) => {
++    const mName = (p.nearest_metro?.name || '').toLowerCase().trim();
++    return mName === cleanName;
++  });
+   return {
+     success: false,
+     error: res.error,
+     data: {
+       station_name: stationName,
+-      total_pandals: 3,
+-      pandals: [
+-        {
+-          _id: 'p1',
+-          name: 'Badamtala Asar Sanagha',
+-          region: 'South',
+-          cluster: 'Hajra-Kalighat',
+-          location: { latitude: 22.5179668, longitude: 88.3437245 },
+-          nearest_metro: { name: stationName, line: 'Blue' },
+-        },
+-        {
+-          _id: 'p2',
+-          name: 'Mudiali Club',
+-          region: 'South',
+-          cluster: 'Southern Avenue',
+-          location: { latitude: 22.5098, longitude: 88.349 },
+-          nearest_metro: { name: stationName, line: 'Blue' },
+-        },
+-        {
+-          _id: 'p3',
+-          name: 'Tridhara Sammilani',
+-          region: 'South',
+-          cluster: 'Manoharpukur',
+-          location: { latitude: 22.5225, longitude: 88.362 },
+-          nearest_metro: { name: stationName, line: 'Blue' },
+-        },
+-      ],
++      total_pandals: matchedPandals.length,
++      pandals: matchedPandals,
+     },
+   };
+ }
+@@ -162,38 +150,22 @@ export async function fetchTrainPandalsApi(stationName) {
+     return { success: true, data: res.data };
+   }
+   console.warn('[StationService] Train pandals fetch failed across all hosts:', res.error);
++  const cleanName = (stationName || '').toLowerCase().trim();
++  const matchedPandals = MOCK_PANDALS.filter((p) => {
++    const stations = p.nearest_stations || [];
++    return stations.some((s) => {
++      const sName = (s.name || '').toLowerCase().trim();
++      return sName === cleanName;
++    });
++  });
+   return {
+     success: false,
+     error: res.error,
+     data: {
+       station_name: stationName,
+-      total_pandals: 3,
+-      pandals: [
+-        {
+-          _id: 'tp1',
+-          name: 'College Square Sarbojanin',
+-          region: 'Central',
+-          cluster: 'College Street',
+-          location: { latitude: 22.5746, longitude: 88.3638 },
+-          nearest_metro: { name: stationName, line: 'Eastern Railway' },
+-        },
+-        {
+-          _id: 'tp2',
+-          name: 'Mohammad Ali Park',
+-          region: 'Central',
+-          cluster: 'MG Road',
+-          location: { latitude: 22.5768, longitude: 88.3601 },
+-          nearest_metro: { name: stationName, line: 'Eastern Railway' },
+-        },
+-        {
+-          _id: 'tp3',
+-          name: 'Sree Bhumi Sporting Club',
+-          region: 'North',
+-          cluster: 'Lake Town',
+-          location: { latitude: 22.6022, longitude: 88.3985 },
+-          nearest_metro: { name: stationName, line: 'Eastern Railway' },
+-        },
+-      ],
++      total_pandals: matchedPandals.length,
++      pandals: matchedPandals,
+     },
+   };
+ }
++
+diff --git a/frontend-app/src/services/trainService.js b/frontend-app/src/services/trainService.js
+index 64a09b4..dad225e 100644
+--- a/frontend-app/src/services/trainService.js
++++ b/frontend-app/src/services/trainService.js
+@@ -1,44 +1,31 @@
+-import apiClient from './apiClient';
+-import { API_ENDPOINTS } from '../config/env';
+-import { getMockTrainStations, getMockTrainRoute, MOCK_TRAIN_STATIONS } from '../data/mockData';
++import { fetchTrainStationsApi, fetchTrainPandalsApi } from './stationService';
++import { getMockTrainStations, MOCK_TRAIN_STATIONS, MOCK_PANDALS } from '../data/mockData';
+ 
+ // GET /api/v1/transit/train/stations
+ export async function fetchTrainStations() {
+   try {
+-    const res = await apiClient.get(API_ENDPOINTS.TRAIN_STATIONS);
++    const res = await fetchTrainStationsApi();
+     const liveStations = Array.isArray(res.data) ? res.data : [];
+ 
+-    // Create a map of live stations for quick lookup
+-    const liveMap = new Map(
+-      liveStations.map((s) => [s.name.toLowerCase(), s])
+-    );
++    if (liveStations.length > 0) {
++      const mockMap = new Map(
++        MOCK_TRAIN_STATIONS.map((s) => [s.name.toLowerCase().replace(/[^a-z0-9]/g, ''), s])
++      );
+ 
+-    // Combine MOCK_TRAIN_STATIONS with any extra live stations not in mocks
+-    const combined = MOCK_TRAIN_STATIONS.map((mockStation) => {
+-      const live = liveMap.get(mockStation.name.toLowerCase());
+-      if (live) {
+-        liveMap.delete(mockStation.name.toLowerCase()); // Marked as handled
+-      }
+-      return {
+-        ...mockStation,
+-        pandal_count: live?.pandal_count || 0,
+-      };
+-    });
+-
+-    // Add remaining live stations that weren't in mocks
+-    liveMap.forEach((live, name) => {
+-      combined.push({
+-        _id: `t_live_${combined.length + 1}`,
+-        name: live.name,
+-        nameBn: live.name, // Fallback
+-        zone: 'Railway Network',
+-        pandal_count: live.pandal_count || 0,
+-        lat: 22.5839, // Generic Kolkata
+-        lng: 88.3426,
++      return liveStations.map((live, idx) => {
++        const key = live.name.toLowerCase().replace(/[^a-z0-9]/g, '');
++        const mockMatch = mockMap.get(key);
++        return {
++          _id: mockMatch?._id || `t_live_${idx + 1}`,
++          name: live.name,
++          nameBn: mockMatch?.nameBn || live.name,
++          zone: mockMatch?.zone || 'Railway Network',
++          pandal_count: live.pandal_count || 0,
++          lat: mockMatch?.lat || 22.5839,
++          lng: mockMatch?.lng || 88.3426,
++        };
+       });
+-    });
+-
+-    return combined;
++    }
+   } catch (err) {
+     console.warn('[trainService] fetchTrainStations backend failed, using mock data:', err?.message);
+   }
+@@ -47,14 +34,29 @@ export async function fetchTrainStations() {
+ 
+ // GET /api/v1/transit/train/pandals
+ export async function fetchPandalsByTrain(stationName) {
++  const nameStr = typeof stationName === 'string' ? stationName : stationName?.name;
++  if (!nameStr) return [];
+   try {
+-    const params = { station_name: stationName };
+-    const res = await apiClient.get(API_ENDPOINTS.TRAIN_PANDALS || '/transit/train/pandals', { params });
+-    if (res.data && res.data.pandals) {
+-      return res.data.pandals;
++    const res = await fetchTrainPandalsApi(nameStr);
++    if (res && res.data) {
++      let list = [];
++      if (Array.isArray(res.data)) list = res.data;
++      else if (Array.isArray(res.data.pandals)) list = res.data.pandals;
++      if (list.length > 0) return list;
+     }
+   } catch (err) {
+-    console.warn('[trainService] fetchPandalsByTrain failed:', err?.message);
++    console.warn('[trainService] fetchPandalsByTrain API error:', err?.message);
+   }
+-  return [];
++
++  // Fallback: match directly from complete MOCK_PANDALS dataset strictly by nearest_stations
++  const cleanName = nameStr.toLowerCase().trim();
++  const matched = MOCK_PANDALS.filter((p) => {
++    const stations = p.nearest_stations || [];
++    return stations.some((s) => {
++      const sName = (s.name || '').toLowerCase().trim();
++      return sName === cleanName;
++    });
++  });
++  return matched;
+ }
++

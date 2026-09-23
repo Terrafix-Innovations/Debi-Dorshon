@@ -1,32 +1,42 @@
 // Comprehensive mock data and fallbacks for Debi-Dorshon app when backend is unreachable
+import debiDorshonData from './debi_dorshon.json';
 
 export const MOCK_METRO_STATIONS = [
-  { _id: 'm1', name: 'Dakshineswar', nameBn: 'দক্ষিণেশ্বর', lat: 22.6548, lng: 88.3582, line: 'Blue Line' },
-  { _id: 'm2', name: 'Dum Dum', nameBn: 'দমদম', lat: 22.6221, lng: 88.3780, line: 'Blue Line' },
-  { _id: 'm3', name: 'Shyambazar', nameBn: 'শ্যামবাজার', lat: 22.6006, lng: 88.3698, line: 'Blue Line' },
-  { _id: 'm4', name: 'Sovabazar Sutanuti', nameBn: 'শোভাবাজার সুতানুটি', lat: 22.5960, lng: 88.3640, line: 'Blue Line' },
-  { _id: 'm5', name: 'Girish Park', nameBn: 'গিরিশ পার্ক', lat: 22.5855, lng: 88.3602, line: 'Blue Line' },
-  { _id: 'm6', name: 'Mahatma Gandhi Road', nameBn: 'মহাত্মা গান্ধী রোড', lat: 22.5802, lng: 88.3590, line: 'Blue Line' },
-  { _id: 'm7', name: 'Central', nameBn: 'সেন্ট্রাল', lat: 22.5694, lng: 88.3596, line: 'Blue Line' },
-  { _id: 'm8', name: 'Esplanade', nameBn: 'এসপ্ল্যানেড', lat: 22.5649, lng: 88.3517, line: 'Blue Line' },
-  { _id: 'm9', name: 'Park Street', nameBn: 'পার্ক স্ট্রিট', lat: 22.5539, lng: 88.3512, line: 'Blue Line' },
-  { _id: 'm10', name: 'Kalighat', nameBn: 'কালীঘাট', lat: 22.5186, lng: 88.3468, line: 'Blue Line' },
-  { _id: 'm11', name: 'Rabindra Sarobar', nameBn: 'রবীন্দ্র সরোবর', lat: 22.5082, lng: 88.3458, line: 'Blue Line' },
-  { _id: 'm12', name: 'Kavi Subhash (New Garia)', nameBn: 'কবি সুভাষ', lat: 22.4690, lng: 88.3965, line: 'Blue Line' },
-  { _id: 'm13', name: 'Sealdah Metro', nameBn: 'শিয়ালদহ মেট্ৰো', lat: 22.5670, lng: 88.3712, line: 'Green Line' },
-  { _id: 'm14', name: 'Salt Lake Sector V', nameBn: 'সল্টলেক সেক্টর ৫', lat: 22.5808, lng: 88.4346, line: 'Green Line' },
-  { _id: 'm15', name: 'Karunamoyee', nameBn: 'করুণাময়ী', lat: 22.5862, lng: 88.4191, line: 'Green Line' },
+  { _id: 'm1', name: 'Kalighat', nameBn: 'কালীঘাট', lat: 22.5186, lng: 88.3468, line: 'Blue Line', pandal_count: 18 },
+  { _id: 'm2', name: 'Shyambazar', nameBn: 'শ্যামবাজার', lat: 22.6006, lng: 88.3698, line: 'Blue Line', pandal_count: 14 },
+  { _id: 'm3', name: 'Behala Bazar', nameBn: 'বেহালা বাজার', lat: 22.5020, lng: 88.3180, line: 'Purple Line', pandal_count: 8 },
+  { _id: 'm4', name: 'Rabindra Sarobar', nameBn: 'রবীন্দ্র সরোবর', lat: 22.5082, lng: 88.3458, line: 'Blue Line', pandal_count: 7 },
+  { _id: 'm5', name: 'Sovabazar-Sutanuti', nameBn: 'শোভাবাজার-সুতানুটি', lat: 22.5960, lng: 88.3640, line: 'Blue Line', pandal_count: 7 },
+  { _id: 'm6', name: 'Netaji Bhavan', nameBn: 'নেতাজি ভবন', lat: 22.5350, lng: 88.3440, line: 'Blue Line', pandal_count: 6 },
+  { _id: 'm7', name: 'Jessore Road', nameBn: 'যশোর রোড', lat: 22.6280, lng: 88.4050, line: 'Yellow Line', pandal_count: 5 },
+  { _id: 'm8', name: 'Belgachhia', nameBn: 'বেলগাছিয়া', lat: 22.6080, lng: 88.3800, line: 'Blue Line', pandal_count: 4 },
+  { _id: 'm9', name: 'Girish Park', nameBn: 'গিরিশ পার্ক', lat: 22.5855, lng: 88.3602, line: 'Blue Line', pandal_count: 4 },
+  { _id: 'm10', name: 'Hemanta Mukhopadhyay', nameBn: 'হেমন্ত মুখোপাধ্যায়', lat: 22.5180, lng: 88.3980, line: 'Orange Line', pandal_count: 4 },
+  { _id: 'm11', name: 'Jatin Das Park', nameBn: 'জতিন দাস পার্ক', lat: 22.5260, lng: 88.3450, line: 'Blue Line', pandal_count: 3 },
+  { _id: 'm12', name: 'Netaji', nameBn: 'নেতাজি', lat: 22.4820, lng: 88.3580, line: 'Blue Line', pandal_count: 3 },
+  { _id: 'm13', name: 'Taratala', nameBn: 'তারা তলা', lat: 22.5130, lng: 88.3120, line: 'Purple Line', pandal_count: 3 },
+  { _id: 'm14', name: 'Sakher Bazar', nameBn: 'সখের বাজার', lat: 22.4900, lng: 88.3140, line: 'Purple Line', pandal_count: 2 },
+  { _id: 'm15', name: 'Gitanjali', nameBn: 'গীতাঞ্জলি', lat: 22.4630, lng: 88.3750, line: 'Blue Line', pandal_count: 1 },
+  { _id: 'm16', name: 'Kavi Nazrul', nameBn: 'কবি নজরুল', lat: 22.4550, lng: 88.3850, line: 'Blue Line', pandal_count: 1 },
+  { _id: 'm17', name: 'Noapara', nameBn: 'নোয়াপাড়া', lat: 22.6390, lng: 88.3810, line: 'Blue Line', pandal_count: 1 },
 ];
 
 export const MOCK_TRAIN_STATIONS = [
-  { _id: 't1', name: 'Howrah Junction', nameBn: 'হাওড়া জংশন', lat: 22.5839, lng: 88.3426, zone: 'Eastern Railway' },
-  { _id: 't2', name: 'Sealdah Junction', nameBn: 'শিয়ালদহ জংশন', lat: 22.5670, lng: 88.3712, zone: 'Eastern Railway' },
-  { _id: 't3', name: 'Bidhannagar Road', nameBn: 'বিধাননগর রোড', lat: 22.5937, lng: 88.3887, zone: 'Eastern Railway' },
-  { _id: 't4', name: 'Dum Dum Junction', nameBn: 'দমদম জংশন', lat: 22.6221, lng: 88.3780, zone: 'Eastern Railway' },
-  { _id: 't5', name: 'Majerhat', nameBn: 'মাঝেরহাট', lat: 22.5181, lng: 88.3242, zone: 'Circular Railway' },
-  { _id: 't6', name: 'Ballygunge Junction', nameBn: 'বালিগঞ্জ জংশন', lat: 22.5278, lng: 88.3667, zone: 'Eastern Railway' },
-  { _id: 't7', name: 'Shalimar', nameBn: 'শালিমার', lat: 22.5540, lng: 88.3180, zone: 'South Eastern Railway' },
-  { _id: 't8', name: 'Kolkata Terminal', nameBn: 'কলকাতা টার্মিনাল', lat: 22.6033, lng: 88.3710, zone: 'Eastern Railway' },
+  { _id: 't1', name: 'New Alipur', nameBn: 'নিউ আলিপুর', lat: 22.5200, lng: 88.3280, zone: 'Circular Railway', pandal_count: 15 },
+  { _id: 't2', name: 'Ballygunge Jn', nameBn: 'বালিগঞ্জ জংশন', lat: 22.5278, lng: 88.3667, zone: 'Eastern Railway', pandal_count: 15 },
+  { _id: 't3', name: 'Bagbazar', nameBn: 'বাগবাজার', lat: 22.6020, lng: 88.3610, zone: 'Circular Railway', pandal_count: 11 },
+  { _id: 't4', name: 'Bidhannagar Road', nameBn: 'বিধাননগর রোড', lat: 22.5937, lng: 88.3887, zone: 'Eastern Railway', pandal_count: 10 },
+  { _id: 't5', name: 'Majherhat', nameBn: 'মাঝেরহাট', lat: 22.5181, lng: 88.3242, zone: 'Circular Railway', pandal_count: 10 },
+  { _id: 't6', name: 'Tollygunj', nameBn: 'টালিগঞ্জ', lat: 22.5020, lng: 88.3450, zone: 'Eastern Railway', pandal_count: 8 },
+  { _id: 't7', name: 'Khidirpur', nameBn: 'খিদিরপুর', lat: 22.5390, lng: 88.3260, zone: 'Circular Railway', pandal_count: 6 },
+  { _id: 't8', name: 'Dum Dum Cant.', nameBn: 'দমদম ক্যান্টনমেন্ট', lat: 22.6280, lng: 88.3900, zone: 'Eastern Railway', pandal_count: 5 },
+  { _id: 't9', name: 'Dhakuria', nameBn: 'ঢাকুরিয়া', lat: 22.5120, lng: 88.3680, zone: 'Eastern Railway', pandal_count: 5 },
+  { _id: 't10', name: 'Sovabazar Ahiritola', nameBn: 'শোভাবাজার অহিরীটোলা', lat: 22.5950, lng: 88.3580, zone: 'Circular Railway', pandal_count: 4 },
+  { _id: 't11', name: 'Tala', nameBn: 'টালা', lat: 22.6080, lng: 88.3720, zone: 'Circular Railway', pandal_count: 4 },
+  { _id: 't12', name: 'Lake Gardens', nameBn: 'লেক গার্ডেনস', lat: 22.5080, lng: 88.3580, zone: 'Eastern Railway', pandal_count: 3 },
+  { _id: 't13', name: 'Dumdum', nameBn: 'দমদম', lat: 22.6221, lng: 88.3780, zone: 'Eastern Railway', pandal_count: 1 },
+  { _id: 't14', name: 'New Garia', nameBn: 'নিউ গড়িয়া', lat: 22.4690, lng: 88.3965, zone: 'Eastern Railway', pandal_count: 1 },
+  { _id: 't15', name: 'Jadabpur', nameBn: 'যাদবপুর', lat: 22.4950, lng: 88.3720, zone: 'Eastern Railway', pandal_count: 1 },
 ];
 
 export const DUMMY_USER_LOCATION = {
@@ -36,21 +46,23 @@ export const DUMMY_USER_LOCATION = {
   accuracy: '12m',
 };
 
-export const MOCK_PANDALS = [
-  { _id: 'p1', name: 'Sree Bhumi Sporting Club', nameBn: 'শ্রীভূমি স্পোর্টিং ক্লাব', lat: 22.6022, lng: 88.3985, area: 'Lake Town', zone: 'North Kolkata', rating: 4.9 },
-  { _id: 'p2', name: 'College Square Sarbojanin', nameBn: 'কলেজ স্কয়ার সর্বজনীন', lat: 22.5746, lng: 88.3638, area: 'College Street', zone: 'Central Kolkata', rating: 4.8 },
-  { _id: 'p3', name: 'Mohammad Ali Park', nameBn: 'মহম্মদ আলী পার্ক', lat: 22.5768, lng: 88.3601, area: 'MG Road', zone: 'Central Kolkata', rating: 4.7 },
-  { _id: 'p4', name: 'Chetla Agrani Club', nameBn: 'চেতলা অগ্রণী ক্লাব', lat: 22.5195, lng: 88.3412, area: 'Chetla', zone: 'South Kolkata', rating: 4.8 },
-  { _id: 'p5', name: 'Ekdalia Evergreen', nameBn: 'একডালিয়া এভারগ্রিন', lat: 22.5180, lng: 88.3685, area: 'Gariahat', zone: 'South Kolkata', rating: 4.9 },
-  { _id: 'p6', name: 'Singhi Park', nameBn: 'সিংহি পার্ক', lat: 22.5198, lng: 88.3662, area: 'Gariahat', zone: 'South Kolkata', rating: 4.6 },
-  { _id: 'p7', name: 'Suruchi Sangha', nameBn: 'সুরুচি সংঘ', lat: 22.5140, lng: 88.3305, area: 'New Alipore', zone: 'South Kolkata', rating: 4.9 },
-  { _id: 'p8', name: 'Maddox Square', nameBn: 'ম্যাডক্স স্কয়ার', lat: 22.5332, lng: 88.3615, area: 'Ballygunge', zone: 'South Kolkata', rating: 4.7 },
-  { _id: 'p9', name: 'FD Block Salt Lake', nameBn: 'এফডি ব্লক সল্টলেক', lat: 22.5815, lng: 88.4110, area: 'Salt Lake', zone: 'East Kolkata', rating: 4.5 },
-  { _id: 'p10', name: 'Mudiali Club', nameBn: 'মুদিয়ালী ক্লাব', lat: 22.5098, lng: 88.3490, area: 'Southern Avenue', zone: 'South Kolkata', rating: 4.6 },
-  { _id: 'p11', name: 'Badamtala Ashar Sangha', nameBn: 'বাদামতলা আষাঢ় সংঘ', lat: 22.5170, lng: 88.3498, area: 'Kalighat', zone: 'South Kolkata', rating: 4.7 },
-  { _id: 'p12', name: 'Tridhara Sammilani', nameBn: 'ত্রিধারা সম্মিলনী', lat: 22.5225, lng: 88.3620, area: 'Manoharpukur', zone: 'South Kolkata', rating: 4.8 },
-  { _id: 'p13', name: 'Sovabazar Rajbari', nameBn: 'শোভাবাজার রাজবাড়ি', lat: 22.5950, lng: 88.3628, area: 'Sovabazar', zone: 'North Kolkata', rating: 4.6 },
-];
+export const MOCK_PANDALS = debiDorshonData.map((p, idx) => ({
+  _id: p._id || `p_${idx + 1}`,
+  id: p._id || `p_${idx + 1}`,
+  name: p.name,
+  nameBn: p.nameBn || p.name,
+  region: p.region || 'Kolkata',
+  cluster: p.cluster || p.region || 'Kolkata',
+  area: p.cluster || p.region || 'Kolkata',
+  zone: p.region || 'Kolkata',
+  location: p.location || { latitude: 22.5726, longitude: 88.3639 },
+  lat: p.location?.latitude || 22.5726,
+  lng: p.location?.longitude || 88.3639,
+  nearest_metro: p.nearest_metro || null,
+  nearest_stations: p.nearest_stations || [],
+  nearest_ferry: p.nearest_ferry || null,
+  rating: p.rating || 4.8,
+}));
 
 // Helper to generate a polyline path between points
 function generatePolyline(start, end, steps = 8) {

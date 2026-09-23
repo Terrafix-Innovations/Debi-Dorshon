@@ -1,8 +1,17 @@
 import React, { memo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Marker } from 'react-native-maps';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
+
+let Marker;
+if (Platform.OS !== 'web') {
+  try {
+    const Maps = require('react-native-maps');
+    Marker = Maps.Marker;
+  } catch (e) {
+    Marker = null;
+  }
+}
 
 /**
  * CustomMapMarker: Distinct stylized markers for Debi-Dorshon map
@@ -21,7 +30,7 @@ function CustomMapMarkerComponent({
   isSelected = false,
   onPress,
 }) {
-  if (!coordinate || typeof coordinate.latitude !== 'number' || typeof coordinate.longitude !== 'number') {
+  if (!coordinate || typeof coordinate.latitude !== 'number' || typeof coordinate.longitude !== 'number' || !Marker) {
     return null;
   }
 

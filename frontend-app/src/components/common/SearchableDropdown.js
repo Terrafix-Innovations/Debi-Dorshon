@@ -6,22 +6,24 @@ import { radius, spacing } from '../../theme/spacing';
 
 // Generic searchable single-select used for every source/destination/station field.
 // `items` can be [{ _id?, name, line?, pandal_count?, nameBn? }] as returned by the backend.
-export default function SearchableDropdown({ label, items = [], value, onSelect, placeholder }) {
+export default function SearchableDropdown({ label, items, data, value, onSelect, placeholder }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+
+  const itemList = items || data || [];
 
   const getItemId = (item) => item._id || item.name;
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return items;
+    if (!query.trim()) return itemList;
     const q = query.toLowerCase();
-    return items.filter((i) => i.name && i.name.toLowerCase().includes(q));
-  }, [items, query]);
+    return itemList.filter((i) => i.name && i.name.toLowerCase().includes(q));
+  }, [itemList, query]);
 
   const selected = useMemo(() => {
     if (!value) return null;
-    return items.find((i) => getItemId(i) === value || i.name === value);
-  }, [items, value]);
+    return itemList.find((i) => getItemId(i) === value || i.name === value);
+  }, [itemList, value]);
 
   const renderSubtitle = (item) => {
     if (item.line) {

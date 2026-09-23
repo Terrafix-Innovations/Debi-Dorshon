@@ -1,45 +1,31 @@
-import apiClient from './apiClient';
-import { API_ENDPOINTS } from '../config/env';
-import { getMockMetroStations, getMockMetroRoute, MOCK_METRO_STATIONS } from '../data/mockData';
+import { fetchMetroStationsApi, fetchMetroPandalsApi } from './stationService';
+import { getMockMetroStations, MOCK_METRO_STATIONS, MOCK_PANDALS } from '../data/mockData';
 
 // GET /api/v1/transit/metro/stations
 export async function fetchMetroStations() {
   try {
-    const res = await apiClient.get(API_ENDPOINTS.METRO_STATIONS);
+    const res = await fetchMetroStationsApi();
     const liveStations = Array.isArray(res.data) ? res.data : [];
-    
-    // Create a map of live stations for quick lookup
-    const liveMap = new Map(
-      liveStations.map((s) => [s.name.toLowerCase(), s])
-    );
 
-    // Combine MOCK_METRO_STATIONS with any extra live stations not in mocks
-    const combined = MOCK_METRO_STATIONS.map((mockStation) => {
-      const live = liveMap.get(mockStation.name.toLowerCase());
-      if (live) {
-        liveMap.delete(mockStation.name.toLowerCase()); // Marked as handled
-      }
-      return {
-        ...mockStation,
-        pandal_count: live?.pandal_count || 0,
-        line: live?.line ? (live.line.toLowerCase().includes('line') ? live.line : `${live.line} Line`) : mockStation.line,
-      };
-    });
+    if (liveStations.length > 0) {
+      const mockMap = new Map(
+        MOCK_METRO_STATIONS.map((s) => [s.name.toLowerCase().replace(/[^a-z0-9]/g, ''), s])
+      );
 
-    // Add remaining live stations that weren't in mocks
-    liveMap.forEach((live, name) => {
-      combined.push({
-        _id: `m_live_${combined.length + 1}`,
-        name: live.name,
-        nameBn: live.name, // Fallback
-        line: live.line ? (live.line.toLowerCase().includes('line') ? live.line : `${live.line} Line`) : 'Metro Network',
-        pandal_count: live.pandal_count || 0,
-        lat: 22.5726, // Generic Kolkata
-        lng: 88.3639,
+      return liveStations.map((live, idx) => {
+        const key = live.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const mockMatch = mockMap.get(key);
+        return {
+          _id: mockMatch?._id || `m_live_${idx + 1}`,
+          name: live.name,
+          nameBn: mockMatch?.nameBn || live.name,
+          line: live.line ? (live.line.toLowerCase().includes('line') ? live.line : `${live.line} Line`) : (mockMatch?.line || 'Metro Network'),
+          pandal_count: live.pandal_count || 0,
+          lat: mockMatch?.lat || 22.5726,
+          lng: mockMatch?.lng || 88.3639,
+        };
       });
-    });
-
-    return combined;
+    }
   } catch (err) {
     console.warn('[metroService] fetchMetroStations backend failed, using mock data:', err?.message);
   }
@@ -48,15 +34,26 @@ export async function fetchMetroStations() {
 
 // GET /api/v1/transit/metro/pandals
 export async function fetchPandalsByMetro(stationName, line = null) {
+  const nameStr = typeof stationName === 'string' ? stationName : stationName?.name;
+  if (!nameStr) return [];
   try {
-    const params = { station_name: stationName };
-    if (line) params.line = line.replace(' Line', '');
-    const res = await apiClient.get(API_ENDPOINTS.METRO_PANDALS || '/transit/metro/pandals', { params });
-    if (res.data && res.data.pandals) {
-      return res.data.pandals;
+    const res = await fetchMetroPandalsApi(nameStr);
+    if (res && res.data) {
+      let list = [];
+      if (Array.isArray(res.data)) list = res.data;
+      else if (Array.isArray(res.data.pandals)) list = res.data.pandals;
+      if (list.length > 0) return list;
     }
   } catch (err) {
-    console.warn('[metroService] fetchPandalsByMetro failed:', err?.message);
+    console.warn('[metroService] fetchPandalsByMetro API error:', err?.message);
   }
-  return [];
+
+  // Fallback: match directly from complete MOCK_PANDALS dataset strictly by nearest_metro
+  const cleanName = nameStr.toLowerCase().trim();
+  const matched = MOCK_PANDALS.filter((p) => {
+    const mName = (p.nearest_metro?.name || '').toLowerCase().trim();
+    return mName === cleanName;
+  });
+  return matched;
 }
+
