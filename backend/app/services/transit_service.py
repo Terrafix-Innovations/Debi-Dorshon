@@ -69,6 +69,10 @@ class TransitService:
         async for doc in cursor:
             doc["_id"] = str(doc["_id"])
             doc["id"] = doc["_id"]
+            # Ensure distance field exists
+            if doc.get("nearest_metro"):
+                if not doc["nearest_metro"].get("distance"):
+                    doc["nearest_metro"]["distance"] = "Nearby"
             pandals.append(doc)
 
         await cache.set_json(cache_key, pandals, expire=settings.CACHE_TTL_STATION_PANDALS)
@@ -120,6 +124,12 @@ class TransitService:
         async for doc in cursor:
             doc["_id"] = str(doc["_id"])
             doc["id"] = doc["_id"]
+            # Ensure distance field exists in the matched station
+            if doc.get("nearest_stations"):
+                for s in doc["nearest_stations"]:
+                    if s.get("name") and s["name"].lower() == clean_name:
+                        if not s.get("distance"):
+                            s["distance"] = "Nearby"
             pandals.append(doc)
 
         await cache.set_json(cache_key, pandals, expire=settings.CACHE_TTL_STATION_PANDALS)

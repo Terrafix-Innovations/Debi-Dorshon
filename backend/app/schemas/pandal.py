@@ -17,6 +17,7 @@ class LocationSchema(BaseModel):
 class TransportInfoSchema(BaseModel):
     name: Optional[str] = None
     line: Optional[str] = None
+    distance: Optional[str] = None
 
 
 class PandalBase(BaseModel):

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  debi-dorshon-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: debi_dorshon_frontend
+    ports:
+      - "8080:80"
+    restart: always

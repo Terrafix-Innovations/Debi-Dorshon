@@ -1,0 +1,15 @@
+export const colors = {
+  primaryMaroon: '#8B1A1A',
+  secondaryRed: '#A31E22',
+  deepShadow: '#5C0F0F',
+  gold: '#D4A017',
+  goldMuted: '#C9A227',
+  goldHighlight: '#F4C430',
+  cream: '#F5E6C8',
+  cardCream: '#FBF3E1',
+  espresso: '#2B1608',
+  white: '#FFFFFF',
+  gradientStart: '#E8792D',
+  gradientEnd: '#F2994A',
+  danger: '#A31E22',
+};
