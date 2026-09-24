@@ -42,9 +42,9 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -221,7 +221,7 @@ export default function TripScreen({ navigation }) {
       };
       setStartPlace(picked);
       setStartText(picked.title);
-      try { Vibration.vibrate(15); } catch (err) {}
+      try { Vibration.vibrate(15); } catch (err) { }
       return;
     }
 
@@ -234,14 +234,14 @@ export default function TripScreen({ navigation }) {
       };
       setEndPlace(picked);
       setEndText(picked.title);
-      try { Vibration.vibrate(15); } catch (err) {}
+      try { Vibration.vibrate(15); } catch (err) { }
     }
   };
 
   // Map camera centering on active card selection
   const handleSelectCard = (index, item) => {
     setActiveIndex(index);
-    try { Vibration.vibrate(12); } catch (err) {}
+    try { Vibration.vibrate(12); } catch (err) { }
     const p = item.pandal || item;
     const lat = p.location?.latitude ?? p.lat;
     const lng = p.location?.longitude ?? p.lng;
@@ -256,7 +256,7 @@ export default function TripScreen({ navigation }) {
             zoom: 15.5,
           });
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   };
 
@@ -268,7 +268,7 @@ export default function TripScreen({ navigation }) {
           edgePadding: { top: 180, bottom: 220, left: 50, right: 50 },
           animated: true,
         });
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [polylineCoords]);
 

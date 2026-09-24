@@ -90,80 +90,76 @@ export default function FloatingRouteCard({
 
   return (
     <View style={styles.cardContainer}>
-      <View style={styles.cardRow}>
-        {/* Left Vertical Rail (Gold Ring -> Pink Connector -> Maroon Pin) */}
-        <View style={styles.leftRail}>
-          <View style={styles.goldRing}>
-            <View style={styles.goldInnerDot} />
-          </View>
-          <View style={styles.railLine} />
-          <View style={styles.maroonPin}>
-            <Ionicons name="location" size={10} color={colors.white} />
+      <View style={styles.cardMainRow}>
+        {/* Left Vertical Timeline Indicator */}
+        <View style={styles.timelineColumn}>
+          <View style={styles.startRing} />
+          <View style={styles.timelineLine} />
+          <View style={styles.destCircle}>
+            <Ionicons name="location" size={9} color="#FFFFFF" />
           </View>
         </View>
 
         {/* Inputs Column */}
         <View style={styles.inputsColumn}>
-          {/* Start Location Input */}
-          <TouchableOpacity
-            style={styles.inputPill}
-            onPress={() => handleOpenSearch('start')}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="locate-outline" size={16} color="#8a7a2e" />
-            <Text style={startText ? styles.inputText : styles.inputPlaceholder} numberOfLines={1}>
-              {startText || 'Search start location...'}
-            </Text>
-            {startText ? (
+          {/* START Section */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.startLabel}>START</Text>
+            <TouchableOpacity
+              style={styles.inputPill}
+              onPress={() => handleOpenSearch('start')}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="location-outline" size={16} color="#8A7B6E" />
+              <Text
+                style={startText ? styles.inputText : styles.inputPlaceholder}
+                numberOfLines={1}
+              >
+                {startText || 'Choose start location'}
+              </Text>
               <TouchableOpacity
-                onPress={() => {
-                  onStartChange('');
-                  onSelectStartPlace(null);
-                }}
+                onPress={onUseCurrentLocation}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Ionicons name="close-circle" size={16} color={`${colors.espresso}66`} />
+                <MaterialCommunityIcons name="target" size={18} color="#8A7B6E" />
               </TouchableOpacity>
-            ) : null}
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
 
-          {/* Destination Input */}
-          <TouchableOpacity
-            style={styles.inputPill}
-            onPress={() => handleOpenSearch('end')}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="flag-outline" size={16} color="#5a1512" />
-            <Text style={endText ? styles.inputText : styles.inputPlaceholder} numberOfLines={1}>
-              {endText || 'Search destination...'}
-            </Text>
-            {endText ? (
-              <TouchableOpacity
-                onPress={() => {
-                  onEndChange('');
-                  onSelectEndPlace(null);
-                }}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          {/* DESTINATION Section */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.destLabel}>DESTINATION</Text>
+            <TouchableOpacity
+              style={styles.inputPill}
+              onPress={() => handleOpenSearch('end')}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="location-outline" size={16} color="#8A7B6E" />
+              <Text
+                style={endText ? styles.inputText : styles.inputPlaceholder}
+                numberOfLines={1}
               >
-                <Ionicons name="close-circle" size={16} color={`${colors.espresso}66`} />
-              </TouchableOpacity>
-            ) : null}
-          </TouchableOpacity>
+                {endText || 'Choose destination'}
+              </Text>
+              <Ionicons name="flag-outline" size={17} color="#8A7B6E" />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Swap Button & Loader Column */}
-        <View style={styles.actionColumn}>
+        {/* Right Action Column (Divider & Swap Button) */}
+        <View style={styles.rightActionColumn}>
+          <View style={styles.verticalDivider} />
           <TouchableOpacity
-            style={styles.swapBtn}
+            style={styles.swapCircleBtn}
             onPress={handleTriggerSwap}
             activeOpacity={0.7}
           >
-            <MaterialCommunityIcons name="swap-vertical" size={20} color="#903f00" />
+            <MaterialCommunityIcons name="swap-vertical" size={22} color="#7A1515" />
           </TouchableOpacity>
 
-          {loading ? (
-            <ActivityIndicator size="small" color="#903f00" style={{ marginTop: 6 }} />
-          ) : null}
+          {loading && (
+            <ActivityIndicator size="small" color="#7A1515" style={{ marginTop: 6 }} />
+          )}
         </View>
       </View>
 
@@ -255,57 +251,50 @@ export default function FloatingRouteCard({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#fdfaf4',
-    borderRadius: radius.lg,
+    backgroundColor: '#FAF5EB',
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
-    padding: spacing.sm,
-    shadowColor: '#000000',
+    borderColor: '#EADCC6',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.12,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 5,
   },
-  cardRow: {
+  cardMainRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
   },
 
-  /* Left Rail */
-  leftRail: {
+  /* Left Timeline Indicator */
+  timelineColumn: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 24,
-    paddingVertical: 4,
+    width: 20,
+    marginRight: 10,
+    marginTop: 18,
   },
-  goldRing: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    borderWidth: 2,
-    borderColor: '#8a7a2e',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.white,
+  startRing: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 3.5,
+    borderColor: '#8A7A2E',
+    backgroundColor: '#FAF5EB',
   },
-  goldInnerDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#8a7a2e',
+  timelineLine: {
+    width: 2.5,
+    height: 48,
+    backgroundColor: '#E7BCC6',
+    marginVertical: 4,
   },
-  railLine: {
-    width: 2,
-    height: 22,
-    backgroundColor: '#e7bcc6',
-    marginVertical: 2,
-  },
-  maroonPin: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#5a1512',
+  destCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#7A1515',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -313,44 +302,66 @@ const styles = StyleSheet.create({
   /* Inputs Column */
   inputsColumn: {
     flex: 1,
-    gap: 6,
+    gap: 8,
+  },
+  inputGroup: {},
+  startLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#8A7A2E',
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  destLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#7A1515',
+    letterSpacing: 0.8,
+    marginBottom: 4,
   },
   inputPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f2ece1',
-    borderRadius: radius.pill,
-    paddingHorizontal: spacing.md,
-    height: 38,
-    gap: spacing.xs,
+    backgroundColor: '#F0E7D8',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    height: 42,
+    gap: 8,
   },
   inputText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
     color: colors.espresso,
   },
   inputPlaceholder: {
     flex: 1,
-    fontSize: 13,
-    color: `${colors.espresso}77`,
+    fontSize: 14,
+    color: '#8A7B6E',
+    fontWeight: '500',
   },
 
-  /* Action Column */
-  actionColumn: {
+  /* Right Action Column */
+  rightActionColumn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingLeft: 4,
+    paddingLeft: 12,
   },
-  swapBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f2ece1',
+  verticalDivider: {
+    width: 1,
+    height: 90,
+    backgroundColor: '#E8DEC9',
+    marginRight: 12,
+  },
+  swapCircleBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#F3E8D7',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: `${colors.goldMuted}40`,
+    borderColor: '#E2D3BE',
   },
 
   /* Autocomplete Modal */

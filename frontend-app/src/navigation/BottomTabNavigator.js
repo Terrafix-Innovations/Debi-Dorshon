@@ -19,24 +19,24 @@ export default function BottomTabNavigator() {
       initialRouteName="Home"
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: colors.primaryMaroon,
-        tabBarInactiveTintColor: `${colors.espresso}AA`,
+        tabBarActiveTintColor: '#943E00',
+        tabBarInactiveTintColor: '#3D2E24',
         tabBarStyle: {
-          backgroundColor: colors.cream,
-          borderTopColor: colors.goldMuted,
-          borderTopWidth: 1.5,
-          height: Platform.OS === 'ios' ? 84 : 68,
+          backgroundColor: '#FAF6EE',
+          borderTopColor: '#E8DEC9',
+          borderTopWidth: 1,
+          height: Platform.OS === 'ios' ? 88 : 72,
           paddingBottom: Platform.OS === 'ios' ? 24 : 10,
           paddingTop: 8,
-          elevation: 10,
-          shadowColor: colors.espresso,
-          shadowOffset: { width: 0, height: -3 },
-          shadowOpacity: 0.15,
-          shadowRadius: 5,
+          elevation: 12,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '800',
+          fontWeight: '700',
           marginTop: 2,
         },
       })}
@@ -65,7 +65,7 @@ export default function BottomTabNavigator() {
           tabBarLabel: 'Navigation',
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons
-              name={focused ? 'map-marker-radius' : 'map-marker-radius-outline'}
+              name={focused ? 'map-marker' : 'map-marker-outline'}
               size={24}
               color={color}
             />
@@ -73,21 +73,29 @@ export default function BottomTabNavigator() {
         }}
       />
 
-      {/* Tab 3: Search / Trip (Prominent Center Button) */}
+      {/* Tab 3: Trips (Raised Hero Tab) */}
       <Tab.Screen
         name="Trip"
         component={TripScreen}
         options={{
-          tabBarLabel: 'Trip Planner',
-          tabBarIcon: ({ focused }) => (
-            <View style={styles.centerSearchBtn}>
-              <MaterialCommunityIcons name="magnify" size={28} color={colors.white} />
+          tabBarLabel: 'Trips',
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '800',
+            color: '#943E00',
+            marginTop: 4,
+          },
+          tabBarIcon: () => (
+            <View style={styles.centerHeroContainer}>
+              <View style={styles.centerHeroCircle}>
+                <MaterialCommunityIcons name="map-outline" size={28} color="#FFFFFF" />
+              </View>
             </View>
           ),
         }}
       />
 
-      {/* Tab 4: Metro/Train Parikrama */}
+      {/* Tab 4: Metro/Train */}
       <Tab.Screen
         name="Stations"
         component={MetroScreen}
@@ -95,7 +103,7 @@ export default function BottomTabNavigator() {
           tabBarLabel: 'Metro/Train',
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons
-              name={focused ? 'train-car' : 'subway-variant'}
+              name={focused ? 'train' : 'train-variant'}
               size={24}
               color={color}
             />
@@ -123,20 +131,26 @@ export default function BottomTabNavigator() {
 }
 
 const styles = StyleSheet.create({
-  centerSearchBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primaryMaroon,
+  centerHeroContainer: {
+    position: 'absolute',
+    top: -26,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -14,
-    borderWidth: 3,
-    borderColor: colors.goldHighlight,
-    elevation: 6,
-    shadowColor: colors.espresso,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+  },
+  centerHeroCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#943E00',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3.5,
+    borderColor: '#FAF6EE',
+    elevation: 8,
+    shadowColor: '#943E00',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
   },
 });
+

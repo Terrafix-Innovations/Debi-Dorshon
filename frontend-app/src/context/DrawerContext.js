@@ -6,8 +6,20 @@ const DrawerContext = createContext();
 export function DrawerProvider({ children }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   
-  // Calculate initial active day based on current date
+  // Calculate active day based on current date & time
   const [activePujaDay, setActivePujaDay] = useState(() => getPujaGreeting(new Date()));
+
+  useEffect(() => {
+    const updateGreeting = () => {
+      setActivePujaDay(getPujaGreeting(new Date()));
+    };
+
+    updateGreeting();
+
+    // Auto-update greeting based on current date & time every minute
+    const intervalId = setInterval(updateGreeting, 60000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const openDrawer = () => setIsDrawerOpen(true);
   const closeDrawer = () => setIsDrawerOpen(false);
@@ -15,6 +27,9 @@ export function DrawerProvider({ children }) {
 
   const pujaDays = [
     'শুভ শারদীয়া',
+    'শুভ তৃতীয়া',
+    'শুভ চতুর্থী',
+    'শুভ পঞ্চমী',
     'শুভ ষষ্ঠী',
     'শুভ সপ্তমী',
     'শুভ মহাঅষ্টমী',
@@ -44,3 +59,4 @@ export function DrawerProvider({ children }) {
 export function useDrawer() {
   return useContext(DrawerContext);
 }
+

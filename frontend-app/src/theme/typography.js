@@ -1,10 +1,13 @@
-// Load 'Baloo2-ExtraBold' / 'Poppins-ExtraBold' and 'HindSiliguri-Regular'
-// via expo-font in App.js if you want these custom faces; falls back to
-// the system font otherwise.
 export const fonts = {
-  display: 'Baloo2-ExtraBold',
-  displayAlt: 'Poppins-ExtraBold',
-  bengali: 'HindSiliguri-Regular',
+  calligraphy: 'Galada_400Regular',
+  calligraphyAlt: 'Atma_700Bold',
+  figginsPica: 'FigginsPicaBengali',
+  tiroBangla: 'TiroBangla_400Regular',
+  anekBangla: 'AnekBangla_800ExtraBold',
+  display: 'BalooDa2_800ExtraBold',
+  displayAlt: 'BalooDa2_700Bold',
+  bengali: 'HindSiliguri_700Bold',
+  bengaliSemiBold: 'HindSiliguri_600SemiBold',
   body: 'System',
 };
 
@@ -14,5 +17,9 @@ export const fontSizes = {
   md: 16,
   lg: 18,
   xl: 22,
-  xxl: 28,
+  xxl: 24,
+  xxxl: 28,
+  headerGreeting: 26,
 };
+
+

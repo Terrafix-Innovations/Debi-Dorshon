@@ -1,121 +1,139 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, SafeAreaView } from 'react-native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
-import { MOCK_PANDALS } from '../../data/mockData';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
 
 export default function HomeScreen({ navigation }) {
-  const featuredPandals = MOCK_PANDALS.slice(0, 5);
+  const popularRoutes = [
+    {
+      id: 'route-1',
+      title: 'North Kolkata Heritage Circuit',
+      pandals: 'Bagbazar • Sovabazar Rajbari • Ahiritola • BK Pal',
+      stats: '6 Pandals • ~4.2 km • 2.5 hrs',
+      badge: 'Heritage',
+      icon: 'bank-outline',
+    },
+    {
+      id: 'route-2',
+      title: 'South Kolkata Mega Tour',
+      pandals: 'Tridhara Sammilani • Chetla Agrani • Suruchi Sangha • Ekdalia',
+      stats: '8 Pandals • ~6.8 km • 3.5 hrs',
+      badge: 'Popular',
+      icon: 'fire',
+    },
+    {
+      id: 'route-3',
+      title: 'Central & College Square Loop',
+      pandals: 'Mohammad Ali Park • College Square • Santosh Mitra Sq',
+      stats: '5 Pandals • ~3.5 km • 2.0 hrs',
+      badge: 'Iconic',
+      icon: 'star-outline',
+    },
+    {
+      id: 'route-4',
+      title: 'Salt Lake & Bypass Special',
+      pandals: 'FD Block • BJ Block • AK Block • Sree Bhumi',
+      stats: '7 Pandals • ~7.5 km • 4.0 hrs',
+      badge: 'Grand',
+      icon: 'map-legend',
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header matching wireframe */}
       <HeaderNavbar navigation={navigation} title="দেবী দর্শন" />
       <SideDrawer navigation={navigation} />
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Wireframe Hero Card 1: Trip Planner Redirect */}
-        <View style={styles.sectionWrap}>
-          <Pressable onPress={() => navigation.navigate('Trip')}>
-            <LinearGradient
-              colors={[colors.primaryMaroon, colors.secondaryRed]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.heroCard}
-            >
-              <View style={styles.cardBadgeRow}>
-                <View style={styles.badge}>
-                  <MaterialCommunityIcons name="routes" size={16} color={colors.goldHighlight} />
-                  <Text style={styles.badgeText}>Custom Itinerary</Text>
-                </View>
-                <Ionicons name="arrow-forward-circle" size={26} color={colors.goldHighlight} />
+        {/* 1. Big Div: Trip Planner */}
+        <View style={styles.heroSection}>
+          <Pressable
+            style={styles.heroCard}
+            onPress={() => navigation.navigate('Trip')}
+          >
+            <View style={styles.heroBadgeRow}>
+              <View style={styles.heroBadge}>
+                <MaterialCommunityIcons name="routes" size={14} color={colors.goldHighlight} />
+                <Text style={styles.heroBadgeText}>PUJO PARIKRAMA</Text>
               </View>
+              <MaterialCommunityIcons name="compass-outline" size={24} color={colors.goldHighlight} />
+            </View>
 
-              <Text style={styles.heroTitle}>Trip Planner (Create Your Route)</Text>
-              <Text style={styles.heroSub}>
-                Enter your starting location and destination to generate optimal continuous pandal hopping polyline.
-              </Text>
+            <Text style={styles.heroTitle}>Trip Planner</Text>
+            <Text style={styles.heroSub}>
+              Generate a custom Puja Parikrama itinerary based on your start point, destination, and preferred transit mode.
+            </Text>
 
-              <View style={styles.heroActionBtn}>
-                <Text style={styles.heroActionText}>OPEN TRIP PLANNER</Text>
-                <MaterialCommunityIcons name="chevron-right" size={18} color={colors.primaryMaroon} />
-              </View>
-            </LinearGradient>
+            <View style={styles.heroBtn}>
+              <Text style={styles.heroBtnText}>START PLANNING YOUR TRIP</Text>
+              <Ionicons name="arrow-forward" size={16} color={colors.primaryMaroon} />
+            </View>
           </Pressable>
         </View>
 
-        {/* Wireframe Bottom Grid: Cards 2 & 3 */}
-        <View style={styles.gridSectionWrap}>
-          <Text style={styles.sectionTitle}>Pujo Navigation & Transit</Text>
-          <View style={styles.gridRow}>
-            {/* Card 2: Metro / Train Parikrama */}
+        {/* 2. Small Divs Grid: Quick Features */}
+        <View style={styles.gridSection}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.gridContainer}>
+            {/* Card 1: Metro & Train */}
             <Pressable
-              style={styles.gridCard}
+              style={styles.smallCard}
               onPress={() => navigation.navigate('Stations')}
             >
-              <LinearGradient
-                colors={['#1E3A8A', '#3B82F6']}
-                style={styles.gridCardIconWrap}
-              >
-                <MaterialCommunityIcons name="train-car" size={28} color={colors.white} />
-              </LinearGradient>
-              <Text style={styles.gridCardTitle}>Metro & Train</Text>
-              <Text style={styles.gridCardTag}>Parikrama Guide</Text>
-              <Text style={styles.gridCardSub}>
-                Station selector & nearest pandals list
-              </Text>
+              <View style={[styles.smallIconWrap, { backgroundColor: '#8B1A1A' }]}>
+                <MaterialCommunityIcons name="subway-variant" size={24} color={colors.goldHighlight} />
+              </View>
+              <Text style={styles.smallCardTitle}>Metro & Train</Text>
+              <Text style={styles.smallCardSub}>Station guide & pandals</Text>
             </Pressable>
 
-            {/* Card 3: Navigation Map */}
+            {/* Card 2: Pandals */}
             <Pressable
-              style={styles.gridCard}
+              style={styles.smallCard}
               onPress={() => navigation.navigate('Navigation')}
             >
-              <LinearGradient
-                colors={['#065F46', '#10B981']}
-                style={styles.gridCardIconWrap}
-              >
-                <MaterialCommunityIcons name="map-marker-radius" size={28} color={colors.white} />
-              </LinearGradient>
-              <Text style={styles.gridCardTitle}>Navigation Map</Text>
-              <Text style={styles.gridCardTag}>Live Pinpoints</Text>
-              <Text style={styles.gridCardSub}>
-                Zoomable Kolkata map with pandal coordinates
-              </Text>
+              <View style={[styles.smallIconWrap, { backgroundColor: '#8B1A1A' }]}>
+                <MaterialCommunityIcons name="map-search-outline" size={24} color={colors.goldHighlight} />
+              </View>
+              <Text style={styles.smallCardTitle}>Pandals</Text>
+              <Text style={styles.smallCardSub}>Live route & pinpoints</Text>
             </Pressable>
           </View>
         </View>
 
-        {/* Featured Famous Pandals List */}
-        <View style={styles.pandalSectionWrap}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Famous Durga Puja Pandals</Text>
-            <Pressable onPress={() => navigation.navigate('Stations')}>
-              <Text style={styles.seeAllText}>Explore All</Text>
-            </Pressable>
+        {/* 3. Section: Most Popular Pujo Routes */}
+        <View style={styles.routesSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Most Popular Pujo Routes</Text>
           </View>
 
-          {featuredPandals.map((pandal) => (
+          {popularRoutes.map((item) => (
             <Pressable
-              key={pandal._id}
-              style={styles.pandalCard}
-              onPress={() => navigation.navigate('Navigation')}
+              key={item.id}
+              style={styles.routeCard}
+              onPress={() => navigation.navigate('Trip', { routePreset: item.id })}
             >
-              <View style={styles.pandalIconWrap}>
-                <Ionicons name="location" size={20} color={colors.primaryMaroon} />
+              <View style={styles.routeHeaderRow}>
+                <View style={styles.routeTitleGroup}>
+                  <MaterialCommunityIcons name={item.icon} size={20} color={colors.primaryMaroon} />
+                  <Text style={styles.routeTitle}>{item.title}</Text>
+                </View>
+                <View style={styles.routeTag}>
+                  <Text style={styles.routeTagText}>{item.badge}</Text>
+                </View>
               </View>
-              <View style={styles.pandalInfo}>
-                <Text style={styles.pandalName}>{pandal.name}</Text>
-                <Text style={styles.pandalSub}>
-                  {pandal.nameBn} • {pandal.area} ({pandal.zone})
-                </Text>
-              </View>
-              <View style={styles.pandalNavBtn}>
-                <Ionicons name="arrow-forward" size={16} color={colors.white} />
+
+              <Text style={styles.routePandals}>{item.pandals}</Text>
+
+              <View style={styles.routeFooterRow}>
+                <Text style={styles.routeStats}>{item.stats}</Text>
+                <View style={styles.routeNavBtn}>
+                  <Text style={styles.routeNavBtnText}>View Route</Text>
+                  <Ionicons name="chevron-forward" size={14} color={colors.primaryMaroon} />
+                </View>
               </View>
             </Pressable>
           ))}
@@ -126,163 +144,209 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  container: { flex: 1 },
-
-  sectionWrap: { paddingHorizontal: spacing.md, marginTop: spacing.md },
-  heroCard: {
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    elevation: 4,
-    shadowColor: colors.espresso,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.cream,
   },
-  cardBadgeRow: {
+  container: {
+    flex: 1,
+  },
+
+  // 1. Big Div (Trip Planner Hero Card)
+  heroSection: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+  },
+  heroCard: {
+    backgroundColor: colors.primaryMaroon,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.goldMuted,
+    shadowColor: colors.espresso,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  heroBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: spacing.xs,
   },
-  badge: {
+  heroBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(244, 196, 48, 0.2)',
+    backgroundColor: 'rgba(244, 196, 48, 0.18)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: radius.pill,
     borderWidth: 1,
     borderColor: colors.goldHighlight,
-    gap: 4,
+    gap: 6,
   },
-  badgeText: {
+  heroBadgeText: {
     color: colors.goldHighlight,
     fontSize: 11,
     fontWeight: '800',
+    letterSpacing: 0.5,
   },
   heroTitle: {
     color: colors.white,
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '900',
-    marginTop: spacing.sm,
+    letterSpacing: 0.5,
+    marginTop: spacing.xs,
   },
   heroSub: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: 'rgba(255, 255, 255, 0.88)',
     fontSize: 13,
-    marginTop: 4,
-    lineHeight: 18,
+    lineHeight: 19,
+    marginTop: 6,
   },
-  heroActionBtn: {
+  heroBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.goldHighlight,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: radius.md,
     marginTop: spacing.md,
-    gap: 4,
+    gap: 8,
     alignSelf: 'flex-start',
   },
-  heroActionText: {
+  heroBtnText: {
     color: colors.primaryMaroon,
     fontWeight: '900',
     fontSize: 12,
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
 
-  gridSectionWrap: {
+  // 2. Small Divs Grid
+  gridSection: {
     paddingHorizontal: spacing.md,
     marginTop: spacing.lg,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 18,
+    fontWeight: '900',
     color: colors.espresso,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
+    letterSpacing: 0.3,
   },
-  gridRow: {
+  gridContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     gap: spacing.sm,
   },
-  gridCard: {
+  smallCard: {
     flex: 1,
     backgroundColor: colors.cardCream,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.goldMuted,
     padding: spacing.md,
+    alignItems: 'flex-start',
   },
-  gridCardIconWrap: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+  smallIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xs,
   },
-  gridCardTitle: {
-    fontSize: 15,
+  smallCardTitle: {
+    fontSize: 14,
     fontWeight: '800',
     color: colors.espresso,
-  },
-  gridCardTag: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.primaryMaroon,
     marginTop: 2,
   },
-  gridCardSub: {
+  smallCardSub: {
     fontSize: 11,
     color: `${colors.espresso}AA`,
-    marginTop: 4,
-    lineHeight: 15,
+    marginTop: 2,
   },
 
-  pandalSectionWrap: {
+  // 3. Most Popular Pujo Routes Section
+  routesSection: {
     paddingHorizontal: spacing.md,
     marginTop: spacing.lg,
-    marginBottom: spacing.xl,
+    paddingBottom: spacing.xxl,
   },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  sectionHeader: {
     marginBottom: spacing.xs,
   },
-  seeAllText: {
-    fontSize: 13,
-    color: colors.primaryMaroon,
-    fontWeight: '800',
-  },
-  pandalCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  routeCard: {
     backgroundColor: colors.cardCream,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.goldMuted,
-    padding: spacing.sm,
-    marginTop: spacing.xs,
-    gap: spacing.sm,
+    padding: spacing.md,
+    marginTop: spacing.sm,
   },
-  pandalIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: `${colors.primaryMaroon}15`,
+  routeHeaderRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
-  pandalInfo: { flex: 1 },
-  pandalName: { fontSize: 14, fontWeight: '700', color: colors.espresso },
-  pandalSub: { fontSize: 11, color: `${colors.espresso}99`, marginTop: 2 },
-  pandalNavBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: colors.primaryMaroon,
+  routeTitleGroup: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 8,
+    flex: 1,
+  },
+  routeTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: colors.espresso,
+    flex: 1,
+  },
+  routeTag: {
+    backgroundColor: 'rgba(139, 26, 26, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 26, 26, 0.2)',
+  },
+  routeTagText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: colors.primaryMaroon,
+  },
+  routePandals: {
+    fontSize: 12,
+    color: colors.espresso,
+    marginTop: 8,
+    lineHeight: 17,
+  },
+  routeFooterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
+    paddingTop: spacing.xs,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(212, 175, 55, 0.2)',
+  },
+  routeStats: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: `${colors.espresso}AA`,
+  },
+  routeNavBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  routeNavBtnText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.primaryMaroon,
   },
 });
+

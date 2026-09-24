@@ -31,8 +31,8 @@ export default function MetroScreen({ navigation, route }) {
     async function loadStations() {
       setLoading(true);
       try {
-        const data = activeTab === 'metro' 
-          ? await fetchMetroStations() 
+        const data = activeTab === 'metro'
+          ? await fetchMetroStations()
           : await fetchTrainStations();
         setStationsList(data);
       } catch (error) {
@@ -159,7 +159,7 @@ export default function MetroScreen({ navigation, route }) {
                   <Text style={styles.pandalName}>{pandal.name}</Text>
                   <Text style={styles.pandalSub}>
                     {pandal.region || pandal.cluster} • {
-                      activeTab === 'metro' 
+                      activeTab === 'metro'
                         ? (pandal.nearest_metro?.distance || 'Nearby')
                         : (pandal.nearest_stations?.find(s => s.name === selectedStationName)?.distance || 'Nearby')
                     }
