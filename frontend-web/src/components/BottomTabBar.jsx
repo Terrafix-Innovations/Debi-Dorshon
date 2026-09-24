@@ -1,24 +1,33 @@
 import React from 'react';
 
+/**
+ * Debi-Dorshon Bottom Navigation Tab Bar
+ * 
+ * Requirements:
+ * 1. All tabs enabled.
+ * 2. Inactive tabs: crisp black font color (#111111) like Home.
+ * 3. Active tab: clearly distinct with cognac amber (#994800), bold font,
+ *    soft pill background highlight, and an active indicator dot.
+ */
 const TABS = [
   {
     id: 'home',
     label: 'Home',
     enabled: true,
     icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 3.2 3 10.4V21h6v-6h6v6h6V10.4L12 3.2z" />
+      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 10.5L12 3l9 7.5V21H15v-6H9v6H3V10.5z" />
       </svg>
     ),
   },
   {
     id: 'navigation',
     label: 'Navigation',
-    enabled: false,
+    enabled: true,
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="12" cy="11" r="2.4" />
+      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z" />
+        <circle cx="12" cy="11" r="2.5" />
       </svg>
     ),
   },
@@ -28,46 +37,48 @@ const TABS = [
     enabled: true,
     center: true,
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M9 6.75 15 4l6 2.75v12.5L15 22l-6-2.75L3 22V9.5L9 6.75Z" strokeLinejoin="round" />
-        <path d="M9 6.75v12.5M15 4v12.5" strokeLinejoin="round" />
+      <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 18l6-2 6 2V6l-6-2-6 2-6-2v12l6 2z" />
+        <path d="M9 4v14M15 6v14" />
       </svg>
     ),
   },
   {
     id: 'metro',
     label: 'Metro/Train',
-    enabled: false,
+    enabled: true,
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="5" y="3" width="14" height="14" rx="3" />
-        <path d="M5 11h14M8 21l2-4M16 21l-2-4M9 7h6" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="8.5" cy="14.5" r="0.6" fill="currentColor" />
-        <circle cx="15.5" cy="14.5" r="0.6" fill="currentColor" />
+      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="3" width="16" height="15" rx="3" />
+        <line x1="4" y1="11" x2="20" y2="11" />
+        <circle cx="8" cy="15" r="1" fill="currentColor" />
+        <circle cx="16" cy="15" r="1" fill="currentColor" />
+        <path d="M8 18l-2 4M16 18l2 4M9 22h6" />
       </svg>
     ),
   },
   {
     id: 'redeem',
     label: 'Redeem',
-    enabled: false,
+    enabled: true,
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M4 8V6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a2 2 0 0 0 0 4v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a2 2 0 0 0 0-4z" strokeLinejoin="round" />
-        <path d="M14.5 9.5l-5 5" strokeLinecap="round" />
-        <circle cx="9.8" cy="9.8" r="0.5" fill="currentColor" />
-        <circle cx="14.2" cy="14.2" r="0.5" fill="currentColor" />
+      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 8V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a2 2 0 0 0 0 4v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a2 2 0 0 0 0-4z" />
+        <path d="M14.5 9.5l-5 5" />
+        <circle cx="9.8" cy="9.8" r="0.8" fill="currentColor" stroke="none" />
+        <circle cx="14.2" cy="14.2" r="0.8" fill="currentColor" stroke="none" />
       </svg>
     ),
   },
 ];
 
 export default function BottomTabBar({ activeTab = 'trips', onChangeTab }) {
-  // Reorder so the enabled center tab sits in the middle prominently.
   const center = TABS.find((t) => t.center);
   const sides = TABS.filter((t) => !t.center);
   const left = sides.slice(0, Math.ceil(sides.length / 2));
   const right = sides.slice(Math.ceil(sides.length / 2));
+
+  const isCenterActive = activeTab === center.id;
 
   const renderTab = (tab) => {
     const isActive = activeTab === tab.id;
@@ -77,45 +88,52 @@ export default function BottomTabBar({ activeTab = 'trips', onChangeTab }) {
         type="button"
         disabled={!tab.enabled}
         onClick={() => tab.enabled && onChangeTab?.(tab.id)}
-        className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 transition-colors ${
-          tab.enabled
-            ? isActive
-              ? 'text-primary'
-              : 'text-on-surface-variant hover:text-on-surface'
-            : 'text-on-surface-variant/30 cursor-not-allowed'
+        className={`group relative flex flex-col items-center justify-center gap-0.5 flex-1 py-1 transition-all rounded-2xl ${
+          isActive
+            ? 'text-[#994800] bg-[#994800]/10 font-bold'
+            : 'text-[#111111] hover:text-[#994800] hover:bg-black/[0.03] font-medium'
         }`}
       >
-        <span className="w-6 h-6">{tab.icon}</span>
-        <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>{tab.label}</span>
+        <span className="flex items-center justify-center transition-transform group-active:scale-95">
+          {tab.icon}
+        </span>
+        <span className={`text-[12px] leading-tight ${isActive ? 'font-bold text-[#994800]' : 'font-medium text-[#111111]'}`}>
+          {tab.label}
+        </span>
       </button>
     );
   };
 
   return (
-    <nav className="absolute inset-x-0 bottom-0 z-40">
-      <div className="relative w-full">
-        <div
-          className="flex items-end justify-around border-t border-black/5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-2 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))]"
-          style={{ background: '#fdfaf4' }}
-        >
+    <nav className="absolute inset-x-0 bottom-0 z-40 select-none">
+      {/* Light Cream Bottom Bar Shell */}
+      <div className="relative w-full bg-[#fdfaf3] border-t border-[#ebdcc9]/70 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <div className="relative z-10 w-full max-w-lg mx-auto flex items-center justify-around px-2 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))]">
           {left.map(renderTab)}
 
-          {/* Center prominent Trips tab */}
+          {/* Center Prominent Elevated Trips Tab */}
           <div className="flex-1 flex justify-center -mt-6">
             <button
               type="button"
               onClick={() => onChangeTab?.(center.id)}
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-0.5 active:scale-95 transition-transform"
             >
-              <span
-                className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-4 transition-transform active:scale-95 ${
-                  activeTab === center.id ? 'bg-primary text-white' : 'bg-primary/80 text-white'
-                }`}
-                style={{ borderColor: '#fdfaf4' }}
-              >
-                <span className="w-7 h-7">{center.icon}</span>
-              </span>
-              <span className={`text-[10px] ${activeTab === center.id ? 'font-bold text-primary' : 'font-medium text-on-surface-variant'}`}>
+              {/* Outer Cream Halo Ring around the circular button */}
+              <div className="p-1 rounded-full bg-[#fdfaf3]">
+                {/* Round Button: Cognac Amber when active, warm dark slate when inactive */}
+                <div
+                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
+                    isCenterActive
+                      ? 'bg-[#994800] shadow-[0_4px_16px_rgba(153,72,0,0.35)] scale-105'
+                      : 'bg-[#3d3732] hover:bg-[#2c2825] shadow-sm'
+                  }`}
+                >
+                  {center.icon}
+                </div>
+              </div>
+
+              {/* Trips Label */}
+              <span className={`text-[12px] leading-tight ${isCenterActive ? 'font-bold text-[#994800]' : 'font-medium text-[#111111]'}`}>
                 {center.label}
               </span>
             </button>

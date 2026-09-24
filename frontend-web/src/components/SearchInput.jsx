@@ -129,11 +129,19 @@ export default function SearchInput({
   const isOrigin = type === 'origin';
 
   return (
-    <div className="relative w-full" ref={wrapperRef}>
+    <div className={`relative w-full ${isOpen ? 'z-40' : 'z-10'}`} ref={wrapperRef}>
       <div
-        className="relative flex items-center h-11 rounded-xl px-3 transition-shadow focus-within:ring-2 focus-within:ring-[#903f00]/20"
-        style={{ background: '#f2ece1' }}
+        className="relative flex items-center h-[46px] rounded-2xl px-3 transition-shadow focus-within:ring-2 focus-within:ring-[#7c6d28]/25"
+        style={{ background: '#f2ebde' }}
       >
+        {/* Leading Location Pin Icon */}
+        <span className="shrink-0 mr-2 text-[#9e9086] pointer-events-none">
+          <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="12" cy="11" r="2.5" />
+          </svg>
+        </span>
+
         <input
           type="text"
           value={query}
@@ -142,38 +150,43 @@ export default function SearchInput({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full bg-transparent border-0 py-0.5 pr-14 text-[15px] font-medium text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-0"
+          className="w-full bg-transparent border-0 py-0.5 pr-10 text-[14.5px] font-medium text-[#2d1b18] placeholder:text-[#9e9086] focus:outline-none focus:ring-0"
         />
 
-        {/* Trailing icon: locate crosshair for origin, flag for destination */}
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#8a7d70' }}>
-          {isOrigin ? (
-            <svg className="w-[19px] h-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3.2" />
-              <circle cx="12" cy="12" r="8" />
-              <path d="M12 1.5v3.2M12 19.3v3.2M1.5 12h3.2M19.3 12h3.2" strokeLinecap="round" />
-            </svg>
-          ) : (
-            <svg className="w-[19px] h-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4.5 22V3M4.5 3.5h13l-2 4 2 4h-13" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-        </span>
-
+        {/* Clear Button if input has text */}
         {query && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-9 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-on-surface-variant/60 hover:text-on-surface transition-colors rounded-full text-[10px]"
+            className="absolute right-9 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-[#9e9086] hover:text-[#2d1b18] transition-colors rounded-full text-[10px]"
             title="Clear"
           >
             ✕
           </button>
         )}
+
+        {/* Trailing icon: locate crosshair for origin, flag for destination */}
+        <span className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#9e9086]">
+          {isOrigin ? (
+            <svg className="w-[19px] h-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3" />
+              <circle cx="12" cy="12" r="7.5" />
+              <line x1="12" y1="2" x2="12" y2="4.5" strokeLinecap="round" />
+              <line x1="12" y1="19.5" x2="12" y2="22" strokeLinecap="round" />
+              <line x1="2" y1="12" x2="4.5" y2="12" strokeLinecap="round" />
+              <line x1="19.5" y1="12" x2="22" y2="12" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg className="w-[19px] h-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="5" y1="22" x2="5" y2="3" strokeLinecap="round" />
+              <path d="M5 4.5h12l-2 4 2 4H5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </span>
       </div>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-container-lowest border border-outline-variant/50 rounded-2xl shadow-2xl max-h-64 overflow-y-auto z-50 divide-y divide-outline-variant/15">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#fffdf9] border border-[#ebdcc9] rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-50 divide-y divide-[#ebdcc9]/40">
           {loading && (
             <div className="p-3 text-xs text-on-surface-variant flex items-center gap-2">
               <span className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>

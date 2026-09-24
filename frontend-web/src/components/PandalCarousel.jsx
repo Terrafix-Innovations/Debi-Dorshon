@@ -26,10 +26,14 @@ export default function PandalCarousel({
 
   if (!hasRoute && !loading) {
     return (
-      <div className="pointer-events-none absolute inset-x-0 bottom-[76px] z-20 flex justify-center px-4 pb-2">
-        <div className="pointer-events-auto rounded-2xl bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/30 shadow-lg px-5 py-3 text-center">
-          <p className="text-[13px] font-semibold text-on-surface">Plan a trip to see pandals</p>
-          <p className="text-[11px] text-on-surface-variant/70 mt-0.5">
+      <div className="pointer-events-none absolute inset-x-0 bottom-[84px] z-20 flex justify-center px-4 pb-2">
+        <div
+          className="pointer-events-auto w-full max-w-sm rounded-[22px] bg-[#fdfbf7]/92 backdrop-blur-md border border-black/[0.05] shadow-[0_8px_24px_rgba(0,0,0,0.07)] px-6 py-3.5 text-center"
+        >
+          <p className="text-[16.5px] font-bold text-[#18191f] tracking-tight">
+            Plan a trip to see pandals
+          </p>
+          <p className="text-[13.5px] font-normal text-[#3d3e44] mt-1 leading-snug">
             Pick a start and destination above
           </p>
         </div>

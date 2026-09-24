@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import Layout from './components/Layout';
 import MapBackground from './components/MapBackground';
 import RoutePanel from './components/RoutePanel';
 import RouteSummaryChip from './components/RouteSummaryChip';
 import PandalCarousel from './components/PandalCarousel';
-import BottomTabBar from './components/BottomTabBar';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const MAX_DETOUR_KM = 2.5;
@@ -130,7 +130,7 @@ export default function App() {
   const hasRoute = Boolean(routeData);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#faf7f2]">
+    <Layout activeTab={activeTab} onChangeTab={setActiveTab}>
       {/* Full-screen map background */}
       <MapBackground
         origin={origin}
@@ -165,7 +165,7 @@ export default function App() {
 
       {/* Error toast */}
       {error && (
-        <div className="pointer-events-none absolute inset-x-0 z-40 flex justify-center px-4" style={{ top: '210px' }}>
+        <div className="pointer-events-none absolute inset-x-0 z-40 flex justify-center px-4" style={{ top: '254px' }}>
           <div className="pointer-events-auto rounded-full bg-rose-600 text-white text-xs font-semibold px-4 py-2 shadow-lg animate-fade-in">
             {error}
           </div>
@@ -180,9 +180,6 @@ export default function App() {
         loading={loading}
         hasRoute={hasRoute}
       />
-
-      {/* Bottom tab bar */}
-      <BottomTabBar activeTab={activeTab} onChangeTab={setActiveTab} />
-    </div>
+    </Layout>
   );
 }

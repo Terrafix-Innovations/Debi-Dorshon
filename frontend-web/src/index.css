@@ -15,6 +15,10 @@
   }
 }
 
+.font-bengali {
+  font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
