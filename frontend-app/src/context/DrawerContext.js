@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getPujaGreeting, PUJA_DAYS_2026 } from '../utils/pujaCalendar';
+import { getPujaGreeting, PUJA_DAYS_2026, PUJA_SCHEDULE } from '../utils/pujaCalendar';
 
 const DrawerContext = createContext();
 
@@ -48,6 +48,7 @@ export function DrawerProvider({ children }) {
         setActivePujaDay,
         pujaDays,
         PUJA_DAYS_2026,
+        PUJA_SCHEDULE,
         getPujaGreeting,
       }}
     >

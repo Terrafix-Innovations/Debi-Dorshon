@@ -1,83 +1,23 @@
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-let MapView, Marker, Polyline;
-if (Platform.OS !== 'web') {
-  try {
-    const Maps = require('react-native-maps');
-    MapView = Maps.default;
-    Marker = Maps.Marker;
-    Polyline = Maps.Polyline;
-  } catch (e) {
-    MapView = null;
-  }
-}
+import { View, StyleSheet } from 'react-native';
 import { colors } from '../../theme/colors';
-import { getRegionForCoordinates } from '../../utils/mapHelpers';
+import InteractiveMapView from '../map/InteractiveMapView';
 
 export default function RouteMapView({ source, destination, checkpoints = [], path = [] }) {
-  const pathCoords = path.length
-    ? path.map((p) => ({ latitude: p.lat, longitude: p.lng }))
-    : [source, destination]
-        .filter(Boolean)
-        .map((p) => ({ latitude: p.lat, longitude: p.lng }));
-
-  const region = getRegionForCoordinates(pathCoords);
-
-  if (Platform.OS === 'web') {
-    const srcName = source?.name || 'Kolkata';
-    const destName = destination?.name || '';
-    const query = encodeURIComponent(`${srcName} to ${destName} Kolkata`);
-    const mapUrl = `https://maps.google.com/maps?q=${query}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
-
-    return (
-      <View style={styles.wrap}>
-        <iframe
-          src={mapUrl}
-          width="100%"
-          height="100%"
-          style={{ border: 0, width: '100%', height: '100%' }}
-          loading="lazy"
-          title="Route Google Map"
-        />
-      </View>
-    );
-  }
+  const itinerary = checkpoints.map((cp, idx) => ({
+    step: idx + 1,
+    pandal: cp,
+    detour_distance_km: 0
+  }));
 
   return (
     <View style={styles.wrap}>
-      <MapView style={StyleSheet.absoluteFillObject} initialRegion={region}>
-        {pathCoords.length > 1 && (
-          <Polyline coordinates={pathCoords} strokeColor={colors.secondaryRed} strokeWidth={4} />
-        )}
-
-        {source && (
-          <Marker
-            coordinate={{ latitude: source.lat, longitude: source.lng }}
-            title={source.name}
-            description="Source"
-            pinColor={colors.primaryMaroon}
-          />
-        )}
-
-        {destination && (
-          <Marker
-            coordinate={{ latitude: destination.lat, longitude: destination.lng }}
-            title={destination.name}
-            description="Destination"
-            pinColor={colors.gold}
-          />
-        )}
-
-        {checkpoints.map((cp) => (
-          <Marker
-            key={cp._id || `${cp.lat}-${cp.lng}`}
-            coordinate={{ latitude: cp.lat, longitude: cp.lng }}
-            title={cp.name}
-            description="Checkpoint"
-            pinColor={colors.goldHighlight}
-          />
-        ))}
-      </MapView>
+      <InteractiveMapView
+        origin={source}
+        destination={destination}
+        routePath={path}
+        itinerary={itinerary}
+      />
     </View>
   );
 }

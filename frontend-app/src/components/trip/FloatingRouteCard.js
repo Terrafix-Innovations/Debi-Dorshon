@@ -11,10 +11,15 @@ import {
   Pressable,
   Vibration,
 } from 'react-native';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import Svg, { Path, Circle, G } from 'react-native-svg';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { fetchAutocompletePlaces } from '../../services/routeService';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
+
+const GOLD = '#7C6D28';   // START accent
+const MAROON = '#6E1412'; // DESTINATION accent
+const PINK = '#E8BEC8';   // connector line
 
 export default function FloatingRouteCard({
   startText,
@@ -82,21 +87,45 @@ export default function FloatingRouteCard({
   };
 
   const handleTriggerSwap = () => {
-    try {
-      Vibration.vibrate(30);
-    } catch (e) {}
+    try { Vibration.vibrate(30); } catch (e) {}
     onSwap();
   };
 
   return (
-    <View style={styles.cardContainer}>
+    <View style={styles.cardShell}>
+      {/* Decorative Corner Art Layer */}
+      <View style={styles.cornerArtLayer} pointerEvents="none">
+        {/* Top-Right Golden Floral Vine SVG Motif */}
+        <View style={styles.topRightVine}>
+          <Svg width="72" height="72" viewBox="0 0 80 80" fill="none">
+            <Path d="M80 0 C60 5, 45 20, 42 45 C40 30, 52 14, 80 0 Z" fill="#D9BE94" opacity={0.35} />
+            <Path d="M80 15 C65 20, 55 35, 52 55" stroke="#CAA774" strokeWidth="1.2" strokeLinecap="round" />
+            <Path d="M80 30 C72 34, 66 44, 65 58" stroke="#CAA774" strokeWidth="0.9" strokeLinecap="round" />
+            <Path d="M56 26 C50 20, 52 14, 58 16 C64 18, 62 24, 56 26 Z" fill="#CAA774" opacity={0.4} />
+            <Circle cx="45" cy="50" r="1.5" fill="#CAA774" />
+          </Svg>
+        </View>
+
+        {/* Bottom-Right Maroon & Gold Lotus Petals SVG Motif */}
+        <View style={styles.bottomRightLotus}>
+          <Svg width="72" height="56" viewBox="0 0 80 64" fill="none">
+            <Path d="M80 64 C65 58, 52 48, 48 32 C58 35, 70 46, 80 64 Z" fill="#7A1614" stroke="#D4B27B" strokeWidth="0.8" />
+            <Path d="M80 64 C70 54, 62 42, 60 26 C68 30, 75 42, 80 64 Z" fill="#99201D" stroke="#D4B27B" strokeWidth="0.8" />
+            <Path d="M80 64 C76 50, 72 38, 70 18 C78 26, 80 40, 80 64 Z" fill="#B32824" stroke="#E2C89B" strokeWidth="0.8" />
+            <Path d="M48 48 C42 46, 40 40, 44 38 C48 36, 52 42, 48 48 Z" fill="#CAA774" opacity={0.6} />
+          </Svg>
+        </View>
+      </View>
+
       <View style={styles.cardMainRow}>
-        {/* Left Vertical Timeline Indicator */}
+        {/* Left Timeline Rail: Hollow Gold Ring -> Pink Pill Line -> Solid Maroon Circle Pin */}
         <View style={styles.timelineColumn}>
           <View style={styles.startRing} />
-          <View style={styles.timelineLine} />
-          <View style={styles.destCircle}>
-            <Ionicons name="location" size={9} color="#FFFFFF" />
+          <View style={styles.timelineConnector} />
+          <View style={styles.destCirclePin}>
+            <Svg width="10" height="10" viewBox="0 0 24 24" fill="#FFFFFF">
+              <Path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+            </Svg>
           </View>
         </View>
 
@@ -152,16 +181,23 @@ export default function FloatingRouteCard({
           <TouchableOpacity
             style={styles.swapCircleBtn}
             onPress={handleTriggerSwap}
-            activeOpacity={0.7}
+            activeOpacity={0.75}
           >
-            <MaterialCommunityIcons name="swap-vertical" size={22} color="#7A1515" />
+            <Svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={MAROON} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <Path d="M8 19V5M8 5L4.5 8.5M8 5l3.5 3.5" />
+              <Path d="M16 5v14M16 19l-3.5-3.5M16 19l3.5-3.5" />
+            </Svg>
           </TouchableOpacity>
-
-          {loading && (
-            <ActivityIndicator size="small" color="#7A1515" style={{ marginTop: 6 }} />
-          )}
         </View>
       </View>
+
+      {/* Loading Indicator */}
+      {loading && (
+        <View style={styles.loadingRow}>
+          <ActivityIndicator size="small" color={MAROON} />
+          <Text style={styles.loadingText}>Finding optimal pandal route...</Text>
+        </View>
+      )}
 
       {/* Autocomplete Search Modal */}
       <Modal
@@ -185,7 +221,7 @@ export default function FloatingRouteCard({
               <Ionicons
                 name={activeInput === 'start' ? 'locate' : 'flag'}
                 size={18}
-                color={activeInput === 'start' ? '#8a7a2e' : '#5a1512'}
+                color={activeInput === 'start' ? GOLD : MAROON}
               />
               <TextInput
                 style={styles.searchInput}
@@ -198,7 +234,6 @@ export default function FloatingRouteCard({
               {loadingSuggestions && <ActivityIndicator size="small" color="#903f00" />}
             </View>
 
-            {/* Optional "Use Current Location" Quick Choice for Start */}
             {activeInput === 'start' ? (
               <TouchableOpacity
                 style={styles.currentLocRow}
@@ -250,25 +285,52 @@ export default function FloatingRouteCard({
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    backgroundColor: '#FAF5EB',
-    borderRadius: 22,
+  cardShell: {
+    backgroundColor: '#FEFCF8',
+    borderRadius: 26,
     borderWidth: 1,
-    borderColor: '#EADCC6',
+    borderColor: 'rgba(235, 220, 201, 0.8)',
     paddingVertical: 14,
     paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowColor: '#2D1A16',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    position: 'relative',
+    overflow: 'hidden',
   },
+  cornerArtLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  topRightVine: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 72,
+    height: 72,
+    opacity: 0.45,
+  },
+  bottomRightLotus: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 72,
+    height: 56,
+    opacity: 0.5,
+  },
+
   cardMainRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    zIndex: 10,
   },
 
-  /* Left Timeline Indicator */
+  /* Left Timeline Rail */
   timelineColumn: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -277,26 +339,32 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   startRing: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 17,
+    height: 17,
+    borderRadius: 8.5,
     borderWidth: 3.5,
-    borderColor: '#8A7A2E',
-    backgroundColor: '#FAF5EB',
+    borderColor: GOLD,
+    backgroundColor: '#FDFAF4',
   },
-  timelineLine: {
-    width: 2.5,
-    height: 48,
-    backgroundColor: '#E7BCC6',
+  timelineConnector: {
+    width: 3,
+    height: 44,
+    borderRadius: 1.5,
+    backgroundColor: PINK,
     marginVertical: 4,
   },
-  destCircle: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: '#7A1515',
+  destCirclePin: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: MAROON,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
   },
 
   /* Inputs Column */
@@ -308,35 +376,37 @@ const styles = StyleSheet.create({
   startLabel: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#8A7A2E',
+    color: GOLD,
     letterSpacing: 0.8,
     marginBottom: 4,
   },
   destLabel: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#7A1515',
+    color: MAROON,
     letterSpacing: 0.8,
     marginBottom: 4,
   },
   inputPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0E7D8',
+    backgroundColor: '#F7F2EA',
     borderRadius: 18,
     paddingHorizontal: 14,
     height: 42,
     gap: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(235, 220, 201, 0.6)',
   },
   inputText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 13.5,
     fontWeight: '700',
     color: colors.espresso,
   },
   inputPlaceholder: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 13.5,
     color: '#8A7B6E',
     fontWeight: '500',
   },
@@ -345,35 +415,49 @@ const styles = StyleSheet.create({
   rightActionColumn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 12,
+    paddingLeft: 10,
   },
   verticalDivider: {
     width: 1,
-    height: 90,
-    backgroundColor: '#E8DEC9',
-    marginRight: 12,
+    height: 86,
+    backgroundColor: 'rgba(235, 220, 201, 0.8)',
+    marginRight: 10,
   },
   swapCircleBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#F3E8D7',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FAEEE4',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2D3BE',
+    borderColor: 'rgba(235, 220, 201, 0.8)',
   },
 
-  /* Autocomplete Modal */
+  loadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 10,
+    zIndex: 10,
+  },
+  loadingText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: MAROON,
+  },
+
+  /* Search Modal */
   modalOverlay: {
     flex: 1,
-    backgroundColor: '#00000066',
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
     justifyContent: 'flex-start',
     paddingTop: 80,
     paddingHorizontal: spacing.md,
   },
   searchModalCard: {
-    backgroundColor: '#faf7f2',
+    backgroundColor: '#FAF7F2',
     borderRadius: radius.lg,
     maxHeight: '80%',
     padding: spacing.md,
@@ -389,12 +473,12 @@ const styles = StyleSheet.create({
   searchTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#903f00',
+    color: MAROON,
   },
   searchInputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f2ece1',
+    backgroundColor: '#F2ECE1',
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.goldMuted,
@@ -424,7 +508,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f2ece1',
+    backgroundColor: '#F2ECE1',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -441,7 +525,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   badgeWrap: {
-    backgroundColor: '#f2ece1',
+    backgroundColor: '#F2ECE1',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: radius.pill,

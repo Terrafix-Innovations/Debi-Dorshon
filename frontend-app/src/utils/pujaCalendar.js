@@ -1,59 +1,60 @@
 /**
- * Returns the Bengali Puja greeting based on the current date and time.
- * Durga Puja 2026 Dates in Kolkata:
- * - Maha Tritiya: Oct 14, 2026
- * - Maha Chaturthi: Oct 15, 2026
- * - Maha Panchami: Oct 16, 2026
- * - Maha Sasthi: Oct 17, 2026
- * - Maha Saptami: Oct 18, 2026
- * - Maha Ashtami: Oct 19, 2026
- * - Maha Navami: Oct 20, 2026
- * - Vijaya Dashami: Oct 21, 2026
- * 
- * Anything outside Tritiya to Dashami returns "শুভ শারদীয়া".
+ * Returns the Bengali Puja greeting dynamically based on the current date and time.
+ * Durga Puja Schedule Mapping:
+ * - Tritiya to Vijaya Dashami have specific greetings on their respective dates.
+ * - Any date outside this range returns the timeless general greeting "শুভ শারদীয়া".
  */
+
+export const PUJA_SCHEDULE = {
+  2025: {
+    '09-25': { greeting: 'শুভ তৃতীয়া', english: 'Maha Tritiya' },
+    '09-26': { greeting: 'শুভ চতুর্থী', english: 'Maha Chaturthi' },
+    '09-27': { greeting: 'শুভ পঞ্চমী', english: 'Maha Panchami' },
+    '09-28': { greeting: 'শুভ ষষ্ঠী', english: 'Maha Sasthi' },
+    '09-29': { greeting: 'শুভ সপ্তমী', english: 'Maha Saptami' },
+    '09-30': { greeting: 'শুভ মহাঅষ্টমী', english: 'Maha Ashtami' },
+    '10-01': { greeting: 'শুভ মহানবমী', english: 'Maha Navami' },
+    '10-02': { greeting: 'শুভ বিজয়া', english: 'Vijaya Dashami' },
+  },
+  2026: {
+    '10-13': { greeting: 'শুভ তৃতীয়া', english: 'Maha Tritiya' },
+    '10-14': { greeting: 'শুভ চতুর্থী', english: 'Maha Chaturthi' },
+    '10-15': { greeting: 'শুভ পঞ্চমী', english: 'Maha Panchami' },
+    '10-16': { greeting: 'শুভ ষষ্ঠী', english: 'Maha Shashthi' },
+    '10-17': { greeting: 'শুভ সপ্তমী', english: 'Maha Saptami' },
+    '10-18': { greeting: 'শুভ সপ্তমী', english: 'Maha Saptami' },
+    '10-19': { greeting: 'শুভ মহাঅষ্টমী', english: 'Maha Ashtami' },
+    '10-20': { greeting: 'শুভ মহানবমী', english: 'Maha Navami' },
+    '10-21': { greeting: 'শুভ বিজয়া', english: 'Vijaya Dashami' },
+  },
+};
+
 export function getPujaGreeting(targetDate = new Date()) {
   const date = new Date(targetDate);
   const year = date.getFullYear();
-  const month = date.getMonth(); // 0-indexed: 9 = October
-  const day = date.getDate();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const dateKey = `${month}-${day}`;
 
-  // Durga Puja 2026 Schedule
-  if (year === 2026 && month === 9) {
-    if (day === 14) {
-      return 'শুভ তৃতীয়া';
-    } else if (day === 15) {
-      return 'শুভ চতুর্থী';
-    } else if (day === 16) {
-      return 'শুভ পঞ্চমী';
-    } else if (day === 17) {
-      return 'শুভ ষষ্ঠী';
-    } else if (day === 18) {
-      return 'শুভ সপ্তমী';
-    } else if (day === 19) {
-      return 'শুভ মহাঅষ্টমী';
-    } else if (day === 20) {
-      return 'শুভ মহানবমী';
-    } else if (day === 21) {
-      return 'শুভ বিজয়া';
-    } else {
-      return 'শুভ শারদীয়া';
-    }
+  const yearSchedule = PUJA_SCHEDULE[year];
+  if (yearSchedule && yearSchedule[dateKey]) {
+    return yearSchedule[dateKey].greeting;
   }
 
-  // Default fallback for any other date or before Tritiya
+  // Default fallback for any other date outside key Puja days
   return 'শুভ শারদীয়া';
 }
 
 export const PUJA_DAYS_2026 = [
-  { label: 'শুভ শারদীয়া', date: 'Pre-Puja / General' },
-  { label: 'শুভ তৃতীয়া', date: '14 Oct 2026' },
-  { label: 'শুভ চতুর্থী', date: '15 Oct 2026' },
-  { label: 'শুভ পঞ্চমী', date: '16 Oct 2026' },
-  { label: 'শুভ ষষ্ঠী', date: '17 Oct 2026' },
-  { label: 'শুভ সপ্তমী', date: '18 Oct 2026' },
-  { label: 'শুভ মহাঅষ্টমী', date: '19 Oct 2026' },
-  { label: 'শুভ মহানবমী', date: '20 Oct 2026' },
-  { label: 'শুভ বিজয়া', date: '21 Oct 2026' },
+  { label: 'শুভ শারদীয়া', date: 'Pre-Puja / Post-Puja General' },
+  { label: 'শুভ তৃতীয়া', date: '13 Oct 2026 (Tuesday)' },
+  { label: 'শুভ চতুর্থী', date: '14 Oct 2026 (Wednesday)' },
+  { label: 'শুভ পঞ্চমী', date: '15 Oct 2026 (Thursday)' },
+  { label: 'শুভ ষষ্ঠী', date: '16 Oct 2026 (Friday)' },
+  { label: 'শুভ সপ্তমী', date: '17–18 Oct 2026 (Saturday–Sunday)' },
+  { label: 'শুভ মহাঅষ্টমী', date: '19 Oct 2026 (Monday)' },
+  { label: 'শুভ মহানবমী', date: '20 Oct 2026 (Tuesday)' },
+  { label: 'শুভ বিজয়া', date: '21 Oct 2026 (Wednesday)' },
 ];
+
 

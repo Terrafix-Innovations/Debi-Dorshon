@@ -2,11 +2,11 @@ import React, { forwardRef, useImperativeHandle, useRef, useMemo, useState, useC
 import { View, StyleSheet, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { colors } from '../../theme/colors';
+import { API_BASE_URL } from '../../config/env';
 
 /**
- * InteractiveMapView: Interactive Leaflet map rendered inside a WebView.
- * Uses OpenStreetMap standard tiles (100% free, no API key required, zero watermarks).
- * Supports smooth touch gestures (pan, pinch-to-zoom, tap) and dynamic real-time updates.
+ * InteractiveMapView: Interactive Mapbox map rendered inside a WebView.
+ * Fetches token from backend and mirrors web UI behavior.
  */
 const InteractiveMapView = forwardRef(function InteractiveMapView(
   {
@@ -19,6 +19,9 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     trainStations = [],
     selectedPlace = null,
     onSelectPlace,
+    onMapClick,
+    onUpdateOrigin,
+    onUpdateDestination,
     userCoords = null,
     activeFilter = 'all',
   },
@@ -62,48 +65,62 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       .replace(/>/g, '&gt;');
   };
 
-  // Collect all markers for the Leaflet map
+  // Collect all markers for the Mapbox map.
+  // Popup content mirrors the web UI (frontend-web/src/components/MapBackground.jsx):
+  //   - Origin/Destination -> "Start" / "End" badge + name
+  //   - Pandal (routed)     -> "Stop #N • +X.XX km" badge + name + region/cluster + metro
   const allMarkers = useMemo(() => {
     const markers = [];
 
-    // Origin
+    // Origin (Start pin, matches web 'S')
     if (origin && typeof origin.latitude === 'number' && typeof origin.longitude === 'number') {
       markers.push({
         lat: origin.latitude,
         lng: origin.longitude,
         type: 'origin',
-        label: 'A',
-        name: escapeText(origin.name || 'Origin'),
-        area: escapeText(origin.area || ''),
+        label: 'S',
+        badge: 'Start',
+        name: escapeText(origin.name || origin.title || 'Start Point'),
+        sub: escapeText(origin.area || ''),
       });
     }
 
-    // Destination
+    // Destination (End pin, matches web 'E')
     if (destination && typeof destination.latitude === 'number' && typeof destination.longitude === 'number') {
       markers.push({
         lat: destination.latitude,
         lng: destination.longitude,
         type: 'destination',
-        label: 'B',
-        name: escapeText(destination.name || 'Destination'),
-        area: escapeText(destination.area || ''),
+        label: 'E',
+        badge: 'End',
+        name: escapeText(destination.name || destination.title || 'End Point'),
+        sub: escapeText(destination.area || ''),
       });
     }
 
-    // Itinerary pandals (when route is calculated)
+    // Itinerary pandals (when a route is calculated) — full web-style popup
     if (showPandals && itinerary.length > 0) {
       itinerary.forEach((item, idx) => {
         const p = item.pandal || item;
         const lat = p.location?.latitude ?? p.lat;
         const lng = p.location?.longitude ?? p.lng;
         if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) return;
+        const step = item.step ?? idx + 1;
+        const detour = typeof item.detour_distance_km === 'number' ? item.detour_distance_km : null;
+        const region = p.region || 'Kolkata';
+        const cluster = p.cluster || '';
+        const sub = cluster ? `${region} \u2022 ${cluster}` : region;
+        const metroName = p.nearest_metro?.name || '';
         markers.push({
           lat,
           lng,
           type: 'pandal',
-          label: String(item.step || idx + 1),
+          label: String(step),
+          step,
+          badge: detour != null ? `Stop #${step} \u2022 +${detour.toFixed(2)} km` : `Stop #${step}`,
           name: escapeText(p.name || `Pandal ${idx + 1}`),
-          area: escapeText(p.cluster || p.area || p.region || ''),
+          sub: escapeText(sub),
+          metro: escapeText(metroName),
           raw: p,
         });
       });
@@ -115,13 +132,19 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         const lat = p.location?.latitude ?? p.lat;
         const lng = p.location?.longitude ?? p.lng;
         if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) return;
+        const region = p.region || 'Kolkata';
+        const cluster = p.cluster || '';
+        const sub = cluster ? `${region} \u2022 ${cluster}` : region;
+        const metroName = p.nearest_metro?.name || '';
         markers.push({
           lat,
           lng,
           type: 'pandal',
           label: '',
+          badge: 'Pandal',
           name: escapeText(p.name || `Pandal ${idx + 1}`),
-          area: escapeText(p.cluster || p.area || p.region || ''),
+          sub: escapeText(sub),
+          metro: escapeText(metroName),
           raw: p,
         });
       });
@@ -138,8 +161,9 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           lng,
           type: 'metro',
           label: 'M',
+          badge: 'Metro Station',
           name: escapeText(m.name || 'Metro Station'),
-          area: escapeText(m.line ? `${m.line} Line` : 'Metro'),
+          sub: escapeText(m.line ? `${m.line} Line` : 'Metro'),
           raw: m,
         });
       });
@@ -156,8 +180,9 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           lng,
           type: 'train',
           label: 'T',
+          badge: 'Train Station',
           name: escapeText(t.name || 'Train Station'),
-          area: escapeText(t.zone || 'Railway'),
+          sub: escapeText(t.zone || 'Railway'),
           raw: t,
         });
       });
@@ -166,8 +191,8 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     return markers;
   }, [origin, destination, itinerary, pandals, metroStations, trainStations, showPandals, showMetro, showTrain]);
 
-  // Build route path for Leaflet polyline
-  const leafletPath = useMemo(() => {
+  // Build route path for Mapbox polyline
+  const mapPath = useMemo(() => {
     return pathCoords.map((p) => [p.latitude, p.longitude]);
   }, [pathCoords]);
 
@@ -222,8 +247,8 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     animateToRegion: (region) => {
       if (webRef.current) {
         webRef.current.injectJavaScript(`
-          if (window._map && window._map.flyTo) {
-            window._map.flyTo([${region.latitude}, ${region.longitude}], 15, { duration: 0.6 });
+          if (window._map) {
+            window._map.flyTo({ center: [${region.longitude}, ${region.latitude}], zoom: 15.5, duration: 800 });
           }
           true;
         `);
@@ -231,10 +256,12 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     },
     fitToCoordinates: (coords) => {
       if (webRef.current && coords && coords.length > 0) {
-        const bounds = JSON.stringify(coords.map((c) => [c.latitude ?? c.lat, c.longitude ?? c.lng]));
+        const rawCoords = coords.map((c) => [c.longitude ?? c.lng, c.latitude ?? c.lat]);
         webRef.current.injectJavaScript(`
-          if (window._map && window._map.fitBounds) {
-            window._map.fitBounds(${bounds}, { padding: [60, 60], maxZoom: 16 });
+          if (window._map && window.mapboxgl) {
+            const pts = ${JSON.stringify(rawCoords)};
+            const bounds = pts.reduce((b, c) => b.extend(c), new mapboxgl.LngLatBounds(pts[0], pts[0]));
+            window._map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
           }
           true;
         `);
@@ -250,24 +277,60 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         webRef.current.injectJavaScript(`if (window._map) window._map.zoomOut(); true;`);
       }
     },
+    highlightStep: (step) => {
+      if (webRef.current) {
+        webRef.current.injectJavaScript(`if (window.highlightStep) window.highlightStep(${step == null ? 'null' : step}); true;`);
+      }
+    },
   }));
 
-  // Handle messages from Leaflet webview
+  // Mirror the web "active pandal focus": when the selected place changes,
+  // highlight the matching pin and fly to it inside the WebView.
+  useEffect(() => {
+    if (!webRef.current) return;
+    let step = null;
+    if (selectedPlace) {
+      if (typeof selectedPlace.step !== 'undefined') {
+        step = selectedPlace.step;
+      } else {
+        const selId = selectedPlace.id || selectedPlace._id;
+        const match = itinerary.find((item) => {
+          const p = item.pandal || item;
+          return (p.id || p._id) && (p.id || p._id) === selId;
+        });
+        if (match) step = match.step;
+      }
+    }
+    webRef.current.injectJavaScript(`if (window.highlightStep) window.highlightStep(${step == null ? 'null' : step}); true;`);
+  }, [selectedPlace, itinerary]);
+
+  // Handle messages from Mapbox webview
   const handleMessage = useCallback((event) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
       if (data.type === 'marker_click' && onSelectPlace) {
         onSelectPlace(data.place?.raw || data.place);
+      } else if (data.type === 'map_click') {
+        // Handle map click to add locations
+        if (onMapClick) {
+          onMapClick(data.lat, data.lng);
+        }
+      } else if (data.type === 'marker_drag') {
+        if (data.markerType === 'origin' && onUpdateOrigin) {
+          onUpdateOrigin(data.lat, data.lng);
+        } else if (data.markerType === 'destination' && onUpdateDestination) {
+          onUpdateDestination(data.lat, data.lng);
+        }
       }
     } catch (e) {}
-  }, [onSelectPlace]);
+  }, [onSelectPlace, onMapClick, onUpdateOrigin, onUpdateDestination]);
 
-  // Build the complete Leaflet HTML with embedded data
-  const leafletHtml = useMemo(() => {
-    const pathJson = JSON.stringify(leafletPath);
+  // Build the complete Mapbox HTML with embedded data
+  const mapboxHtml = useMemo(() => {
+    const pathJson = JSON.stringify(pathCoords.map(p => [p.longitude, p.latitude]));
     const markersJson = JSON.stringify(allMarkers);
-    const stylesJson = JSON.stringify(markerStyles);
-    const userJson = userCoords ? JSON.stringify([userCoords.latitude, userCoords.longitude]) : 'null';
+    const userJson = userCoords ? JSON.stringify([userCoords.longitude, userCoords.latitude]) : 'null';
+    const cleanBase = (API_BASE_URL || 'http://localhost:8000').trim().replace(/\/+$/, '');
 
     return `
       <!DOCTYPE html>
@@ -275,8 +338,8 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
+        <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body {
@@ -284,129 +347,292 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
             height: 100%;
             overflow: hidden;
             background: #FAF2E4;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
           }
           #map {
             width: 100%;
             height: 100%;
             background: #FAF2E4;
-            touch-action: pan-x pan-y pinch-zoom;
           }
-          .map-pin {
-            font-weight: 900;
-            font-size: 11px;
-            width: 28px;
-            height: 28px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-            text-align: center;
-            line-height: 28px;
-            cursor: pointer;
-            user-select: none;
+          
+          /* Custom Pins matching Web UI (frontend-web/src/index.css) */
+          .custom-pin-wrapper { cursor: pointer; }
+
+          .pin-s {
+            width: 34px; height: 34px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            background: #ecfdf5; color: #065f46;
+            border: 2px solid #059669;
+            box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3), 0 2px 4px rgba(0,0,0,0.12);
+            font-size: 12px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
           }
+          .pin-s > span { transform: rotate(45deg); }
+
+          .pin-e {
+            width: 34px; height: 34px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            background: #fff1f2; color: #9f1239;
+            border: 2px solid #e11d48;
+            box-shadow: 0 6px 16px rgba(225, 29, 72, 0.3), 0 2px 4px rgba(0,0,0,0.12);
+            font-size: 12px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+          .pin-e > span { transform: rotate(45deg); }
+
+          .pin-pandal {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: #b45309; color: #ffffff;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(180, 83, 9, 0.4), 0 2px 6px rgba(0,0,0,0.18);
+            font-size: 12px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+          .pin-pandal.active-pin {
+            background: #903f00;
+            transform: scale(1.28);
+            box-shadow: 0 0 0 6px rgba(144, 63, 0, 0.22), 0 6px 16px rgba(0,0,0,0.28);
+            z-index: 1000 !important;
+          }
+
+          /* Hover / press feedback (matches web) */
+          .pin-s:active, .pin-e:active { transform: scale(1.12) rotate(-45deg); }
+          .pin-pandal:active { transform: scale(1.16); }
+          @media (hover: hover) {
+            .pin-s:hover, .pin-e:hover { transform: scale(1.12) rotate(-45deg); }
+            .pin-pandal:hover { transform: scale(1.16); }
+          }
+
+          /* Mapbox Popup Styling (matches web) */
+          .mapboxgl-popup-content {
+            background: #ffffff !important;
+            color: #1b1c1a !important;
+            border-radius: 14px !important;
+            border: 1px solid #ddc1b3 !important;
+            box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.15), 0 8px 12px -6px rgba(0, 0, 0, 0.1) !important;
+            padding: 12px 14px !important;
+            overflow: hidden !important;
+          }
+          .mapboxgl-popup-tip {
+            border-top-color: #ffffff !important;
+            border-bottom-color: #ffffff !important;
+          }
+
+          .popup { min-width: 150px; }
+          .popup-badge {
+            font-size: 10px; color: #78716c; text-transform: uppercase;
+            letter-spacing: 0.05em; font-weight: 700; margin-bottom: 3px;
+          }
+          .popup-title { font-size: 14px; color: #1c1917; font-weight: 700; margin-bottom: 2px; }
+          .popup-sub { font-size: 12px; color: #78716c; font-weight: 400; }
+          .popup-metro { font-size: 12px; color: #4338ca; font-weight: 500; margin-top: 4px; }
         </style>
       </head>
       <body>
         <div id="map"></div>
         <script>
-          // Initialize map with touch gestures enabled
-          var map = L.map('map', {
-            zoomControl: false,
-            attributionControl: false,
-            dragging: true,
-            touchZoom: true,
-            tap: true,
-            tapTolerance: 15,
-            doubleClickZoom: true,
-            scrollWheelZoom: true,
-          }).setView([${mapCenter.lat}, ${mapCenter.lng}], ${mapCenter.zoom});
-          window._map = map;
+          const KOLKATA_CENTER = [88.3639, 22.5726];
+          let map;
+          let isDragging = false;
+          let pandalMarkers = [];
 
-          // Free OpenStreetMap Standard Tiles (No API key needed, zero watermark)
-          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-          }).addTo(map);
+          async function init() {
+            let token = null;
+            try {
+              const res = await fetch('${cleanBase}/api/v1/route/config');
+              if (res.ok) {
+                const cfg = await res.json();
+                if (cfg.mapbox_configured && cfg.mapbox_token) {
+                  token = cfg.mapbox_token;
+                }
+              }
+            } catch (err) {}
 
-          // Force invalidateSize so Leaflet immediately measures container dimensions
-          setTimeout(function() { map.invalidateSize(); }, 100);
-          setTimeout(function() { map.invalidateSize(); }, 350);
-          setTimeout(function() { map.invalidateSize(); }, 700);
+            if (token) mapboxgl.accessToken = token;
 
-          // Layer groups
-          var routeLayer = L.featureGroup().addTo(map);
-          var markersLayer = L.featureGroup().addTo(map);
-          var userLayer = L.featureGroup().addTo(map);
+            const mapStyle = token
+              ? 'mapbox://styles/mapbox/streets-v12'
+              : {
+                  version: 8,
+                  sources: {
+                    'voyager-tiles': {
+                      type: 'raster',
+                      tiles: [
+                        'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+                        'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+                        'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+                      ],
+                      tileSize: 256,
+                      attribution: '&copy; CartoDB &copy; OpenStreetMap',
+                    },
+                  },
+                  layers: [{ id: 'voyager-base', type: 'raster', source: 'voyager-tiles', minzoom: 0, maxzoom: 19 }],
+                };
 
-          // Global update function
-          window.updateMapData = function(pathPoints, markers, styles, userCoords) {
-            // 1. Update polyline
-            routeLayer.clearLayers();
-            if (pathPoints && pathPoints.length > 1) {
-              L.polyline(pathPoints, { color: '#5C0F0F', weight: 7, opacity: 0.85 }).addTo(routeLayer);
-              L.polyline(pathPoints, { color: '#8B1A1A', weight: 4, opacity: 1.0 }).addTo(routeLayer);
+            map = new mapboxgl.Map({
+              container: 'map',
+              style: mapStyle,
+              center: KOLKATA_CENTER,
+              zoom: 12.5,
+              attributionControl: false,
+            });
+            window._map = map;
+
+            map.on('click', (e) => {
+              if (isDragging) return;
+              const target = e.originalEvent?.target;
+              if (target && (target.closest('.custom-pin-wrapper') || target.closest('.mapboxgl-marker'))) return;
+              if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'map_click', lat: e.lngLat.lat, lng: e.lngLat.lng }));
+              }
+            });
+
+            map.on('load', () => {
+              updateData(${pathJson}, ${markersJson}, ${userJson});
+            });
+          }
+
+          function createPinElement(type, label = '', isActive = false) {
+            const el = document.createElement('div');
+            el.className = 'custom-pin-wrapper';
+            if (type === 'pandal') {
+              el.innerHTML = '<div class="pin-pandal ' + (isActive ? 'active-pin' : '') + '">' + label + '</div>';
+            } else if (type === 'origin') {
+              el.innerHTML = '<div class="pin-s"><span>' + (label || 'S') + '</span></div>';
+            } else if (type === 'destination') {
+              el.innerHTML = '<div class="pin-e"><span>' + (label || 'E') + '</span></div>';
+            } else {
+              el.innerHTML = '<div class="pin-pandal">' + label + '</div>';
+            }
+            return el;
+          }
+
+          function updateData(pathPoints, markers, userCoords) {
+            if (!map) return;
+
+            // Route Path — layered corridor matching the web UI (glow + casing + core)
+            if (map.getSource('route')) {
+              map.getSource('route').setData({
+                type: 'Feature',
+                geometry: { type: 'LineString', coordinates: pathPoints }
+              });
+            } else if (pathPoints && pathPoints.length > 0) {
+              map.addSource('route', {
+                type: 'geojson',
+                data: { type: 'Feature', geometry: { type: 'LineString', coordinates: pathPoints } }
+              });
+              map.addLayer({
+                id: 'route-glow', type: 'line', source: 'route',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: { 'line-color': '#fed7aa', 'line-width': 10, 'line-opacity': 0.7 }
+              });
+              map.addLayer({
+                id: 'route-casing', type: 'line', source: 'route',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: { 'line-color': '#903f00', 'line-width': 4.5, 'line-opacity': 0.95 }
+              });
+              map.addLayer({
+                id: 'route-core', type: 'line', source: 'route',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: { 'line-color': '#ffedd5', 'line-width': 1.5 }
+              });
             }
 
-            // 2. Update markers
-            markersLayer.clearLayers();
-            if (markers && markers.length > 0) {
-              markers.forEach(function(m) {
-                var s = styles[m.type] || styles.pandal;
-                var html = '<div class="map-pin" style="background:' + s.bg + ';color:' + s.color + ';border-color:' + s.border + ';">' + (m.label || '⚘') + '</div>';
-                var icon = L.divIcon({ className: '', html: html, iconSize: [28, 28], iconAnchor: [14, 14] });
-                var marker = L.marker([m.lat, m.lng], { icon: icon }).addTo(markersLayer);
-                
-                var popupContent = '<b>' + m.name + '</b>' + (m.area ? '<br/><span style="font-size:11px;color:#666;">' + m.area + '</span>' : '');
-                marker.bindPopup(popupContent);
+            // Markers
+            pandalMarkers.forEach(m => m.remove());
+            pandalMarkers = [];
 
-                marker.on('click', function() {
+            const bounds = new mapboxgl.LngLatBounds();
+
+            markers.forEach(m => {
+              const el = createPinElement(m.type, m.label);
+              const badge = m.badge || m.type;
+              const popupHtml = '<div class="popup">' +
+                '<div class="popup-badge">' + badge + '</div>' +
+                '<div class="popup-title">' + m.name + '</div>' +
+                (m.sub ? '<div class="popup-sub">' + m.sub + '</div>' : '') +
+                (m.metro ? '<div class="popup-metro">\uD83D\uDE87 ' + m.metro + '</div>' : '') +
+                '</div>';
+
+              const marker = new mapboxgl.Marker({ 
+                element: el, 
+                draggable: (m.type === 'origin' || m.type === 'destination') 
+              })
+                .setLngLat([m.lng, m.lat])
+                .setPopup(new mapboxgl.Popup({ offset: 22, closeButton: false }).setHTML(popupHtml))
+                .addTo(map);
+
+              if (typeof m.step !== 'undefined') marker._step = m.step;
+
+              if (m.type === 'origin' || m.type === 'destination') {
+                marker.on('dragstart', () => { isDragging = true; });
+                marker.on('dragend', () => {
+                  const pos = marker.getLngLat();
                   if (window.ReactNativeWebView) {
-                    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'marker_click', place: m }));
+                    window.ReactNativeWebView.postMessage(JSON.stringify({ 
+                      type: 'marker_drag', 
+                      markerType: m.type, 
+                      lat: pos.lat, 
+                      lng: pos.lng 
+                    }));
                   }
+                  setTimeout(() => { isDragging = false; }, 200);
                 });
+              }
+
+              el.addEventListener('click', () => {
+                if (window.ReactNativeWebView) {
+                  window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'marker_click', place: m }));
+                }
               });
+
+              pandalMarkers.push(marker);
+              bounds.extend([m.lng, m.lat]);
+            });
+
+            if (userCoords) {
+              bounds.extend(userCoords);
             }
 
-            // 3. Update user location
-            userLayer.clearLayers();
-            if (userCoords && userCoords.length === 2) {
-              var userIcon = L.divIcon({
-                className: '',
-                html: '<div style="width:14px;height:14px;border-radius:7px;background:#4285F4;border:3px solid #fff;box-shadow:0 0 8px rgba(66,133,244,0.6);"></div>',
-                iconSize: [14, 14],
-                iconAnchor: [7, 7]
-              });
-              L.marker(userCoords, { icon: userIcon, zIndexOffset: 1000 }).addTo(userLayer)
-                .bindPopup('<b>Your Location</b>');
+            if (!bounds.isEmpty()) {
+              map.fitBounds(bounds, { padding: 50, maxZoom: 15, duration: 1000 });
             }
+          }
 
-            // 4. Auto-fit bounds
-            if (pathPoints && pathPoints.length > 1) {
-              map.fitBounds(pathPoints, { padding: [60, 60], maxZoom: 16 });
-            } else if (markers && markers.length > 1) {
-              var pts = [];
-              markers.forEach(function(m) { pts.push([m.lat, m.lng]); });
-              map.fitBounds(pts, { padding: [60, 60], maxZoom: 16 });
-            }
+          // Highlight a pandal pin by its step number and fly to it (mirrors web active-pin focus)
+          window.highlightStep = function (step) {
+            pandalMarkers.forEach((mk) => {
+              const inner = mk.getElement().querySelector('.pin-pandal');
+              if (!inner) return;
+              if (step != null && mk._step === step) {
+                inner.classList.add('active-pin');
+                if (map) map.flyTo({ center: mk.getLngLat(), zoom: 15.5, duration: 800 });
+                if (mk.getPopup() && !mk.getPopup().isOpen()) mk.togglePopup();
+              } else {
+                inner.classList.remove('active-pin');
+              }
+            });
           };
 
-          // Render immediately on load
-          window.updateMapData(${pathJson}, ${markersJson}, ${stylesJson}, ${userJson});
+          init();
         </script>
       </body>
       </html>
     `;
-  }, [mapCenter, leafletPath, allMarkers, markerStyles, userCoords]);
+  }, [pathCoords, allMarkers, userCoords]);
 
   // On Web, use iframe
   if (Platform.OS === 'web') {
     return (
       <View style={styles.container}>
         <iframe
-          srcDoc={leafletHtml}
+          srcDoc={mapboxHtml}
           width="100%"
           height="100%"
           style={{ border: 0, width: '100%', height: '100%' }}
@@ -427,7 +653,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       <WebView
         ref={webRef}
         key={`map_route_${routePath?.length > 0 ? 'active' : 'idle'}_${activeFilter}`}
-        source={{ html: leafletHtml }}
+        source={{ html: mapboxHtml }}
         style={styles.webView}
         originWhitelist={['*']}
         javaScriptEnabled={true}
@@ -442,17 +668,6 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         mixedContentMode="always"
         nestedScrollEnabled={true}
         onMessage={handleMessage}
-        onLoadEnd={() => {
-          if (webRef.current) {
-            webRef.current.injectJavaScript(`
-              if (window._map) {
-                window._map.invalidateSize();
-                ${leafletPath.length > 1 ? `window._map.fitBounds(${JSON.stringify(leafletPath)}, { padding: [60, 60], maxZoom: 16 });` : ''}
-              }
-              true;
-            `);
-          }
-        }}
       />
     </View>
   );
