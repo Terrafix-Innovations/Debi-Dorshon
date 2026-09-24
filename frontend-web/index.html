@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Debi Dorshon | Sacred Route & Pandal Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+    <!-- Tailwind CSS with Stitch Design System Tokens -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#903f00",
+              "primary-container": "#b45309",
+              "on-primary": "#ffffff",
+              "on-primary-container": "#fff1eb",
+              "primary-fixed": "#ffdbca",
+              "on-primary-fixed": "#331200",
+              "secondary": "#565e74",
+              "secondary-container": "#dae2fd",
+              "on-secondary": "#ffffff",
+              "on-secondary-container": "#5c647a",
+              "tertiary": "#854600",
+              "tertiary-container": "#a95b00",
+              "on-tertiary": "#ffffff",
+              "surface": "#fbf9f5",
+              "surface-bright": "#fbf9f5",
+              "surface-dim": "#dbdad6",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f5f3ef",
+              "surface-container": "#f0eeea",
+              "surface-container-high": "#eae8e4",
+              "surface-container-highest": "#e4e2de",
+              "background": "#fbf9f5",
+              "on-surface": "#1b1c1a",
+              "on-surface-variant": "#564338",
+              "outline": "#897267",
+              "outline-variant": "#ddc1b3"
+            },
+            fontFamily: {
+              "headline": ["Playfair Display", "serif"],
+              "body": ["Plus Jakarta Sans", "sans-serif"],
+              "mono": ["JetBrains Mono", "monospace"]
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-background text-on-surface font-body antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
