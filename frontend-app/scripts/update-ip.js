@@ -47,7 +47,13 @@ function updateEnv(ip) {
 
   if (regex.test(content)) {
     const oldMatch = content.match(regex)[0];
-    const oldUrl = oldMatch.split('=')[1];
+    const oldUrl = oldMatch.substring('EXPO_PUBLIC_API_BASE_URL='.length).trim();
+
+    // If configured to use an online HTTPS URL (e.g., Render), don't overwrite with local Wi-Fi IP
+    if (oldUrl && (oldUrl.startsWith('https://') || oldUrl.includes('.onrender.com'))) {
+      console.log(`ℹ️ Preserving deployed remote API URL: ${oldUrl}`);
+      return;
+    }
 
     if (oldUrl === newUrl) {
       console.log(`✅ API URL already up-to-date: ${newUrl}`);
