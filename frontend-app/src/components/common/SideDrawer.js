@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, memo } from 'react';
 import {
   View,
   Text,
   Image,
+  ImageBackground,
   StyleSheet,
   Pressable,
   Modal,
@@ -21,7 +22,7 @@ import { colors } from '../../theme/colors';
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = Math.min(width * 0.84, 330);
 
-const triggerHaptic = (ms = 12) => {
+const triggerHaptic = (ms = 8) => {
   try {
     Vibration.vibrate(ms);
   } catch (e) { }
@@ -30,7 +31,7 @@ const triggerHaptic = (ms = 12) => {
 // --- Custom SVGs matching the new design ---
 
 // 1. Golden Three-Petal Lotus / Leaf Ornament
-function FloralOrnament({ size = 18, color = '#C8A86B' }) {
+const FloralOrnament = memo(function FloralOrnament({ size = 18, color = '#C8A86B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       {/* Central petal */}
@@ -53,10 +54,10 @@ function FloralOrnament({ size = 18, color = '#C8A86B' }) {
       <Path d="M12 17 L12 21" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
     </Svg>
   );
-}
+});
 
 // 3. Plan Your Trip Custom Icon (Two map pins with dashed route trail)
-function PlanTripIcon({ size = 20, color = '#7A1614' }) {
+const PlanTripIcon = memo(function PlanTripIcon({ size = 20, color = '#7A1614' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M5 14 C3.9 14, 3 14.9, 3 16 C3 18, 5 21, 5 21 S7 18, 7 16 C7 14.9, 6.1 14, 5 14 Z" />
@@ -66,10 +67,10 @@ function PlanTripIcon({ size = 20, color = '#7A1614' }) {
       <Circle cx="19" cy="5" r="0.8" fill={color} />
     </Svg>
   );
-}
+});
 
 // 4. My Trips Custom Icon (Temple / Domed Pavilion Heritage Structure)
-function MyTripsIcon({ size = 20, color = '#7A1614' }) {
+const MyTripsIcon = memo(function MyTripsIcon({ size = 20, color = '#7A1614' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M12 2 L12 4" />
@@ -84,10 +85,10 @@ function MyTripsIcon({ size = 20, color = '#7A1614' }) {
       <Line x1="2" y1="22" x2="22" y2="22" />
     </Svg>
   );
-}
+});
 
 // 5. Kolkata Skyline Line Art Illustration (Howrah Bridge + Victoria Memorial + Birds + Corner Motif)
-function KolkataSkyline({ strokeColor = '#CAA774' }) {
+const KolkataSkyline = memo(function KolkataSkyline({ strokeColor = '#CAA774' }) {
   return (
     <View style={styles.skylineWrap}>
       <Svg width="100%" height={70} viewBox="0 0 300 70" fill="none">
@@ -160,54 +161,106 @@ function KolkataSkyline({ strokeColor = '#CAA774' }) {
       </View>
     </View>
   );
-}
+});
+
+const MENU_ITEMS = [
+  {
+    label: 'Profile',
+    icon: 'person-outline',
+    screen: 'Profile',
+  },
+  {
+    label: 'Plan Your Trip',
+    customIcon: () => <PlanTripIcon size={21} color="#7A1614" />,
+    screen: 'Trip',
+  },
+  {
+    label: 'My Trips',
+    customIcon: () => <MyTripsIcon size={21} color="#7A1614" />,
+    screen: 'Trip',
+  },
+  {
+    label: 'Nearby Pandals',
+    icon: 'location-outline',
+    screen: 'Navigation',
+  },
+  {
+    label: 'Recommendations',
+    icon: 'star-outline',
+    screen: 'Recommendations',
+  },
+  {
+    label: 'Contact Us',
+    icon: 'chatbubble-ellipses-outline',
+    screen: 'Contact',
+  },
+  {
+    label: 'About Us',
+    icon: 'information-circle-outline',
+    screen: 'About',
+  },
+  {
+    label: 'Privacy Policy',
+    icon: 'shield-checkmark-outline',
+    screen: 'PrivacyPolicy',
+  },
+];
 
 // --- Main SideDrawer Component ---
 
 export default function SideDrawer({ navigation }) {
   const { isDrawerOpen, closeDrawer } = useDrawer();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (isDrawerOpen) {
+      setModalVisible(true);
+      slideAnim.setValue(-DRAWER_WIDTH);
+      fadeAnim.setValue(0);
+
       Animated.parallel([
-        Animated.timing(slideAnim, {
+        Animated.spring(slideAnim, {
           toValue: 0,
-          duration: 250,
+          damping: 24,
+          mass: 0.75,
+          stiffness: 260,
+          overshootClamping: true,
+          restDisplacementThreshold: 0.01,
+          restSpeedThreshold: 0.01,
           useNativeDriver: true,
         }),
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 250,
+          duration: 180,
           useNativeDriver: true,
         }),
       ]).start();
-    } else {
-      slideAnim.setValue(-DRAWER_WIDTH);
-      fadeAnim.setValue(0);
+    } else if (modalVisible) {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: -DRAWER_WIDTH,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setModalVisible(false);
+      });
     }
   }, [isDrawerOpen]);
 
-  if (!isDrawerOpen) return null;
+  if (!isDrawerOpen && !modalVisible) return null;
 
   const handleClose = () => {
-    triggerHaptic(12);
-    Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: -DRAWER_WIDTH,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      closeDrawer();
-    });
+    triggerHaptic(8);
+    closeDrawer();
   };
 
   const navigateTo = (screenName, params = {}) => {
@@ -217,55 +270,14 @@ export default function SideDrawer({ navigation }) {
     }
   };
 
-  const menuItems = [
-    {
-      label: 'Profile',
-      icon: 'person-outline',
-      screen: 'Profile',
-    },
-    {
-      label: 'Plan Your Trip',
-      customIcon: () => <PlanTripIcon size={21} color="#7A1614" />,
-      screen: 'Trip',
-    },
-    {
-      label: 'My Trips',
-      customIcon: () => <MyTripsIcon size={21} color="#7A1614" />,
-      screen: 'Trip',
-    },
-    {
-      label: 'Nearby Pandals',
-      icon: 'location-outline',
-      screen: 'Navigation',
-    },
-    {
-      label: 'Recommendations',
-      icon: 'star-outline',
-      screen: 'Recommendations',
-    },
-    {
-      label: 'Contact Us',
-      icon: 'chatbubble-ellipses-outline',
-      screen: 'Contact',
-    },
-    {
-      label: 'About Us',
-      icon: 'information-circle-outline',
-      screen: 'About',
-    },
-    {
-      label: 'Privacy Policy',
-      icon: 'shield-checkmark-outline',
-      screen: 'PrivacyPolicy',
-    },
-  ];
-
   return (
     <Modal
       transparent
-      visible={isDrawerOpen}
+      visible={modalVisible}
       animationType="none"
       onRequestClose={handleClose}
+      hardwareAccelerated
+      statusBarTranslucent
     >
       <View style={styles.overlay}>
         {/* Semi-transparent dark backdrop */}
@@ -280,7 +292,13 @@ export default function SideDrawer({ navigation }) {
             { transform: [{ translateX: slideAnim }] },
           ]}
         >
-          <SafeAreaView style={styles.safeArea}>
+          <ImageBackground
+            source={require('../../../assets/kolkata_vintage_map.jpg')}
+            style={styles.drawerBg}
+            imageStyle={styles.drawerBgImage}
+          >
+            <View style={styles.drawerFrostedOverlay} />
+            <SafeAreaView style={styles.safeArea}>
             {/* Top Brand Header: Logo + Bengali Text + Close Button */}
             <View style={styles.topHeader}>
               <View style={styles.brandRow}>
@@ -319,7 +337,7 @@ export default function SideDrawer({ navigation }) {
               showsVerticalScrollIndicator={false}
               bounces={false}
             >
-              {menuItems.map((item, idx) => (
+              {MENU_ITEMS.map((item, idx) => (
                 <Pressable
                   key={idx}
                   style={({ pressed }) => [
@@ -327,7 +345,7 @@ export default function SideDrawer({ navigation }) {
                     pressed && styles.menuItemPressed,
                   ]}
                   onPress={() => {
-                    triggerHaptic(12);
+                    triggerHaptic(8);
                     navigateTo(item.screen);
                   }}
                 >
@@ -352,6 +370,7 @@ export default function SideDrawer({ navigation }) {
               <KolkataSkyline strokeColor="#CAA774" />
             </View>
           </SafeAreaView>
+          </ImageBackground>
         </Animated.View>
       </View>
     </Modal>
@@ -379,6 +398,19 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
     elevation: 16,
     overflow: 'hidden',
+  },
+  drawerBg: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  drawerBgImage: {
+    opacity: 0.12,
+    resizeMode: 'cover',
+  },
+  drawerFrostedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(250, 245, 237, 0.90)',
   },
   safeArea: {
     flex: 1,

@@ -38,6 +38,19 @@ class Settings(BaseSettings):
     # Optional Mapbox Access Token (kept securely on backend)
     MAPBOX_ACCESS_TOKEN: Optional[str] = None
 
+    # Google OAuth 2.0 Credentials
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    GOOGLE_ANDROID_CLIENT_ID: Optional[str] = None
+    GOOGLE_IOS_CLIENT_ID: Optional[str] = None
+
+    # JWT Authentication & User Sandboxing (Permanent non-expiring sessions)
+    JWT_SECRET_KEY: str = "default_insecure_key_override_in_env"
+    JWT_ALGORITHM: str = "HS256"
+    USER_COLLECTION_NAME: str = "users"
+    TRIP_COLLECTION_NAME: str = "user_trips"
+    FAVORITE_COLLECTION_NAME: str = "user_favorites"
+
     # Redis & Caching Settings
     REDIS_URL: Optional[str] = "redis://localhost:6379/0"
     CACHE_TTL_TRANSIT: int = 3600        # 1 hour for station lists

@@ -10,6 +10,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
+import ScreenBackground from '../../components/common/ScreenBackground';
 import { fetchPandals } from '../../services/pandalService';
 import { fetchMapConfig } from '../../services/routeService';
 import { colors } from '../../theme/colors';
@@ -73,25 +74,27 @@ export default function RouteScreen({ navigation }) {
       <HeaderNavbar navigation={navigation} title="Navigation Map" />
       <SideDrawer navigation={navigation} />
 
-      <View style={styles.container}>
-        {renderBanner()}
+      <ScreenBackground>
+        <View style={styles.container}>
+          {renderBanner()}
 
-        <View style={styles.mapWrap}>
-          <InteractiveMapView
-            pandals={mappablePandals}
-            onSelectPlace={(place) => {
-              // Handle place selection if needed
-            }}
-          />
+          <View style={styles.mapWrap}>
+            <InteractiveMapView
+              pandals={mappablePandals}
+              onSelectPlace={(place) => {
+                // Handle place selection if needed
+              }}
+            />
 
-          {loading && (
-            <View style={styles.mapLoadingOverlay}>
-              <ActivityIndicator size="large" color={colors.primaryMaroon} />
-              <Text style={styles.mapLoadingText}>Fetching pandal locations...</Text>
-            </View>
-          )}
+            {loading && (
+              <View style={styles.mapLoadingOverlay}>
+                <ActivityIndicator size="large" color={colors.primaryMaroon} />
+                <Text style={styles.mapLoadingText}>Fetching pandal locations...</Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
+      </ScreenBackground>
     </SafeAreaView>
   );
 }

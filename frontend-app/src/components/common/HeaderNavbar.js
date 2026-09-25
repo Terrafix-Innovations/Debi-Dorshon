@@ -103,9 +103,12 @@ export default function HeaderNavbar({ navigation, showBack = false, title = 'рж
             </Pressable>
           ) : (
             <Pressable
-              style={styles.iconBtn}
+              style={({ pressed }) => [
+                styles.iconBtn,
+                pressed && { opacity: 0.6, transform: [{ scale: 0.92 }] },
+              ]}
               onPress={toggleDrawer}
-              hitSlop={10}
+              hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
             >
               <Svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#381E18" strokeWidth="2.5" strokeLinecap="round">
                 <Line x1="4" y1="7" x2="20" y2="7" />

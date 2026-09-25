@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
+import ScreenBackground from '../../components/common/ScreenBackground';
 import { useAuth } from '../../context/AuthContext';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
@@ -16,7 +17,8 @@ export default function RedeemScreen({ navigation }) {
       <HeaderNavbar navigation={navigation} title="Redeem • দেবী দর্শন" />
       <SideDrawer navigation={navigation} />
 
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScreenBackground>
+        <ScrollView contentContainerStyle={styles.container}>
         {/* Points Summary Badge */}
         <View style={styles.pointsWrap}>
           <LinearGradient
@@ -40,6 +42,7 @@ export default function RedeemScreen({ navigation }) {
           </View>
         </View>
       </ScrollView>
+      </ScreenBackground>
     </SafeAreaView>
   );
 }

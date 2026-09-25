@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
+import ScreenBackground from '../../components/common/ScreenBackground';
 
 // Color Palette
 const BG_WARM_CREAM = '#FFF7E8';
@@ -60,11 +61,12 @@ export default function HomeScreen({ navigation }) {
       <HeaderNavbar navigation={navigation} title="দেবী দর্শন" />
       <SideDrawer navigation={navigation} />
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScreenBackground>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
         {/* 1. Hero Title & Subtext */}
         <View style={styles.heroSection}>
           <Text style={styles.heroHeading}>
@@ -254,6 +256,7 @@ export default function HomeScreen({ navigation }) {
           </Pressable>
         </View>
       </ScrollView>
+      </ScreenBackground>
     </SafeAreaView>
   );
 }

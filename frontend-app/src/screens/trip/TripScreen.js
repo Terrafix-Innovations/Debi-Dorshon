@@ -16,6 +16,7 @@ let MapView, Marker, Polyline;
 import * as Location from 'expo-location';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
+import ScreenBackground from '../../components/common/ScreenBackground';
 import FloatingRouteCard from '../../components/trip/FloatingRouteCard';
 import RouteSummaryChip from '../../components/trip/RouteSummaryChip';
 import PandalCarousel from '../../components/trip/PandalCarousel';
@@ -258,7 +259,8 @@ export default function TripScreen({ navigation }) {
       <HeaderNavbar navigation={navigation} title="Puja Parikrama Route Planner" />
       <SideDrawer navigation={navigation} />
 
-      <View style={styles.rootContainer}>
+      <ScreenBackground>
+        <View style={styles.rootContainer}>
         {/* Fullscreen Map Layer */}
         <InteractiveMapView
           ref={mapRef}
@@ -332,6 +334,7 @@ export default function TripScreen({ navigation }) {
           />
         </View>
       </View>
+      </ScreenBackground>
     </SafeAreaView>
   );
 }

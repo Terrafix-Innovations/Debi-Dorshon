@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } fr
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
+import ScreenBackground from '../../components/common/ScreenBackground';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
 
@@ -39,7 +40,8 @@ export default function RecommendationsScreen({ navigation }) {
       <HeaderNavbar navigation={navigation} title="Recommendations" />
       <SideDrawer navigation={navigation} />
 
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+      <ScreenBackground>
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.headerBox}>
           <Text style={styles.title}>Curated Puja Recommendations</Text>
           <Text style={styles.subtitle}>Handpicked itineraries & tips for Kolkata Durga Puja 2026</Text>
@@ -64,6 +66,7 @@ export default function RecommendationsScreen({ navigation }) {
           </TouchableOpacity>
         ))}
       </ScrollView>
+      </ScreenBackground>
     </SafeAreaView>
   );
 }

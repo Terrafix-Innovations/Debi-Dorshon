@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  ImageBackground,
+  TextInput,
 } from 'react-native';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
-import SearchableDropdown from '../../components/common/SearchableDropdown';
 import { fetchMetroStations, fetchPandalsByMetro } from '../../services/metroService';
 import { fetchTrainStations, fetchPandalsByTrain } from '../../services/trainService';
 import { colors } from '../../theme/colors';
@@ -20,13 +21,15 @@ import { radius, spacing } from '../../theme/spacing';
 export default function MetroScreen({ navigation, route }) {
   const initialMode = route?.params?.initialTab === 'train' ? 'train' : 'metro';
   const [activeTab, setActiveTab] = useState(initialMode); // 'train' | 'metro'
-  const [selectedStation, setSelectedStation] = useState(null);
+  const [selectedStation, setSelectedStation] = useState(null); // empty initially
   const [stationsList, setStationsList] = useState([]);
   const [pandals, setPandals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingPandals, setLoadingPandals] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(''); // empty initially
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Fetch stations list on mount or tab change
+  // Fetch stations on tab change without auto-selecting any station
   useEffect(() => {
     async function loadStations() {
       setLoading(true);
@@ -34,19 +37,25 @@ export default function MetroScreen({ navigation, route }) {
         const data = activeTab === 'metro'
           ? await fetchMetroStations()
           : await fetchTrainStations();
-        setStationsList(data);
+        const validList = Array.isArray(data) ? data : [];
+        setStationsList(validList);
       } catch (error) {
         console.error('Failed to fetch stations:', error);
       } finally {
         setLoading(false);
       }
     }
-    loadStations();
+
+    // Reset to clean empty initial state
     setSelectedStation(null);
+    setSearchQuery('');
     setPandals([]);
+    setIsDropdownOpen(false);
+
+    loadStations();
   }, [activeTab]);
 
-  // Fetch pandals when a station is selected
+  // Fetch pandals ONLY when a station is selected
   useEffect(() => {
     async function loadPandals() {
       if (!selectedStation) {
@@ -55,14 +64,20 @@ export default function MetroScreen({ navigation, route }) {
       }
       setLoadingPandals(true);
       try {
-        const stationName = typeof selectedStation === 'string' ? selectedStation : (selectedStation?.name || selectedStation?._id);
-        const stationLine = typeof selectedStation === 'object' ? selectedStation?.line : null;
+        const stationName = typeof selectedStation === 'string'
+          ? selectedStation
+          : (selectedStation?.name || selectedStation?._id);
+        const stationLine = typeof selectedStation === 'object'
+          ? selectedStation?.line
+          : null;
+
         const data = activeTab === 'metro'
           ? await fetchPandalsByMetro(stationName, stationLine)
           : await fetchPandalsByTrain(stationName);
         setPandals(data || []);
       } catch (error) {
         console.error('Failed to fetch pandals for station:', error);
+        setPandals([]);
       } finally {
         setLoadingPandals(false);
       }
@@ -70,130 +85,275 @@ export default function MetroScreen({ navigation, route }) {
     loadPandals();
   }, [selectedStation, activeTab]);
 
-  const selectedStationName = typeof selectedStation === 'string' ? selectedStation : selectedStation?.name;
+  const selectedStationName = typeof selectedStation === 'string'
+    ? selectedStation
+    : selectedStation?.name;
+
+  // Filtered station suggestions for autocomplete as user types
+  const suggestions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return stationsList;
+    return stationsList.filter((s) => (s.name || '').toLowerCase().includes(q));
+  }, [stationsList, searchQuery]);
+
+  const handleSelect = (station) => {
+    setSelectedStation(station);
+    setSearchQuery(station.name || '');
+    setIsDropdownOpen(false);
+  };
+
+  const handleClear = () => {
+    setSelectedStation(null);
+    setSearchQuery('');
+    setPandals([]);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <HeaderNavbar navigation={navigation} title="দেবী দর্শন" />
       <SideDrawer navigation={navigation} />
 
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Title Header */}
-        <View style={styles.headerBox}>
-          <Text style={styles.title}>দেবী দর্শন</Text>
-          <Text style={styles.sub}>আপনার পূজা পরিক্রমার সেরা সঙ্গী</Text>
-        </View>
+      <ImageBackground
+        source={require('../../../assets/kolkata_vintage_map.jpg')}
+        style={styles.backgroundImage}
+        imageStyle={styles.backgroundImageStyle}
+      >
+        <View style={styles.frostedBackdrop} />
 
-        {/* Segmented Tabs */}
-        <View style={styles.tabToggleRow}>
-          <TouchableOpacity
-            style={[styles.toggleBtn, activeTab === 'train' && styles.toggleBtnActive]}
-            onPress={() => setActiveTab('train')}
-          >
-            <MaterialCommunityIcons
-              name="train"
-              size={18}
-              color={activeTab === 'train' ? colors.white : colors.espresso}
-            />
-            <Text style={[styles.toggleText, activeTab === 'train' && styles.toggleTextActive]}>
-              Train
-            </Text>
-          </TouchableOpacity>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          nestedScrollEnabled={true}
+          scrollEnabled={!isDropdownOpen}
+        >
+          {/* 1. Metro / Train Segmented Bar */}
+          <View style={styles.tabToggleRow}>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              style={[styles.toggleBtn, activeTab === 'metro' && styles.toggleBtnActive]}
+              onPress={() => setActiveTab('metro')}
+            >
+              <Text style={styles.toggleEmoji}>🚇</Text>
+              <Text style={[styles.toggleText, activeTab === 'metro' && styles.toggleTextActive]}>
+                Metro
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.toggleBtn, activeTab === 'metro' && styles.toggleBtnActive]}
-            onPress={() => setActiveTab('metro')}
-          >
-            <MaterialCommunityIcons
-              name="subway-variant"
-              size={18}
-              color={activeTab === 'metro' ? colors.white : colors.espresso}
-            />
-            <Text style={[styles.toggleText, activeTab === 'metro' && styles.toggleTextActive]}>
-              Metro
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              style={[styles.toggleBtn, activeTab === 'train' && styles.toggleBtnActive]}
+              onPress={() => setActiveTab('train')}
+            >
+              <Text style={styles.toggleEmoji}>🚆</Text>
+              <Text style={[styles.toggleText, activeTab === 'train' && styles.toggleTextActive]}>
+                Train
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        {/* Dropdown Menu of All Stations */}
-        <View style={styles.dropdownSection}>
-          <Text style={styles.dropdownLabel}>Select Station:</Text>
-          {loading ? (
-            <ActivityIndicator color={colors.primaryMaroon} />
-          ) : (
-            <SearchableDropdown
-              items={stationsList}
-              data={stationsList}
-              value={selectedStation?._id || selectedStationName}
-              onSelect={(val) => {
-                let station = stationsList.find((s) => (s._id || s.name) === val || s.name === val);
-                if (!station && typeof val === 'string') {
-                  station = { name: val };
-                }
-                setSelectedStation(station);
-              }}
-              placeholder={selectedStationName ? selectedStationName : 'No station selected'}
-            />
-          )}
-        </View>
+          {/* 2. Responsive Search Bar with Dropdown (Where Is My Train style) */}
+          <View style={styles.searchContainer}>
+            <View style={styles.searchBar}>
+              <Text style={styles.inputPrefixEmoji}>
+                {activeTab === 'metro' ? '🚇' : '🚆'}
+              </Text>
+              <TextInput
+                style={styles.input}
+                value={searchQuery}
+                onChangeText={(text) => {
+                  setSearchQuery(text);
+                  setIsDropdownOpen(true);
+                }}
+                onFocus={() => {
+                  if (stationsList.length > 0) setIsDropdownOpen(true);
+                }}
+                placeholder={`Enter ${activeTab === 'metro' ? 'Metro' : 'Train'} station...`}
+                placeholderTextColor="#9C7E6B"
+              />
+              {searchQuery ? (
+                <TouchableOpacity onPress={handleClear} style={styles.clearBtn}>
+                  <Ionicons name="close-circle" size={18} color="#9C7E6B" />
+                </TouchableOpacity>
+              ) : null}
+            </View>
 
-        {/* Nearest Pandals Display */}
-        <View style={styles.pandalsSection}>
-          <Text style={styles.sectionTitle}>
-            {selectedStationName
-              ? `Nearest Pandals to ${selectedStationName}`
-              : 'Select a station to see nearest pandals'}
-          </Text>
+            {/* Suggestions Dropdown below input */}
+            {isDropdownOpen && (
+              <View style={styles.dropdownCard}>
+                <ScrollView
+                  style={styles.dropdownScroll}
+                  contentContainerStyle={styles.dropdownScrollContent}
+                  nestedScrollEnabled={true}
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={true}
+                  keyboardDismissMode="on-drag"
+                  bounces={true}
+                >
+                  {loading ? (
+                    <View style={styles.dropdownEmpty}>
+                      <ActivityIndicator size="small" color={colors.primaryMaroon} />
+                      <Text style={styles.dropdownEmptyText}>Loading stations...</Text>
+                    </View>
+                  ) : suggestions.length === 0 ? (
+                    <View style={styles.dropdownEmpty}>
+                      <Text style={styles.dropdownEmptyText}>No stations found</Text>
+                    </View>
+                  ) : (
+                    suggestions.map((st) => (
+                      <TouchableOpacity
+                        key={st.name || st._id}
+                        style={styles.dropdownItem}
+                        onPress={() => handleSelect(st)}
+                        activeOpacity={0.7}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.dropdownItemTitle}>{st.name}</Text>
+                          {st.line ? (
+                            <Text style={styles.dropdownItemSub}>
+                              {st.line.toLowerCase().includes('line') ? st.line : `${st.line} Line`}
+                            </Text>
+                          ) : st.division ? (
+                            <Text style={styles.dropdownItemSub}>{st.division}</Text>
+                          ) : null}
+                        </View>
+                        {st.pandal_count !== undefined && (
+                          <View style={styles.dropdownCountBadge}>
+                            <Text style={styles.dropdownCountText}>{st.pandal_count} Pandals</Text>
+                          </View>
+                        )}
+                      </TouchableOpacity>
+                    ))
+                  )}
+                </ScrollView>
+              </View>
+            )}
+          </View>
 
-          {loadingPandals ? (
-            <ActivityIndicator color={colors.primaryMaroon} style={{ marginVertical: 20 }} />
-          ) : pandals.length > 0 ? (
-            pandals.map((pandal, idx) => (
-              <TouchableOpacity
-                key={pandal.id || idx}
-                style={styles.pandalCard}
-                onPress={() => navigation.navigate('PandalDetail', { pandalId: pandal.id })}
-              >
-                <Text style={styles.pandalNum}>{idx + 1}.</Text>
-                <View style={styles.pandalContent}>
-                  <Text style={styles.pandalName}>{pandal.name}</Text>
-                  <Text style={styles.pandalSub}>
-                    {pandal.region || pandal.cluster} • {
-                      activeTab === 'metro'
-                        ? (pandal.nearest_metro?.distance || 'Nearby')
-                        : (pandal.nearest_stations?.find(s => s.name === selectedStationName)?.distance || 'Nearby')
-                    }
+          {/* 3. Connected Pandals List Area */}
+          {selectedStation ? (
+            <View style={styles.pandalsSection}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitle} numberOfLines={1}>
+                  Pandals near {selectedStationName}
+                </Text>
+                <Text style={styles.pandalCountBadge}>
+                  {loadingPandals ? '...' : `${pandals.length} Pandals`}
+                </Text>
+              </View>
+
+              {loadingPandals ? (
+                <View style={styles.loadingBox}>
+                  <ActivityIndicator color={colors.primaryMaroon} />
+                  <Text style={styles.loadingText}>Loading connected pandals...</Text>
+                </View>
+              ) : pandals.length > 0 ? (
+                pandals.map((pandal, idx) => {
+                  const distanceStr = activeTab === 'metro'
+                    ? (pandal.nearest_metro?.distance || 'Nearby')
+                    : (pandal.nearest_stations?.[0]?.distance || 'Nearby');
+
+                  return (
+                    <View key={pandal.id || pandal._id || idx} style={styles.pandalCard}>
+                      <View style={styles.pandalNumberCircle}>
+                        <Text style={styles.pandalNumberText}>{idx + 1}</Text>
+                      </View>
+
+                      <View style={styles.pandalInfo}>
+                        <Text style={styles.pandalName} numberOfLines={1}>
+                          {pandal.name}
+                        </Text>
+                        <View style={styles.pandalSubRow}>
+                          {pandal.cluster ? (
+                            <Text style={styles.pandalClusterText} numberOfLines={1}>
+                              {pandal.cluster}
+                            </Text>
+                          ) : null}
+                          <Text style={styles.pandalDistanceText}>🚶 {distanceStr}</Text>
+                        </View>
+                      </View>
+
+                      {/* Clean Route Button: ">" that redirects to navigation */}
+                      <TouchableOpacity
+                        style={styles.routeBtn}
+                        activeOpacity={0.8}
+                        onPress={() => {
+                          navigation.navigate('Navigation', {
+                            targetPandal: pandal,
+                            sourceStation: selectedStation,
+                          });
+                        }}
+                      >
+                        <Text style={styles.routeBtnText}>&gt;</Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })
+              ) : (
+                <View style={styles.emptyBox}>
+                  <Text style={styles.emptyText}>
+                    No pandals cataloged near this station yet.
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.primaryMaroon} />
-              </TouchableOpacity>
-            ))
-          ) : selectedStation ? (
-            <Text style={{ textAlign: 'center', marginVertical: 20, color: colors.espresso }}>
-              No pandals found near this station.
-            </Text>
-          ) : null}
-        </View>
-      </ScrollView>
+              )}
+            </View>
+          ) : (
+            <TouchableOpacity
+              activeOpacity={0.9}
+              style={styles.emptyPromptBox}
+              onPress={() => setIsDropdownOpen(false)}
+            >
+              <Text style={styles.emptyPromptText}>
+                Search or select a station above to view nearby pandals
+              </Text>
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  container: { padding: spacing.md },
-  headerBox: { alignItems: 'center', marginBottom: spacing.md },
-  title: { fontSize: 24, fontWeight: '900', color: colors.primaryMaroon },
-  sub: { fontSize: 12, fontWeight: '700', color: colors.goldMuted, marginTop: 2 },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FDF8EE',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  backgroundImageStyle: {
+    opacity: 0.16,
+    resizeMode: 'cover',
+  },
+  frostedBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(253, 248, 238, 0.90)',
+  },
+  container: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xxl,
+  },
 
+  /* Segmented Toggle */
   tabToggleRow: {
     flexDirection: 'row',
-    backgroundColor: colors.cardCream,
-    borderRadius: radius.pill,
+    backgroundColor: '#FFFDF9',
+    borderRadius: 18,
     padding: 4,
     borderWidth: 1,
-    borderColor: colors.goldMuted,
+    borderColor: '#EBDCC9',
     marginBottom: spacing.md,
+    gap: 6,
+    shadowColor: colors.espresso,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
   },
   toggleBtn: {
     flex: 1,
@@ -201,36 +361,247 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    borderRadius: radius.pill,
+    borderRadius: 14,
     gap: 6,
   },
   toggleBtnActive: {
     backgroundColor: colors.primaryMaroon,
+    shadowColor: colors.primaryMaroon,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  toggleText: { fontSize: 13, fontWeight: '700', color: colors.espresso },
-  toggleTextActive: { color: colors.white },
+  toggleEmoji: {
+    fontSize: 16,
+  },
+  toggleText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#564338',
+  },
+  toggleTextActive: {
+    color: colors.white,
+  },
 
-  dropdownSection: { marginBottom: spacing.lg },
-  dropdownLabel: { fontSize: 13, fontWeight: '700', color: colors.espresso, marginBottom: 6 },
-
-  pandalsSection: {
-    backgroundColor: colors.cardCream,
-    padding: spacing.md,
-    borderRadius: radius.lg,
+  /* Search Bar & Dropdown */
+  searchContainer: {
+    position: 'relative',
+    zIndex: 50,
+    marginBottom: spacing.md,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFDF9',
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: colors.goldMuted,
+    borderColor: '#EBDCC9',
+    paddingHorizontal: 12,
+    height: 48,
+    shadowColor: colors.espresso,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: colors.espresso, marginBottom: spacing.sm },
+  inputPrefixEmoji: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1B1C1A',
+    paddingVertical: 0,
+  },
+  clearBtn: {
+    padding: 4,
+  },
+  dropdownCard: {
+    backgroundColor: '#FFFDF9',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#EBDCC9',
+    marginTop: 6,
+    maxHeight: 360,
+    overflow: 'hidden',
+    shadowColor: colors.espresso,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  dropdownScroll: {
+    maxHeight: 360,
+  },
+  dropdownScrollContent: {
+    flexGrow: 1,
+  },
+  dropdownEmpty: {
+    padding: 14,
+    alignItems: 'center',
+    gap: 4,
+  },
+  dropdownEmptyText: {
+    fontSize: 12,
+    color: '#8C674B',
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3E7D7',
+  },
+  dropdownItemTitle: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#1B1C1A',
+  },
+  dropdownItemSub: {
+    fontSize: 11,
+    color: '#8C674B',
+    marginTop: 1,
+  },
+  dropdownCountBadge: {
+    backgroundColor: '#F5E9DA',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+  },
+  dropdownCountText: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: colors.primaryMaroon,
+  },
+
+  /* Pandals Section */
+  pandalsSection: {
+    backgroundColor: '#FFFDF9',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#EBDCC9',
+    padding: 14,
+    shadowColor: colors.espresso,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3E8DA',
+  },
+  sectionTitle: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#2B1608',
+    flex: 1,
+  },
+  pandalCountBadge: {
+    fontSize: 11.5,
+    fontWeight: '800',
+    color: colors.primaryMaroon,
+  },
+
+  loadingBox: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  loadingText: {
+    fontSize: 12,
+    color: '#8C674B',
+  },
+
   pandalCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: colors.goldMuted,
-    gap: spacing.xs,
+    borderBottomColor: '#F4E9DC',
+    gap: 10,
   },
-  pandalNum: { fontSize: 14, fontWeight: '900', color: colors.primaryMaroon, width: 24 },
-  pandalContent: { flex: 1 },
-  pandalName: { fontSize: 14, fontWeight: '800', color: colors.espresso },
-  pandalSub: { fontSize: 11, color: `${colors.espresso}AA`, marginTop: 2 },
+  pandalNumberCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#F5E9DA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pandalNumberText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: colors.primaryMaroon,
+  },
+  pandalInfo: {
+    flex: 1,
+  },
+  pandalName: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#1B1C1A',
+  },
+  pandalSubRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 2,
+  },
+  pandalClusterText: {
+    fontSize: 11,
+    color: '#705A4F',
+    flexShrink: 1,
+  },
+  pandalDistanceText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.primaryMaroon,
+  },
+
+  /* ">" Route button */
+  routeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: colors.primaryMaroon,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  routeBtnText: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: colors.white,
+    marginTop: -1,
+  },
+
+  emptyBox: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 12,
+    color: '#8C674B',
+  },
+  emptyPromptBox: {
+    paddingVertical: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyPromptText: {
+    fontSize: 12.5,
+    color: '#8C674B',
+    fontWeight: '500',
+  },
 });

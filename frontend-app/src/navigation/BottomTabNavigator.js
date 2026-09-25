@@ -7,7 +7,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import RouteScreen from '../screens/route/RouteScreen';
 import TripScreen from '../screens/trip/TripScreen';
 import MetroScreen from '../screens/metro/MetroScreen';
-import RedeemScreen from '../screens/redeem/RedeemScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -50,13 +50,11 @@ function MetroIcon({ color, size = 22 }) {
   );
 }
 
-function RedeemIcon({ color, size = 22 }) {
+function ProfileIcon({ color, size = 22 }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <Path d="M3 8V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a2 2 0 0 0 0 4v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a2 2 0 0 0 0-4z" />
-      <Path d="M14.5 9.5l-5 5" />
-      <Circle cx="9.8" cy="9.8" r="0.8" fill={color} stroke="none" />
-      <Circle cx="14.2" cy="14.2" r="0.8" fill={color} stroke="none" />
+      <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <Circle cx="12" cy="7" r="4" />
     </Svg>
   );
 }
@@ -67,7 +65,7 @@ function CustomBottomTabBar({ state, descriptors, navigation }) {
     { key: 'Navigation', label: 'Navigation', renderIcon: (col) => <NavigationIcon color={col} /> },
     { key: 'Trip', label: 'Trips', isCenter: true },
     { key: 'Stations', label: 'Metro/Train', renderIcon: (col) => <MetroIcon color={col} /> },
-    { key: 'Redeem', label: 'Redeem', renderIcon: (col) => <RedeemIcon color={col} /> },
+    { key: 'Profile', label: 'Profile', renderIcon: (col) => <ProfileIcon color={col} /> },
   ];
 
   return (
@@ -138,7 +136,7 @@ export default function BottomTabNavigator() {
       <Tab.Screen name="Navigation" component={RouteScreen} />
       <Tab.Screen name="Trip" component={TripScreen} />
       <Tab.Screen name="Stations" component={MetroScreen} />
-      <Tab.Screen name="Redeem" component={RedeemScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }

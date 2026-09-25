@@ -35,6 +35,18 @@ async def ensure_indexes():
         await col.create_index("nearest_stations.name", background=True)
         await col.create_index("nearest_metro.name", background=True)
         await col.create_index([("location.latitude", 1), ("location.longitude", 1)], background=True)
+
+        # Users and User-Isolated data indexes
+        user_col = db.db[settings.USER_COLLECTION_NAME]
+        await user_col.create_index("google_id", background=True)
+        await user_col.create_index("email", background=True)
+
+        trip_col = db.db[settings.TRIP_COLLECTION_NAME]
+        await trip_col.create_index([("user_id", 1), ("created_at", -1)], background=True)
+
+        fav_col = db.db[settings.FAVORITE_COLLECTION_NAME]
+        await fav_col.create_index([("user_id", 1), ("pandal_id", 1)], background=True)
+
         logger.info("MongoDB collection indexes ensured successfully.")
     except Exception as e:
         logger.warning("Index creation notice: %s", e)
