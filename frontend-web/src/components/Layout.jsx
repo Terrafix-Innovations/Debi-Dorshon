@@ -17,12 +17,20 @@ export default function Layout({
   onProfileClick,
 }) {
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#faf7f2]">
+    <div
+      className="relative h-full w-full overflow-hidden bg-[#faf7f2] bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage: `url('/kolkata_vintage_map.jpg')`,
+      }}
+    >
+      {/* Translucent Warm Parchment Tint */}
+      <div className="absolute inset-0 bg-[#fbf6ed]/85 pointer-events-none z-0" />
+
       {/* Sacred Durga Puja Header — Universal across all pages */}
       <Header onMenuClick={onMenuClick} onProfileClick={onProfileClick} />
 
       {/* Main Page View Canvas */}
-      <main className="relative h-full w-full overflow-hidden">
+      <main className="relative z-10 h-full w-full overflow-hidden">
         {children}
       </main>
 

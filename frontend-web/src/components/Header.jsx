@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getFestivalGreeting, PUJA_TITHIS, REST_DAY_GREETING } from '../utils/festivalDate';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Debi-Dorshon Master Festival Header
@@ -17,11 +18,14 @@ export default function Header({
   overrideDay = null,
   onDayChange,
 }) {
+  const { user, googleClientId, loginWithGoogleToken, logout, isAuthenticated } = useAuth();
   const [selectedDayKey, setSelectedDayKey] = useState(() => {
     return localStorage.getItem('debi_dorshon_tithi_override') || overrideDay || null;
   });
   const [showPicker, setShowPicker] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const pickerRef = useRef(null);
+  const authModalRef = useRef(null);
 
   // Sync when prop changes
   useEffect(() => {
@@ -46,6 +50,67 @@ export default function Header({
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [showPicker]);
+
+  // Close auth modal on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (authModalRef.current && !authModalRef.current.contains(event.target)) {
+        setShowAuthModal(false);
+      }
+    }
+    if (showAuthModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [showAuthModal]);
+
+  // Render Google Identity Services button inside the Auth modal
+  useEffect(() => {
+    if (showAuthModal && !user && googleClientId) {
+      const initGsi = () => {
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: async (response) => {
+              if (response.credential) {
+                try {
+                  await loginWithGoogleToken(response.credential);
+                  setShowAuthModal(false);
+                } catch (e) {
+                  console.error('Failed to sign in with Google credential:', e);
+                }
+              }
+            },
+          });
+          const btnElem = document.getElementById('web-google-btn-slot');
+          if (btnElem) {
+            btnElem.innerHTML = '';
+            window.google.accounts.id.renderButton(btnElem, {
+              theme: 'filled_black',
+              size: 'large',
+              width: 260,
+              text: 'continue_with',
+              shape: 'pill',
+            });
+          }
+        }
+      };
+
+      // Try immediately or wait for script load
+      initGsi();
+      const interval = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          initGsi();
+          clearInterval(interval);
+        }
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [showAuthModal, user, googleClientId, loginWithGoogleToken]);
 
   const greeting = getFestivalGreeting(selectedDayKey);
 
@@ -334,16 +399,120 @@ export default function Header({
           {/* Right: User Profile Avatar Circle */}
           <button
             type="button"
-            onClick={onProfileClick}
+            onClick={() => setShowAuthModal((prev) => !prev)}
             aria-label="User Profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f2e6d6] text-[#3e221b] hover:bg-[#ebdcc9] active:scale-95 transition-all focus:outline-none shadow-sm"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f2e6d6] text-[#3e221b] hover:bg-[#ebdcc9] active:scale-95 transition-all focus:outline-none shadow-sm overflow-hidden border border-[#ebdcc9]"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
+            {user?.picture ? (
+              <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
+            ) : user?.name ? (
+              <span className="text-xs font-black text-[#831917]">{user.name.charAt(0).toUpperCase()}</span>
+            ) : (
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
+
+      {/* User Account / Google Sign-In Modal */}
+      {showAuthModal && (
+        <div
+          ref={authModalRef}
+          className="pointer-events-auto mt-2 w-full max-w-sm rounded-3xl bg-[#fffefc] p-4 shadow-2xl border border-[#ebdcc9] animate-fade-in z-50 text-[#381e18]"
+        >
+          {user ? (
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-[#f0e4d6] mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#831917] bg-[#fbf5ec] flex items-center justify-center shadow-sm">
+                    {user.picture ? (
+                      <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-lg font-black text-[#831917]">{user.name.charAt(0).toUpperCase()}</span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-bold text-[#1b1c1a] truncate">{user.name}</h4>
+                    <p className="text-xs text-[#8c674b] truncate">{user.email}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAuthModal(false)}
+                  className="text-xs text-[#a08470] hover:text-[#381e18] p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* User Stats: Trips & Points */}
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="p-2.5 rounded-xl bg-[#faf5ed] border border-[#ebdcc9] flex items-center gap-2">
+                  <span className="text-base">🏆</span>
+                  <div>
+                    <div className="text-xs font-bold text-[#1b1c1a]">{user.completed_trips || 0}</div>
+                    <div className="text-[10px] text-[#8c674b]">Trips Saved</div>
+                  </div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-[#faf5ed] border border-[#ebdcc9] flex items-center gap-2">
+                  <span className="text-base">🎟️</span>
+                  <div>
+                    <div className="text-xs font-bold text-[#831917]">{user.redeem_points || 0}</div>
+                    <div className="text-[10px] text-[#8c674b]">Redeem Points</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-[#705a4f] bg-[#fdfaf5] p-2.5 rounded-xl border border-[#ebdcc9]/50 mb-3 flex items-center gap-1.5">
+                <span>🔒</span>
+                <span>Your trips, routes & rewards are isolated to your account.</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  setShowAuthModal(false);
+                }}
+                className="w-full py-2.5 rounded-xl bg-[#fff5f5] text-[#b91c1c] hover:bg-[#fee2e2] text-xs font-bold transition-all border border-[#fecaca] flex items-center justify-center gap-1.5"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#f0e4d6] mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🪔</span>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#831917]">Sign In to দেবী দর্শন</h4>
+                    <p className="text-[11px] text-[#8c674b]">Durga Puja Parikrama Companion</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAuthModal(false)}
+                  className="text-xs text-[#a08470] hover:text-[#381e18] p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p className="text-xs text-[#553b30] leading-relaxed mb-3.5">
+                Sign in with your Google account to save custom pandal routes, track visited pandals, and earn Puja reward passes. Your data remains completely isolated and private to your account.
+              </p>
+
+              {/* Google Button Container */}
+              <div id="web-google-btn-slot" className="flex justify-center my-2 min-h-[44px]" />
+
+              <div className="text-[10px] text-center text-[#9c7e6b] mt-3 flex items-center justify-center gap-1">
+                <span>🛡️</span>
+                <span>Permanent secure session • No data tracking</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Interactive Festival Tithi Picker Popover */}
       {showPicker && (

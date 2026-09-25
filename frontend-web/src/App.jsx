@@ -4,6 +4,7 @@ import MapBackground from './components/MapBackground';
 import RoutePanel from './components/RoutePanel';
 import RouteSummaryChip from './components/RouteSummaryChip';
 import PandalCarousel from './components/PandalCarousel';
+import MetroTransitView from './components/MetroTransitView';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const MAX_DETOUR_KM = 2.5;
@@ -129,57 +130,99 @@ export default function App() {
   const distanceKm = routeData?.estimated_distance_km || 0;
   const hasRoute = Boolean(routeData);
 
+  const handleNavigateToPandal = (pandal, station) => {
+    if (!pandal?.location) return;
+
+    if (station) {
+      const stationCoords = station.location || {
+        latitude: station.latitude || 22.5179,
+        longitude: station.longitude || 88.3437,
+      };
+      setOrigin({
+        latitude: stationCoords.latitude,
+        longitude: stationCoords.longitude,
+        name: station.name,
+      });
+    }
+
+    setDestination({
+      latitude: pandal.location.latitude,
+      longitude: pandal.location.longitude,
+      name: pandal.name,
+      cluster: pandal.cluster,
+      nearest_metro: pandal.nearest_metro,
+    });
+
+    setActivePandal({
+      ...pandal,
+      location: pandal.location,
+    });
+
+    // Redirect to navigation tab
+    setActiveTab('navigation');
+  };
+
   return (
     <Layout activeTab={activeTab} onChangeTab={setActiveTab}>
-      {/* Full-screen map background */}
-      <MapBackground
-        origin={origin}
-        destination={destination}
-        routeData={routeData}
-        activePandal={activePandal}
-        setActivePandal={setActivePandal}
-        onMapClick={handleMapClick}
-        onUpdateOrigin={handleUpdateOrigin}
-        onUpdateDestination={handleUpdateDestination}
-        bottomInset={CAROUSEL_INSET}
-        apiBaseUrl={API_BASE_URL}
-      />
+      {activeTab === 'metro' ? (
+        <MetroTransitView
+          apiBaseUrl={API_BASE_URL}
+          onNavigateToPandal={handleNavigateToPandal}
+        />
+      ) : (
+        <>
+          {/* Full-screen map background */}
+          <MapBackground
+            origin={origin}
+            destination={destination}
+            routeData={routeData}
+            activePandal={activePandal}
+            setActivePandal={setActivePandal}
+            onMapClick={handleMapClick}
+            onUpdateOrigin={handleUpdateOrigin}
+            onUpdateDestination={handleUpdateDestination}
+            bottomInset={CAROUSEL_INSET}
+            apiBaseUrl={API_BASE_URL}
+          />
 
-      {/* Floating route card */}
-      <RoutePanel
-        origin={origin}
-        destination={destination}
-        onSelectOrigin={(pt) => { setOrigin(pt); resetRoute(); }}
-        onSelectDestination={(pt) => { setDestination(pt); resetRoute(); }}
-        onClearOrigin={() => { setOrigin(null); resetRoute(); }}
-        onClearDestination={() => { setDestination(null); resetRoute(); }}
-        onSwap={handleSwap}
-        loading={loading}
-        apiBaseUrl={API_BASE_URL}
-      />
+          {/* Floating route card */}
+          <RoutePanel
+            origin={origin}
+            destination={destination}
+            onSelectOrigin={(pt) => { setOrigin(pt); resetRoute(); }}
+            onSelectDestination={(pt) => { setDestination(pt); resetRoute(); }}
+            onClearOrigin={() => { setOrigin(null); resetRoute(); }}
+            onClearDestination={() => { setDestination(null); resetRoute(); }}
+            onSwap={handleSwap}
+            loading={loading}
+            apiBaseUrl={API_BASE_URL}
+          />
 
-      {/* Floating route summary chip */}
-      {hasRoute && (
-        <RouteSummaryChip distanceKm={distanceKm} pandalCount={itinerary.length} />
+          {/* Floating route summary chip */}
+          {hasRoute && (
+            <RouteSummaryChip distanceKm={distanceKm} pandalCount={itinerary.length} />
+          )}
+
+          {/* Error toast */}
+          {error && (
+            <div className="pointer-events-none absolute inset-x-0 z-40 flex justify-center px-4" style={{ top: '254px' }}>
+              <div className="pointer-events-auto rounded-full bg-rose-600 text-white text-xs font-semibold px-4 py-2 shadow-lg animate-fade-in">
+                {error}
+              </div>
+            </div>
+          )}
+
+          {/* Bottom sliding pandal carousel */}
+          <PandalCarousel
+            itinerary={itinerary}
+            activePandal={activePandal}
+            onSelectPandal={setActivePandal}
+            loading={loading}
+            hasRoute={hasRoute}
+          />
+        </>
       )}
-
-      {/* Error toast */}
-      {error && (
-        <div className="pointer-events-none absolute inset-x-0 z-40 flex justify-center px-4" style={{ top: '254px' }}>
-          <div className="pointer-events-auto rounded-full bg-rose-600 text-white text-xs font-semibold px-4 py-2 shadow-lg animate-fade-in">
-            {error}
-          </div>
-        </div>
-      )}
-
-      {/* Bottom sliding pandal carousel */}
-      <PandalCarousel
-        itinerary={itinerary}
-        activePandal={activePandal}
-        onSelectPandal={setActivePandal}
-        loading={loading}
-        hasRoute={hasRoute}
-      />
     </Layout>
   );
 }
+

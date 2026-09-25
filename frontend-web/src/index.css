@@ -15,6 +15,16 @@
   }
 }
 
+/* Eliminate browser black box / tap highlight on inputs */
+input, textarea, button {
+  -webkit-tap-highlight-color: transparent !important;
+}
+input:focus, input:focus-visible, input:active,
+textarea:focus, textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .font-bengali {
   font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
 }

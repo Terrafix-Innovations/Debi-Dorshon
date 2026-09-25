@@ -171,18 +171,27 @@ export default function MapBackground({
 
     const lngLat = [destination.longitude, destination.latitude];
     const popupHtml = `
-      <div class="p-1">
-        <div class="text-[10px] uppercase font-bold text-stone-500 tracking-wider">End</div>
-        <div class="font-bold text-sm text-stone-900 mt-0.5">${destination.name || 'End Point'}</div>
+      <div class="p-1.5 min-w-[200px]">
+        <div class="text-[10px] uppercase font-black text-[#903f00] tracking-wider flex items-center gap-1">
+          <span>📍</span>
+          <span>Pandal Location</span>
+        </div>
+        <h4 class="font-extrabold text-sm text-stone-900 mt-0.5 leading-snug">${destination.name || 'Pandal Location'}</h4>
+        ${destination.cluster ? `<p class="text-xs text-stone-600 mt-0.5 font-medium">${destination.cluster}</p>` : ''}
+        ${destination.nearest_metro?.name ? `<div class="mt-1 text-xs text-indigo-700 font-bold flex items-center gap-1">🚇 <span>${destination.nearest_metro.name}</span></div>` : ''}
       </div>`;
 
     if (destMarkerRef.current) {
       destMarkerRef.current.setLngLat(lngLat);
       destMarkerRef.current.getPopup()?.setHTML(popupHtml);
+      if (!destMarkerRef.current.getPopup()?.isOpen()) {
+        destMarkerRef.current.togglePopup();
+      }
     } else {
-      const el = createPinElement('dest', 'E');
+      const el = createPinElement('dest', '📍');
       const marker = new mapboxgl.Marker({ element: el, draggable: true }).setLngLat(lngLat).addTo(map);
       marker.setPopup(new mapboxgl.Popup({ offset: 22, closeButton: false }).setHTML(popupHtml));
+      marker.togglePopup();
       marker.on('dragstart', () => { isDraggingRef.current = true; });
       marker.on('dragend', () => {
         const pos = marker.getLngLat();
