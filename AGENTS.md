@@ -44,6 +44,11 @@ This project has a **pre-indexed code knowledge graph** (CodeGraph). It lives in
 
 ## 📋 Project Rules & Conventions
 
+### 🛑 CRITICAL: Strict Git Policy — NEVER ADD, COMMIT, OR PUSH
+- **NEVER** run `git add`, `git commit`, or `git push` automatically or proactively.
+- You are ONLY permitted to inspect git state using read-only commands: `git status`, `git log`, `git diff`.
+- All staging, committing, and pushing must be explicitly commanded by the user or done manually by the user.
+
 ### Virtual Environment & CLI
 - Always use `uv run --project backend ...` to execute Python commands, run tests, or run scripts.
 - Never use global `python` or `pip`.

@@ -17,6 +17,11 @@ codegraph affected <file>           # which tests are affected
 
 CodeGraph returns verbatim source with line numbers — treat its output as a file read already done.
 
+## 🛑 CRITICAL: Strict Git Policy — NEVER ADD, COMMIT, OR PUSH
+- **NEVER** run `git add`, `git commit`, or `git push` automatically or proactively.
+- You are ONLY permitted to inspect git state using read-only commands: `git status`, `git log`, `git diff`.
+- All staging, committing, and pushing must be explicitly commanded by the user or done manually by the user.
+
 ## Virtual Environment & CLI
 - Always use `uv run --project backend ...` to execute Python commands, run tests, or run scripts.
 - Never use global `python` or `pip`.
