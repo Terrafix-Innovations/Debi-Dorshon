@@ -103,31 +103,41 @@ export function AuthProvider({ children }) {
     return () => { isMounted = false; };
   }, [token]);
 
-  // 3. Login with Google ID Token
+  // 3. Login with Google ID Token (with retry for sleeping cloud backend)
   const loginWithGoogleToken = useCallback(async (idToken) => {
-    try {
-      const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
-      const res = await fetch(`${cleanUrl}/api/v1/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_token: idToken }),
-      });
+    const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
+    let lastError = null;
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({ detail: 'Login failed' }));
-        throw new Error(errJson.detail || 'Authentication failed');
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const res = await fetch(`${cleanUrl}/api/v1/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_token: idToken }),
+        });
+
+        if (!res.ok) {
+          const errJson = await res.json().catch(() => ({ detail: 'Login failed' }));
+          throw new Error(errJson.detail || 'Authentication failed');
+        }
+
+        const data = await res.json();
+        localStorage.setItem(TOKEN_KEY, data.access_token);
+        localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        setToken(data.access_token);
+        setUser(data.user);
+        return data.user;
+      } catch (err) {
+        lastError = err;
+        // If network error (Failed to fetch) and first attempt, wait 1.5s and retry once
+        if (attempt < 2 && (err.name === 'TypeError' || String(err.message).includes('fetch'))) {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          continue;
+        }
+        throw err;
       }
-
-      const data = await res.json();
-      localStorage.setItem(TOKEN_KEY, data.access_token);
-      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-      setToken(data.access_token);
-      setUser(data.user);
-      return data.user;
-    } catch (err) {
-      console.error('[AuthContext] Google sign in error:', err);
-      throw err;
     }
+    throw lastError;
   }, []);
 
   // 4. Sign in with Email & Password

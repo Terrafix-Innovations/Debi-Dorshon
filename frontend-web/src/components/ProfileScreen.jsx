@@ -38,6 +38,7 @@ export default function ProfileScreen({
         try {
           window.google.accounts.id.initialize({
             client_id: googleClientId,
+            auto_select: false,
             callback: async (response) => {
               if (response.credential) {
                 setAuthLoading(true);
@@ -45,7 +46,12 @@ export default function ProfileScreen({
                 try {
                   await loginWithGoogleToken(response.credential);
                 } catch (err) {
-                  setErrorMessage(err.message || 'Google sign-in failed');
+                  const msg = err.message || '';
+                  if (msg.includes('fetch') || msg.includes('Network') || msg.includes('Failed')) {
+                    setErrorMessage('Connecting to backend... Server may be waking up from sleep. Please try again.');
+                  } else {
+                    setErrorMessage(msg || 'Google sign-in failed');
+                  }
                 } finally {
                   setAuthLoading(false);
                 }
@@ -57,11 +63,13 @@ export default function ProfileScreen({
           if (btnElem) {
             btnElem.innerHTML = '';
             window.google.accounts.id.renderButton(btnElem, {
+              type: 'standard',
               theme: 'outline',
               size: 'large',
-              width: 280,
+              width: 250,
               text: 'signin_with',
-              shape: 'pill',
+              shape: 'rectangular',
+              logo_alignment: 'left',
             });
           }
           if (timer) clearInterval(timer);
