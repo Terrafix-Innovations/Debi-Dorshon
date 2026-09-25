@@ -58,15 +58,13 @@ const TABS = [
     ),
   },
   {
-    id: 'redeem',
-    label: 'Redeem',
+    id: 'profile',
+    label: 'Profile',
     enabled: true,
     icon: (
       <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 8V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a2 2 0 0 0 0 4v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a2 2 0 0 0 0-4z" />
-        <path d="M14.5 9.5l-5 5" />
-        <circle cx="9.8" cy="9.8" r="0.8" fill="currentColor" stroke="none" />
-        <circle cx="14.2" cy="14.2" r="0.8" fill="currentColor" stroke="none" />
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
       </svg>
     ),
   },

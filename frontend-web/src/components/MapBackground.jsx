@@ -8,9 +8,21 @@ function createPinElement(type, label = '', isActive = false) {
   el.className = 'custom-pin-wrapper cursor-pointer';
 
   if (type === 'pandal') {
-    el.innerHTML = `<div class="pin-pandal ${isActive ? 'active-pin' : ''}">${label}</div>`;
+    el.innerHTML = `
+      <div class="pin-pandal ${isActive ? 'active-pin' : ''}">
+        <img src="/pandal_marker.png" alt="Pandal" class="pin-pandal-img" />
+        ${label ? `<span class="pin-pandal-badge">${label}</span>` : ''}
+      </div>
+    `;
+  } else if (type === 'dest') {
+    el.innerHTML = `
+      <div class="pin-pandal active-pin">
+        <img src="/pandal_marker.png" alt="Destination" class="pin-pandal-img" />
+        <span class="pin-pandal-badge" style="background:#059669;">📍</span>
+      </div>
+    `;
   } else {
-    const pinClass = type === 'dest' ? 'pin-e' : 'pin-s';
+    const pinClass = 'pin-s';
     el.innerHTML = `<div class="${pinClass}"><span>${label}</span></div>`;
   }
   return el;
@@ -189,8 +201,8 @@ export default function MapBackground({
       }
     } else {
       const el = createPinElement('dest', '📍');
-      const marker = new mapboxgl.Marker({ element: el, draggable: true }).setLngLat(lngLat).addTo(map);
-      marker.setPopup(new mapboxgl.Popup({ offset: 22, closeButton: false }).setHTML(popupHtml));
+      const marker = new mapboxgl.Marker({ element: el, draggable: true, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+      marker.setPopup(new mapboxgl.Popup({ offset: 34, closeButton: false }).setHTML(popupHtml));
       marker.togglePopup();
       marker.on('dragstart', () => { isDraggingRef.current = true; });
       marker.on('dragend', () => {
@@ -293,9 +305,9 @@ export default function MapBackground({
             ${pandal.nearest_metro?.name ? `<div class="mt-1 text-xs text-indigo-700 font-medium">🚇 ${pandal.nearest_metro.name}</div>` : ''}
           </div>`;
 
-        const marker = new mapboxgl.Marker({ element: el })
+        const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
           .setLngLat(lngLat)
-          .setPopup(new mapboxgl.Popup({ offset: 20 }).setHTML(popupHtml))
+          .setPopup(new mapboxgl.Popup({ offset: 34 }).setHTML(popupHtml))
           .addTo(map);
 
         marker.step = step;

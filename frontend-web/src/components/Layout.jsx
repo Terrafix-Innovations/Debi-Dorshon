@@ -6,11 +6,11 @@ import BottomTabBar from './BottomTabBar';
  * Universal App Layout Shell
  * 
  * Provides the persistent Header and BottomTabBar across all screens/pages
- * in the application (like layout.tsx in Next.js).
+ * in the application with warm festive parchment atmosphere.
  */
 export default function Layout({
   children,
-  activeTab = 'trips',
+  activeTab = 'home',
   onChangeTab,
   showTabBar = true,
   onMenuClick,
@@ -18,7 +18,7 @@ export default function Layout({
 }) {
   return (
     <div
-      className="relative h-full w-full overflow-hidden bg-[#faf7f2] bg-cover bg-center bg-fixed"
+      className="relative flex flex-col h-full w-full overflow-hidden bg-[#faf7f2] bg-cover bg-center bg-fixed"
       style={{
         backgroundImage: `url('/kolkata_vintage_map.jpg')`,
       }}
@@ -30,7 +30,7 @@ export default function Layout({
       <Header onMenuClick={onMenuClick} onProfileClick={onProfileClick} />
 
       {/* Main Page View Canvas */}
-      <main className="relative z-10 h-full w-full overflow-hidden">
+      <main className="relative z-10 flex-1 w-full overflow-hidden">
         {children}
       </main>
 

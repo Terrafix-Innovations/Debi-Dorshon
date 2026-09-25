@@ -1,28 +1,73 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Layout from './components/Layout';
+import SideDrawer from './components/SideDrawer';
+import HomeScreen from './components/HomeScreen';
+import NavigationScreen from './components/NavigationScreen';
+import ProfileScreen from './components/ProfileScreen';
+import MetroTransitView from './components/MetroTransitView';
+import InfoModals from './components/InfoModals';
 import MapBackground from './components/MapBackground';
 import RoutePanel from './components/RoutePanel';
 import RouteSummaryChip from './components/RouteSummaryChip';
 import PandalCarousel from './components/PandalCarousel';
-import MetroTransitView from './components/MetroTransitView';
+import { useAuth } from './context/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const MAX_DETOUR_KM = 2.5;
 const CAROUSEL_INSET = 200; // px reserved at bottom for carousel + tab bar
 
+// Popular Route Presets
+const POPULAR_PRESETS = {
+  heritage: {
+    origin: {
+      latitude: 22.5960,
+      longitude: 88.3640,
+      name: 'Sovabazar Metro Station',
+    },
+    destination: {
+      latitude: 22.6020,
+      longitude: 88.3610,
+      name: 'Bagbazar Sarbojanin Durgotsav',
+      cluster: 'North Kolkata',
+    },
+  },
+  south_mega: {
+    origin: {
+      latitude: 22.5082,
+      longitude: 88.3458,
+      name: 'Rabindra Sarobar Metro',
+    },
+    destination: {
+      latitude: 22.5180,
+      longitude: 88.3685,
+      name: 'Ekdalia Evergreen Club',
+      cluster: 'South Kolkata',
+    },
+  },
+};
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState('trips');
+  const { saveTrip } = useAuth();
+  const [activeTab, setActiveTab] = useState('home');
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
   const [routeData, setRouteData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activePandal, setActivePandal] = useState(null);
   const [error, setError] = useState(null);
+  const [navigationTargetPandal, setNavigationTargetPandal] = useState(null);
+  const [isRouteSaved, setIsRouteSaved] = useState(false);
+
+  // Side Drawer & Info Modals
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null); // 'recommendations' | 'about' | 'contact' | 'privacy' | 'redeem' | null
+  const [saveSuccessToast, setSaveSuccessToast] = useState(false);
 
   const resetRoute = () => {
     setRouteData(null);
     setActivePandal(null);
     setError(null);
+    setIsRouteSaved(false);
   };
 
   const handleSwap = () => {
@@ -111,9 +156,7 @@ export default function App() {
     }
   }, [origin, destination]);
 
-  // Auto-plan the route (Google Maps style) as soon as both start and
-  // destination are set. Re-runs whenever either endpoint's coordinates
-  // change (e.g. picking a new place or dragging a marker).
+  // Auto-plan route when endpoints are set
   useEffect(() => {
     if (origin && destination) {
       handlePlanRoute();
@@ -130,8 +173,9 @@ export default function App() {
   const distanceKm = routeData?.estimated_distance_km || 0;
   const hasRoute = Boolean(routeData);
 
+  // Navigate directly to a pandal (from Home, Navigation, Metro, Profile)
   const handleNavigateToPandal = (pandal, station) => {
-    if (!pandal?.location) return;
+    if (!pandal) return;
 
     if (station) {
       const stationCoords = station.location || {
@@ -141,35 +185,128 @@ export default function App() {
       setOrigin({
         latitude: stationCoords.latitude,
         longitude: stationCoords.longitude,
-        name: station.name,
+        name: station.name || 'Station',
+      });
+    } else if (!origin) {
+      // If no start location set yet, default to central Kolkata or nearest point
+      setOrigin({
+        latitude: 22.5726,
+        longitude: 88.3639,
+        name: 'Kolkata City Center',
       });
     }
 
+    const lat = pandal.location?.latitude ?? pandal.lat;
+    const lng = pandal.location?.longitude ?? pandal.lng;
+
     setDestination({
-      latitude: pandal.location.latitude,
-      longitude: pandal.location.longitude,
+      latitude: lat,
+      longitude: lng,
       name: pandal.name,
-      cluster: pandal.cluster,
+      cluster: pandal.cluster || pandal.region,
       nearest_metro: pandal.nearest_metro,
     });
 
     setActivePandal({
       ...pandal,
-      location: pandal.location,
+      location: { latitude: lat, longitude: lng },
     });
 
-    // Redirect to navigation tab
+    setActiveTab('trips');
+  };
+
+  // Navigate from Metro / Train ">" button directly to Navigation Screen
+  const handleMetroNavigateToPandal = (pandal) => {
+    if (!pandal) return;
+    setNavigationTargetPandal(pandal);
     setActiveTab('navigation');
   };
 
+  // Select Popular Route Preset (North Kolkata Heritage, South Mega, etc.)
+  const handleSelectPopularRoute = (presetId) => {
+    const preset = POPULAR_PRESETS[presetId];
+    if (preset) {
+      setOrigin(preset.origin);
+      setDestination(preset.destination);
+      resetRoute();
+      setActiveTab('trips');
+    }
+  };
+
+  // Select Recommendation from Modal
+  const handleSelectRecommendation = (rec) => {
+    if (rec.origin && rec.destination) {
+      setOrigin(rec.origin);
+      setDestination(rec.destination);
+      resetRoute();
+      setActiveTab('trips');
+    }
+  };
+
+  // Load Saved Trip from Profile
+  const handleLoadSavedTrip = (trip) => {
+    if (trip?.origin && trip?.destination) {
+      setOrigin(trip.origin);
+      setDestination(trip.destination);
+      resetRoute();
+      setActiveTab('trips');
+    }
+  };
+
+  // Save current route
+  const handleSaveCurrentRoute = () => {
+    if (!origin || !destination) return;
+    saveTrip({
+      name: `${destination.name} Parikrama`,
+      origin,
+      destination,
+      distanceKm,
+      pandalCount: itinerary.length,
+    });
+    setIsRouteSaved(true);
+    setSaveSuccessToast(true);
+    setTimeout(() => setSaveSuccessToast(false), 3000);
+  };
+
   return (
-    <Layout activeTab={activeTab} onChangeTab={setActiveTab}>
-      {activeTab === 'metro' ? (
-        <MetroTransitView
+    <>
+      <Layout
+        activeTab={activeTab}
+        onChangeTab={setActiveTab}
+        onMenuClick={() => setIsDrawerOpen(true)}
+        onProfileClick={() => setActiveTab('profile')}
+      >
+        {/* Screen Views by Active Tab */}
+        {activeTab === 'home' && (
+        <HomeScreen
+          onNavigate={setActiveTab}
+          onSelectPopularRoute={handleSelectPopularRoute}
+        />
+      )}
+
+      {activeTab === 'navigation' && (
+        <NavigationScreen
           apiBaseUrl={API_BASE_URL}
+          targetPandal={navigationTargetPandal}
           onNavigateToPandal={handleNavigateToPandal}
         />
-      ) : (
+      )}
+
+      {activeTab === 'metro' && (
+        <MetroTransitView
+          apiBaseUrl={API_BASE_URL}
+          onNavigateToPandal={handleMetroNavigateToPandal}
+        />
+      )}
+
+      {activeTab === 'profile' && (
+        <ProfileScreen
+          onNavigateToPandal={handleNavigateToPandal}
+          onNavigateToTrip={handleLoadSavedTrip}
+        />
+      )}
+
+      {activeTab === 'trips' && (
         <>
           {/* Full-screen map background */}
           <MapBackground
@@ -198,9 +335,41 @@ export default function App() {
             apiBaseUrl={API_BASE_URL}
           />
 
-          {/* Floating route summary chip */}
+          {/* Dedicated Aesthetic Save Button & Compact Summary Bar (Floats right above bottom carousel, leaving map 100% visible) */}
           {hasRoute && (
-            <RouteSummaryChip distanceKm={distanceKm} pandalCount={itinerary.length} />
+            <div className="pointer-events-none absolute inset-x-3 sm:inset-x-6 bottom-[204px] z-30 flex items-center justify-between">
+              {/* Sleek, mini Route Summary Pill */}
+              <div className="pointer-events-auto animate-fade-in">
+                <RouteSummaryChip distanceKm={distanceKm} pandalCount={itinerary.length} />
+              </div>
+
+              {/* Dedicated Aesthetic Save Route Action Pill */}
+              <div className="pointer-events-auto animate-fade-in">
+                <button
+                  type="button"
+                  onClick={handleSaveCurrentRoute}
+                  className={`h-8 px-3.5 rounded-full border shadow-md font-extrabold text-xs flex items-center gap-1.5 active:scale-95 transition-all ${
+                    isRouteSaved
+                      ? 'bg-emerald-700 text-white border-emerald-600'
+                      : 'bg-[#FFFDF8]/95 backdrop-blur-md border-[#E5D2A8] text-[#8E1B1B] hover:bg-[#FAF0E6]'
+                  }`}
+                  title="Save Route to Profile"
+                >
+                  <span>{isRouteSaved ? '✓' : '🔖'}</span>
+                  <span>{isRouteSaved ? 'Saved to Profile' : 'Save Route'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Save Success Toast */}
+          {saveSuccessToast && (
+            <div className="pointer-events-none absolute inset-x-0 z-50 flex justify-center px-4 bottom-[248px]">
+              <div className="pointer-events-auto rounded-full bg-emerald-700 text-white text-xs font-bold px-4 py-2 shadow-lg animate-fade-in flex items-center gap-1.5">
+                <span>✓</span>
+                <span>Route saved to your profile!</span>
+              </div>
+            </div>
           )}
 
           {/* Error toast */}
@@ -223,6 +392,27 @@ export default function App() {
         </>
       )}
     </Layout>
+
+    {/* Side Drawer Menu (From Hamburger) - Placed outside Layout for full unclipped overlay */}
+    <SideDrawer
+      isOpen={isDrawerOpen}
+      onClose={() => setIsDrawerOpen(false)}
+      onNavigate={(tab) => {
+        setActiveTab(tab);
+        setIsDrawerOpen(false);
+      }}
+      onOpenModal={(modal) => {
+        setActiveModal(modal);
+        setIsDrawerOpen(false);
+      }}
+    />
+
+    {/* Consolidated Info Modals */}
+    <InfoModals
+      activeModal={activeModal}
+      onClose={() => setActiveModal(null)}
+      onSelectRecommendation={handleSelectRecommendation}
+    />
+  </>
   );
 }
-

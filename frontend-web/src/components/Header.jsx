@@ -399,7 +399,7 @@ export default function Header({
           {/* Right: User Profile Avatar Circle */}
           <button
             type="button"
-            onClick={() => setShowAuthModal((prev) => !prev)}
+            onClick={() => (onProfileClick ? onProfileClick() : setShowAuthModal((prev) => !prev))}
             aria-label="User Profile"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f2e6d6] text-[#3e221b] hover:bg-[#ebdcc9] active:scale-95 transition-all focus:outline-none shadow-sm overflow-hidden border border-[#ebdcc9]"
           >
