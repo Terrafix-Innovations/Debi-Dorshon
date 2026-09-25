@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "fresh-debi-dorshon",
-    "slug": "fresh-debi-dorshon",
+    "name": "Debi-Dorshon",
+    "slug": "debi-dorshon",
     "scheme": "debidorshon",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -34,15 +34,14 @@
         {
           "locationWhenInUsePermission": "Debi-Dorshon uses your location to discover Durga Puja pandals, Metro stations, and nearby transit routes."
         }
-      ],
-      "expo-web-browser"
+      ]
     ],
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "88bb1e36-a19c-4891-bf50-d8473e957e7b"
+        "projectId": "814fbb2f-90c3-4893-b382-8e75ddae5ac4"
       }
     }
   }
