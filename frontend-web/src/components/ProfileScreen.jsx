@@ -413,6 +413,28 @@ export default function ProfileScreen({
               </div>
             </form>
           )}
+
+          {/* Terms & Privacy Links */}
+          <p className="text-[10.5px] text-center text-[#856E63] mt-4 leading-relaxed">
+            By continuing, you agree to our{' '}
+            <a
+              href="/terms.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#8E1B1B] underline hover:text-[#771313]"
+            >
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a
+              href="/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#8E1B1B] underline hover:text-[#771313]"
+            >
+              Privacy Policy
+            </a>.
+          </p>
         </div>
       )}
     </div>

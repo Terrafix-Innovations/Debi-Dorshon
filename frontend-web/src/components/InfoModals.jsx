@@ -220,6 +220,16 @@ export default function InfoModals({
                 <p className="text-[#564338] mt-0.5">All API communications use encrypted HTTPS protocols with isolated user sandboxes.</p>
               </div>
             </div>
+
+            <a
+              href="/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 w-full h-10 rounded-xl bg-[#8E1B1B] hover:bg-[#771313] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+            >
+              <span>View Full Legal Privacy Policy</span>
+              <span>↗</span>
+            </a>
           </div>
         )}
 
