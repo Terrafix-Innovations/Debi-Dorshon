@@ -41,23 +41,11 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
 }
 
 export default function TripScreen({ navigation }) {
-  // Origin and Destination state
-  const [startPlace, setStartPlace] = useState({
-    id: 'start_def',
-    title: 'Shyambazar Metro Station',
-    latitude: 22.6033,
-    longitude: 88.3702,
-  });
-
-  const [endPlace, setEndPlace] = useState({
-    id: 'end_def',
-    title: 'Kalighat Metro Station',
-    latitude: 22.5186,
-    longitude: 88.3468,
-  });
-
-  const [startText, setStartText] = useState('Shyambazar Metro Station');
-  const [endText, setEndText] = useState('Kalighat Metro Station');
+  // Origin and Destination state - initialized to null for manual entry
+  const [startPlace, setStartPlace] = useState(null);
+  const [endPlace, setEndPlace] = useState(null);
+  const [startText, setStartText] = useState('');
+  const [endText, setEndText] = useState('');
 
   // Route calculation state
   const [routePlan, setRoutePlan] = useState(null);
@@ -189,8 +177,16 @@ export default function TripScreen({ navigation }) {
     return routePlan?.itinerary || [];
   }, [routePlan]);
 
+  const [isSearchActive, setIsSearchActive] = useState(false);
+
   // Tap an empty point on the map to auto-assign Start (if empty) then Destination.
   const handleMapPress = (lat, lng) => {
+    if (isSearchActive) {
+      setIsSearchActive(false);
+      Keyboard.dismiss();
+      return;
+    }
+
     if (!startPlace?.latitude) {
       const picked = {
         id: `map_${Date.now()}`,
@@ -294,16 +290,23 @@ export default function TripScreen({ navigation }) {
               if (place) {
                 setStartPlace(place);
                 setStartText(place.title);
+              } else {
+                setStartPlace(null);
+                setStartText('');
               }
             }}
             onSelectEndPlace={(place) => {
               if (place) {
                 setEndPlace(place);
                 setEndText(place.title);
+              } else {
+                setEndPlace(null);
+                setEndText('');
               }
             }}
             onSwap={handleSwap}
             onUseCurrentLocation={handleUseCurrentLocation}
+            onSearchActiveChange={setIsSearchActive}
             loading={loadingRoute || locating}
           />
 
@@ -352,7 +355,8 @@ const styles = StyleSheet.create({
     top: spacing.sm,
     left: spacing.sm,
     right: spacing.sm,
-    zIndex: 10,
+    zIndex: 50,
+    elevation: 10,
   },
 
   /* Bottom Carousel Position */

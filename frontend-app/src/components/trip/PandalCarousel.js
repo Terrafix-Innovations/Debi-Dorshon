@@ -93,10 +93,10 @@ export default function PandalCarousel({
     return (
       <View style={styles.carouselWrap}>
         <View style={styles.emptyCard}>
-          <Text style={{ fontSize: 20 }}>🛕</Text>
-          <Text style={styles.emptyTitle}>No pandals along this corridor</Text>
+          <Text style={{ fontSize: 22 }}>🛕</Text>
+          <Text style={styles.emptyTitle}>Enter Start & Destination</Text>
           <Text style={styles.emptySub}>
-            Try picking another start/destination route across Kolkata.
+            Pick your start and destination points above or tap on the map to calculate your custom Puja Parikrama route.
           </Text>
         </View>
       </View>

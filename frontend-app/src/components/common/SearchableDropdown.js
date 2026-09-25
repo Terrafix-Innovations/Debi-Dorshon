@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Pressable, Modal, TextInput, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Modal, TextInput, FlatList, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
@@ -60,6 +60,7 @@ export default function SearchableDropdown({ label, items, data, value, onSelect
               placeholderTextColor={`${colors.espresso}77`}
               value={query}
               onChangeText={setQuery}
+              underlineColorAndroid="transparent"
             />
             <FlatList
               data={filtered}
@@ -139,6 +140,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginBottom: spacing.sm,
     color: colors.espresso,
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none',
+        outlineWidth: 0,
+        outlineColor: 'transparent',
+        boxShadow: 'none',
+      },
+    }),
   },
   option: {
     flexDirection: 'row',

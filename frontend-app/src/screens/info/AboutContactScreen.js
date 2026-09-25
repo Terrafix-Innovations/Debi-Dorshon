@@ -71,6 +71,33 @@ export function ContactScreen({ navigation }) {
   );
 }
 
+export function PrivacyPolicyScreen({ navigation }) {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <HeaderNavbar navigation={navigation} title="Privacy Policy • দেবী দর্শন" />
+      <SideDrawer navigation={navigation} />
+
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.card}>
+          <MaterialCommunityIcons name="shield-check-outline" size={48} color={colors.primaryMaroon} />
+          <Text style={styles.title}>Privacy Policy</Text>
+          <Text style={styles.version}>Last Updated: September 2026</Text>
+          <Text style={styles.desc}>
+            At দেবী দর্শন (Debi Dorshon), your privacy is our top priority. We do not sell or track your private personal information.
+          </Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Data We Process</Text>
+          <Text style={styles.bullet}>• GPS Location: Used solely on-device to compute nearest pandals and shortest puja parikrama routes.</Text>
+          <Text style={styles.bullet}>• Local Cache: Used to store your route preferences and saved pandals.</Text>
+          <Text style={styles.bullet}>• Security: All communications are encrypted over secure HTTPS/WSS protocols.</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   container: { padding: spacing.md },

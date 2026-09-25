@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  FlatList,
-  Modal,
-  Pressable,
+  ScrollView,
+  Keyboard,
   Vibration,
+  Platform,
 } from 'react-native';
-import Svg, { Path, Circle, G } from 'react-native-svg';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { fetchAutocompletePlaces } from '../../services/routeService';
 import { colors } from '../../theme/colors';
@@ -20,6 +20,12 @@ import { radius, spacing } from '../../theme/spacing';
 const GOLD = '#7C6D28';   // START accent
 const MAROON = '#6E1412'; // DESTINATION accent
 const PINK = '#E8BEC8';   // connector line
+
+const triggerHaptic = (ms = 15) => {
+  try {
+    Vibration.vibrate(ms);
+  } catch (e) { }
+};
 
 export default function FloatingRouteCard({
   startText,
@@ -30,25 +36,49 @@ export default function FloatingRouteCard({
   onSelectEndPlace,
   onSwap,
   onUseCurrentLocation,
+  onSearchActiveChange,
   loading = false,
 }) {
-  const [activeInput, setActiveInput] = useState(null); // 'start' | 'end' | null
-  const [query, setQuery] = useState('');
+  const [activeField, setActiveField] = useState(null); // 'start' | 'end' | null
+  const [startVal, setStartVal] = useState(startText || '');
+  const [endVal, setEndVal] = useState(endText || '');
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
+  const startInputRef = useRef(null);
+  const endInputRef = useRef(null);
   const debounceTimer = useRef(null);
 
-  // Debounced search when active input query changes
+  // Sync external prop changes
   useEffect(() => {
-    if (!activeInput) {
+    setStartVal(startText || '');
+  }, [startText]);
+
+  useEffect(() => {
+    setEndVal(endText || '');
+  }, [endText]);
+
+  // Inform parent when search dropdown is active/inactive
+  useEffect(() => {
+    if (onSearchActiveChange) {
+      onSearchActiveChange(activeField !== null);
+    }
+  }, [activeField, onSearchActiveChange]);
+
+  const currentQuery = activeField === 'start' ? startVal : activeField === 'end' ? endVal : '';
+
+  // Debounced search when active field query changes
+  useEffect(() => {
+    if (!activeField) {
       setSuggestions([]);
+      setLoadingSuggestions(false);
       return;
     }
 
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
 
-    if (!query.trim()) {
+    const trimmed = (currentQuery || '').trim();
+    if (!trimmed) {
       setSuggestions([]);
       setLoadingSuggestions(false);
       return;
@@ -57,38 +87,94 @@ export default function FloatingRouteCard({
     setLoadingSuggestions(true);
     debounceTimer.current = setTimeout(async () => {
       try {
-        const list = await fetchAutocompletePlaces(query, 6);
+        const list = await fetchAutocompletePlaces(trimmed, 6);
         setSuggestions(list || []);
       } catch (err) {
         setSuggestions([]);
       } finally {
         setLoadingSuggestions(false);
       }
-    }, 250);
+    }, 200);
 
     return () => {
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
     };
-  }, [query, activeInput]);
+  }, [currentQuery, activeField]);
 
-  const handleOpenSearch = (target) => {
-    setActiveInput(target);
-    setQuery(target === 'start' ? startText || '' : endText || '');
+  const handleStartFocus = () => {
+    triggerHaptic(12);
+    setActiveField('start');
+  };
+
+  const handleEndFocus = () => {
+    triggerHaptic(12);
+    setActiveField('end');
+  };
+
+  const handleStartChangeText = (text) => {
+    setStartVal(text);
+    if (onStartChange) onStartChange(text);
+    if (activeField !== 'start') setActiveField('start');
+  };
+
+  const handleEndChangeText = (text) => {
+    setEndVal(text);
+    if (onEndChange) onEndChange(text);
+    if (activeField !== 'end') setActiveField('end');
+  };
+
+  const handleClearStart = () => {
+    triggerHaptic(15);
+    setStartVal('');
+    if (onStartChange) onStartChange('');
+    if (onSelectStartPlace) onSelectStartPlace(null);
+    setSuggestions([]);
+    startInputRef.current?.focus();
+  };
+
+  const handleClearEnd = () => {
+    triggerHaptic(15);
+    setEndVal('');
+    if (onEndChange) onEndChange('');
+    if (onSelectEndPlace) onSelectEndPlace(null);
+    setSuggestions([]);
+    endInputRef.current?.focus();
   };
 
   const handleSelectSuggestion = (place) => {
-    if (activeInput === 'start') {
-      onSelectStartPlace(place);
-    } else if (activeInput === 'end') {
-      onSelectEndPlace(place);
+    triggerHaptic(18);
+    if (activeField === 'start') {
+      setStartVal(place.title);
+      if (onSelectStartPlace) onSelectStartPlace(place);
+      if (onStartChange) onStartChange(place.title);
+    } else if (activeField === 'end') {
+      setEndVal(place.title);
+      if (onSelectEndPlace) onSelectEndPlace(place);
+      if (onEndChange) onEndChange(place.title);
     }
-    setActiveInput(null);
-    setQuery('');
+    setActiveField(null);
+    setSuggestions([]);
+    Keyboard.dismiss();
+  };
+
+  const handlePressCurrentLocation = () => {
+    triggerHaptic(25);
+    if (onUseCurrentLocation) onUseCurrentLocation();
+    setActiveField(null);
+    setSuggestions([]);
+    Keyboard.dismiss();
   };
 
   const handleTriggerSwap = () => {
-    try { Vibration.vibrate(30); } catch (e) {}
-    onSwap();
+    triggerHaptic(30);
+    if (onSwap) onSwap();
+  };
+
+  const handleCloseDropdown = () => {
+    triggerHaptic(10);
+    setActiveField(null);
+    setSuggestions([]);
+    Keyboard.dismiss();
   };
 
   return (
@@ -134,44 +220,74 @@ export default function FloatingRouteCard({
           {/* START Section */}
           <View style={styles.inputGroup}>
             <Text style={styles.startLabel}>START</Text>
-            <TouchableOpacity
-              style={styles.inputPill}
-              onPress={() => handleOpenSearch('start')}
-              activeOpacity={0.8}
-            >
+            <View style={[styles.inputPill, activeField === 'start' && styles.inputPillActiveStart]}>
               <Ionicons name="location-outline" size={16} color="#8A7B6E" />
-              <Text
-                style={startText ? styles.inputText : styles.inputPlaceholder}
-                numberOfLines={1}
-              >
-                {startText || 'Choose start location'}
-              </Text>
-              <TouchableOpacity
-                onPress={onUseCurrentLocation}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <MaterialCommunityIcons name="target" size={18} color="#8A7B6E" />
-              </TouchableOpacity>
-            </TouchableOpacity>
+              <TextInput
+                ref={startInputRef}
+                style={[
+                  styles.textInput,
+                  Platform.OS === 'web' && { outlineStyle: 'none', outline: 'none' },
+                ]}
+                underlineColorAndroid="transparent"
+                placeholder="Choose start location"
+                placeholderTextColor="#8A7B6E"
+                value={startVal}
+                onChangeText={handleStartChangeText}
+                onFocus={handleStartFocus}
+                returnKeyType="search"
+                autoCapitalize="words"
+                autoCorrect={false}
+              />
+              {startVal ? (
+                <TouchableOpacity
+                  onPress={handleClearStart}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="close-circle" size={18} color="#8A7B6E" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={handlePressCurrentLocation}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <MaterialCommunityIcons name="target" size={18} color={GOLD} />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           {/* DESTINATION Section */}
           <View style={styles.inputGroup}>
             <Text style={styles.destLabel}>DESTINATION</Text>
-            <TouchableOpacity
-              style={styles.inputPill}
-              onPress={() => handleOpenSearch('end')}
-              activeOpacity={0.8}
-            >
+            <View style={[styles.inputPill, activeField === 'end' && styles.inputPillActiveDest]}>
               <Ionicons name="location-outline" size={16} color="#8A7B6E" />
-              <Text
-                style={endText ? styles.inputText : styles.inputPlaceholder}
-                numberOfLines={1}
-              >
-                {endText || 'Choose destination'}
-              </Text>
-              <Ionicons name="flag-outline" size={17} color="#8A7B6E" />
-            </TouchableOpacity>
+              <TextInput
+                ref={endInputRef}
+                style={[
+                  styles.textInput,
+                  Platform.OS === 'web' && { outlineStyle: 'none', outline: 'none' },
+                ]}
+                underlineColorAndroid="transparent"
+                placeholder="Choose destination"
+                placeholderTextColor="#8A7B6E"
+                value={endVal}
+                onChangeText={handleEndChangeText}
+                onFocus={handleEndFocus}
+                returnKeyType="search"
+                autoCapitalize="words"
+                autoCorrect={false}
+              />
+              {endVal ? (
+                <TouchableOpacity
+                  onPress={handleClearEnd}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="close-circle" size={18} color="#8A7B6E" />
+                </TouchableOpacity>
+              ) : (
+                <Ionicons name="flag-outline" size={17} color="#8A7B6E" />
+              )}
+            </View>
           </View>
         </View>
 
@@ -191,7 +307,7 @@ export default function FloatingRouteCard({
         </View>
       </View>
 
-      {/* Loading Indicator */}
+      {/* Loading Indicator for Route Plan */}
       {loading && (
         <View style={styles.loadingRow}>
           <ActivityIndicator size="small" color={MAROON} />
@@ -199,87 +315,83 @@ export default function FloatingRouteCard({
         </View>
       )}
 
-      {/* Autocomplete Search Modal */}
-      <Modal
-        visible={activeInput !== null}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setActiveInput(null)}
-      >
-        <Pressable style={styles.modalOverlay} onPress={() => setActiveInput(null)}>
-          <Pressable style={styles.searchModalCard} onPress={(e) => e.stopPropagation()}>
-            <View style={styles.searchHeader}>
-              <Text style={styles.searchTitle}>
-                {activeInput === 'start' ? 'Pick Start Location' : 'Pick Destination'}
-              </Text>
-              <TouchableOpacity onPress={() => setActiveInput(null)}>
-                <Ionicons name="close" size={22} color={colors.espresso} />
-              </TouchableOpacity>
-            </View>
+      {/* Inline Dropdown for Autocomplete Suggestions (Like Web, No Popups) */}
+      {activeField && (
+        <View style={styles.dropdownContainer}>
+          <View style={styles.dropdownHeaderRow}>
+            <Text style={styles.dropdownHeaderTitle}>
+              {activeField === 'start' ? 'Start Location Suggestions' : 'Destination Suggestions'}
+            </Text>
+            <TouchableOpacity
+              style={styles.dropdownCloseBtn}
+              onPress={handleCloseDropdown}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="close" size={18} color="#8A7B6E" />
+            </TouchableOpacity>
+          </View>
 
-            <View style={styles.searchInputRow}>
-              <Ionicons
-                name={activeInput === 'start' ? 'locate' : 'flag'}
-                size={18}
-                color={activeInput === 'start' ? GOLD : MAROON}
-              />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Type location, metro, or pandal name..."
-                placeholderTextColor={`${colors.espresso}77`}
-                value={query}
-                onChangeText={setQuery}
-                autoFocus
-              />
-              {loadingSuggestions && <ActivityIndicator size="small" color="#903f00" />}
-            </View>
-
-            {activeInput === 'start' ? (
+          <ScrollView
+            style={styles.dropdownScroll}
+            keyboardShouldPersistTaps="handled"
+            nestedScrollEnabled
+          >
+            {/* If Start is active, show Use Current Location at top */}
+            {activeField === 'start' && (
               <TouchableOpacity
-                style={styles.currentLocRow}
-                onPress={() => {
-                  onUseCurrentLocation();
-                  setActiveInput(null);
-                }}
+                style={styles.currentLocItem}
+                onPress={handlePressCurrentLocation}
+                activeOpacity={0.7}
               >
-                <View style={styles.locIconWrap}>
-                  <Ionicons name="navigate-circle" size={22} color="#903f00" />
+                <View style={styles.currentLocIconWrap}>
+                  <MaterialCommunityIcons name="crosshairs-gps" size={18} color={MAROON} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.locTitle}>Use Current Location</Text>
-                  <Text style={styles.locSub}>Your GPS coordinates in Kolkata</Text>
+                  <Text style={styles.currentLocTitle}>Use Current Location</Text>
+                  <Text style={styles.currentLocSubtitle}>Your GPS coordinates in Kolkata</Text>
                 </View>
+                <Ionicons name="chevron-forward" size={16} color="rgba(138, 123, 110, 0.6)" />
               </TouchableOpacity>
-            ) : null}
+            )}
 
-            <FlatList
-              data={suggestions}
-              keyExtractor={(item, idx) => item.id || `sugg_${idx}`}
-              keyboardShouldPersistTaps="handled"
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.suggItem}
-                  onPress={() => handleSelectSuggestion(item)}
-                >
-                  <View style={styles.badgeWrap}>
-                    <Text style={styles.badgeText}>{item.badge || '📍 Place'}</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.suggTitle}>{item.title}</Text>
-                    {item.subtitle ? <Text style={styles.suggSub}>{item.subtitle}</Text> : null}
-                  </View>
-                  <Ionicons name="chevron-forward" size={16} color={`${colors.espresso}55`} />
-                </TouchableOpacity>
-              )}
-              ListEmptyComponent={
-                query.trim() && !loadingSuggestions ? (
-                  <Text style={styles.emptyText}>No matching places found</Text>
-                ) : null
-              }
-            />
-          </Pressable>
-        </Pressable>
-      </Modal>
+            {/* Suggestions Loading */}
+            {loadingSuggestions && (
+              <View style={styles.dropdownLoadingRow}>
+                <ActivityIndicator size="small" color={MAROON} />
+                <Text style={styles.dropdownLoadingText}>Finding locations & pandals...</Text>
+              </View>
+            )}
+
+            {/* Autocomplete items */}
+            {!loadingSuggestions && suggestions.map((item, idx) => (
+              <TouchableOpacity
+                key={item.id || `sugg_${idx}`}
+                style={styles.suggItem}
+                onPress={() => handleSelectSuggestion(item)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.badgeWrap}>
+                  <Text style={styles.badgeText}>{item.badge || '📍 Place'}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.suggTitle} numberOfLines={1}>{item.title}</Text>
+                  {item.subtitle ? (
+                    <Text style={styles.suggSub} numberOfLines={1}>{item.subtitle}</Text>
+                  ) : null}
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="rgba(138, 123, 110, 0.6)" />
+              </TouchableOpacity>
+            ))}
+
+            {/* Empty state */}
+            {!loadingSuggestions && suggestions.length === 0 && currentQuery.trim().length >= 2 && (
+              <View style={styles.dropdownEmptyRow}>
+                <Text style={styles.dropdownEmptyText}>No matching places or pandals found</Text>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      )}
     </View>
   );
 }
@@ -392,23 +504,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F7F2EA',
     borderRadius: 18,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     height: 42,
     gap: 8,
     borderWidth: 1,
     borderColor: 'rgba(235, 220, 201, 0.6)',
   },
-  inputText: {
-    flex: 1,
-    fontSize: 13.5,
-    fontWeight: '700',
-    color: colors.espresso,
+  inputPillActiveStart: {
+    borderColor: GOLD,
+    backgroundColor: '#FAF5EE',
   },
-  inputPlaceholder: {
+  inputPillActiveDest: {
+    borderColor: MAROON,
+    backgroundColor: '#FAF5EE',
+  },
+  textInput: {
     flex: 1,
     fontSize: 13.5,
-    color: '#8A7B6E',
-    fontWeight: '500',
+    fontWeight: '600',
+    color: colors.espresso,
+    paddingVertical: 0,
+    height: 38,
+    borderWidth: 0,
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none',
+        outlineWidth: 0,
+        outlineColor: 'transparent',
+        boxShadow: 'none',
+      },
+    }),
   },
 
   /* Right Action Column */
@@ -448,90 +573,118 @@ const styles = StyleSheet.create({
     color: MAROON,
   },
 
-  /* Search Modal */
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-    justifyContent: 'flex-start',
-    paddingTop: 80,
-    paddingHorizontal: spacing.md,
+  /* Inline Dropdown */
+  dropdownContainer: {
+    marginTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(235, 220, 201, 0.7)',
+    paddingTop: 8,
+    zIndex: 20,
   },
-  searchModalCard: {
-    backgroundColor: '#FAF7F2',
-    borderRadius: radius.lg,
-    maxHeight: '80%',
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.goldMuted,
-  },
-  searchHeader: {
+  dropdownHeaderRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
+    paddingHorizontal: 4,
+    marginBottom: 6,
   },
-  searchTitle: {
-    fontSize: 16,
+  dropdownHeaderTitle: {
+    fontSize: 11,
     fontWeight: '800',
-    color: MAROON,
+    color: '#8A7B6E',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
   },
-  searchInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  dropdownCloseBtn: {
+    padding: 3,
+    borderRadius: 10,
     backgroundColor: '#F2ECE1',
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.goldMuted,
-    paddingHorizontal: spacing.md,
-    height: 44,
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
   },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.espresso,
-    fontWeight: '600',
+  dropdownScroll: {
+    maxHeight: 220,
   },
-  currentLocRow: {
+  currentLocItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    padding: spacing.sm,
-    borderRadius: radius.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: colors.goldMuted,
-    marginBottom: spacing.sm,
-    gap: spacing.xs,
+    borderColor: 'rgba(235, 220, 201, 0.9)',
+    marginBottom: 6,
+    gap: 10,
   },
-  locIconWrap: {
+  currentLocIconWrap: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#F2ECE1',
+    backgroundColor: '#FAEEE4',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  locTitle: { fontSize: 13, fontWeight: '800', color: colors.espresso },
-  locSub: { fontSize: 11, color: `${colors.espresso}88` },
-
+  currentLocTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: colors.espresso,
+  },
+  currentLocSubtitle: {
+    fontSize: 11,
+    color: '#8A7B6E',
+    marginTop: 1,
+  },
+  dropdownLoadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+  },
+  dropdownLoadingText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: MAROON,
+  },
   suggItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: `${colors.goldMuted}40`,
-    gap: spacing.xs,
+    backgroundColor: '#FAF7F2',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    marginBottom: 4,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(235, 220, 201, 0.4)',
   },
   badgeWrap: {
     backgroundColor: '#F2ECE1',
-    paddingHorizontal: 8,
+    paddingHorizontal: 7,
     paddingVertical: 3,
-    borderRadius: radius.pill,
+    borderRadius: 8,
   },
-  badgeText: { fontSize: 11, fontWeight: '700', color: colors.espresso },
-  suggTitle: { fontSize: 14, fontWeight: '700', color: colors.espresso },
-  suggSub: { fontSize: 11, color: `${colors.espresso}88`, marginTop: 1 },
-  emptyText: { textAlign: 'center', color: `${colors.espresso}88`, marginVertical: spacing.md },
+  badgeText: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: colors.espresso,
+  },
+  suggTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.espresso,
+  },
+  suggSub: {
+    fontSize: 11,
+    color: '#8A7B6E',
+    marginTop: 1,
+  },
+  dropdownEmptyRow: {
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  dropdownEmptyText: {
+    fontSize: 12,
+    color: '#8A7B6E',
+    fontStyle: 'italic',
+  },
 });

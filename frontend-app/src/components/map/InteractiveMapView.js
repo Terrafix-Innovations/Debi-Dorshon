@@ -304,14 +304,13 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     webRef.current.injectJavaScript(`if (window.highlightStep) window.highlightStep(${step == null ? 'null' : step}); true;`);
   }, [selectedPlace, itinerary]);
 
-  // Handle messages from Mapbox webview
-  const handleMessage = useCallback((event) => {
+  // Handle messages from Mapbox webview / iframe
+  const handleMessageData = useCallback((rawPayload) => {
     try {
-      const data = JSON.parse(event.nativeEvent.data);
+      const data = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload;
       if (data.type === 'marker_click' && onSelectPlace) {
         onSelectPlace(data.place?.raw || data.place);
       } else if (data.type === 'map_click') {
-        // Handle map click to add locations
         if (onMapClick) {
           onMapClick(data.lat, data.lng);
         }
@@ -325,12 +324,29 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     } catch (e) {}
   }, [onSelectPlace, onMapClick, onUpdateOrigin, onUpdateDestination]);
 
+  const handleMessage = useCallback((event) => {
+    if (event?.nativeEvent?.data) {
+      handleMessageData(event.nativeEvent.data);
+    }
+  }, [handleMessageData]);
+
+  // Add web message listener for iframe postMessage
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const onWebMessage = (e) => {
+      if (e.data) handleMessageData(e.data);
+    };
+    window.addEventListener('message', onWebMessage);
+    return () => window.removeEventListener('message', onWebMessage);
+  }, [handleMessageData]);
+
   // Build the complete Mapbox HTML with embedded data
   const mapboxHtml = useMemo(() => {
     const pathJson = JSON.stringify(pathCoords.map(p => [p.longitude, p.latitude]));
     const markersJson = JSON.stringify(allMarkers);
     const userJson = userCoords ? JSON.stringify([userCoords.longitude, userCoords.latitude]) : 'null';
     const cleanBase = (API_BASE_URL || 'http://localhost:8000').trim().replace(/\/+$/, '');
+    const defaultEnvToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
     return `
       <!DOCTYPE html>
@@ -442,17 +458,28 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           let isDragging = false;
           let pandalMarkers = [];
 
+          function sendToHost(obj) {
+            const str = JSON.stringify(obj);
+            if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+              window.ReactNativeWebView.postMessage(str);
+            } else if (window.parent && window.parent !== window) {
+              window.parent.postMessage(str, '*');
+            }
+          }
+
           async function init() {
-            let token = null;
-            try {
-              const res = await fetch('${cleanBase}/api/v1/route/config');
-              if (res.ok) {
-                const cfg = await res.json();
-                if (cfg.mapbox_configured && cfg.mapbox_token) {
-                  token = cfg.mapbox_token;
+            let token = ${JSON.stringify(defaultEnvToken)};
+            if (!token || token.indexOf('your_') !== -1) {
+              try {
+                const res = await fetch('${cleanBase}/api/v1/route/config');
+                if (res.ok) {
+                  const cfg = await res.json();
+                  if (cfg.mapbox_configured && cfg.mapbox_token) {
+                    token = cfg.mapbox_token;
+                  }
                 }
-              }
-            } catch (err) {}
+              } catch (err) {}
+            }
 
             if (token) mapboxgl.accessToken = token;
 
@@ -488,15 +515,14 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
               if (isDragging) return;
               const target = e.originalEvent?.target;
               if (target && (target.closest('.custom-pin-wrapper') || target.closest('.mapboxgl-marker'))) return;
-              if (window.ReactNativeWebView) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'map_click', lat: e.lngLat.lat, lng: e.lngLat.lng }));
-              }
+              sendToHost({ type: 'map_click', lat: e.lngLat.lat, lng: e.lngLat.lng });
             });
 
             map.on('load', () => {
               updateData(${pathJson}, ${markersJson}, ${userJson});
             });
           }
+
 
           function createPinElement(type, label = '', isActive = false) {
             const el = document.createElement('div');
@@ -574,22 +600,18 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
                 marker.on('dragstart', () => { isDragging = true; });
                 marker.on('dragend', () => {
                   const pos = marker.getLngLat();
-                  if (window.ReactNativeWebView) {
-                    window.ReactNativeWebView.postMessage(JSON.stringify({ 
-                      type: 'marker_drag', 
-                      markerType: m.type, 
-                      lat: pos.lat, 
-                      lng: pos.lng 
-                    }));
-                  }
+                  sendToHost({ 
+                    type: 'marker_drag', 
+                    markerType: m.type, 
+                    lat: pos.lat, 
+                    lng: pos.lng 
+                  });
                   setTimeout(() => { isDragging = false; }, 200);
                 });
               }
 
               el.addEventListener('click', () => {
-                if (window.ReactNativeWebView) {
-                  window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'marker_click', place: m }));
-                }
+                sendToHost({ type: 'marker_click', place: m });
               });
 
               pandalMarkers.push(marker);

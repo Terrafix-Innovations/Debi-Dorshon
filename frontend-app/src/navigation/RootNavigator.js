@@ -7,7 +7,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import AuthScreen from '../screens/auth/AuthScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import RecommendationsScreen from '../screens/info/RecommendationsScreen';
-import { AboutScreen, ContactScreen } from '../screens/info/AboutContactScreen';
+import { AboutScreen, ContactScreen, PrivacyPolicyScreen } from '../screens/info/AboutContactScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +22,7 @@ export default function RootNavigator() {
           <Stack.Screen name="Recommendations" component={RecommendationsScreen} />
           <Stack.Screen name="About" component={AboutScreen} />
           <Stack.Screen name="Contact" component={ContactScreen} />
+          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         </Stack.Navigator>
       </View>
     </NavigationContainer>
