@@ -14,7 +14,7 @@
       }
     },
     "android": {
-      "package": "com.debidorshon.app",
+      "package": "app.vercel.debidorshon",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
