@@ -204,12 +204,19 @@ export default function SearchInput({
                 onClick={() => handleSelect(item)}
                 onMouseEnter={() => setSelectedIndex(idx)}
                 className={`p-2.5 px-3.5 cursor-pointer transition-colors flex items-center justify-between gap-2 ${
-                  isSelected ? 'bg-primary/10' : 'hover:bg-surface-container-low'
+                  isSelected ? 'bg-amber-500/10' : 'hover:bg-[#f5ede0]'
                 }`}
               >
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-xs text-on-surface truncate">{item.title}</div>
-                  <div className="text-[11px] text-on-surface-variant/70 truncate mt-0.5">{item.subtitle}</div>
+                  <div className="flex items-center gap-1.5">
+                    {item.badge && (
+                      <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#8E1B1B]/10 text-[#8E1B1B]">
+                        {item.badge}
+                      </span>
+                    )}
+                    <span className="font-semibold text-xs text-[#2d1b18] truncate">{item.title}</span>
+                  </div>
+                  <div className="text-[11px] text-[#765C51] truncate mt-0.5">{item.subtitle}</div>
                 </div>
               </div>
             );

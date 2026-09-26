@@ -41,9 +41,47 @@ async def get_map_config() -> Dict[str, Any]:
     }
 
 
+def classify_place(name: str, display_name: str, osm_value: str = "", osm_type: str = "") -> tuple:
+    """
+    Classifies a location into a user-friendly category and badge like Google Maps:
+    Returns (category, badge)
+    """
+    text = f"{name} {display_name} {osm_value} {osm_type}".lower()
+
+    # 1. Metro
+    if "metro" in text or osm_value in ["subway", "subway_entrance", "light_rail"] or osm_type in ["subway", "subway_entrance"]:
+        return "metro", "🚇 Metro Station"
+
+    # 2. Train / Railway
+    if "railway" in text or "junction" in text or "terminus" in text or (("station" in text or osm_value in ["station", "halt"]) and "metro" not in text):
+        return "train", "🚆 Railway Station"
+
+    # 3. Airport
+    if "airport" in text or "aerodrome" in text or osm_value in ["aerodrome", "airport"]:
+        return "airport", "✈️ Airport"
+
+    # 4. Ferry / River Ghat
+    if "ferry" in text or "ghat" in text or osm_value == "ferry_terminal":
+        return "ferry", "⛴️ Ferry Ghat"
+
+    # 5. Bus Station / Terminus
+    if "bus" in text or osm_value in ["bus_station", "bus_stop"]:
+        return "bus", "🚌 Bus Stand"
+
+    # 6. Landmark / Monument / Cultural / Park
+    if any(k in text for k in ["memorial", "monument", "museum", "temple", "mandir", "masjid", "church", "park", "garden", "stadium", "mall", "university", "college", "hospital", "bhavan"]) or osm_type in ["tourism", "historic", "attraction"]:
+        return "landmark", "🏛️ Landmark"
+
+    # 7. Street / Highway
+    if any(k in text for k in ["road", "street", "sarani", "lane", "avenue", "highway", "bypass", "flyover"]):
+        return "street", "🛣️ Street / Road"
+
+    return "place", "📍 Place"
+
+
 @router.get(
     "/autocomplete",
-    summary="Search places and pandals securely via backend proxy",
+    summary="Search places and pandals live via OpenStreetMap and MongoDB",
 )
 @limiter.limit(settings.RATE_LIMIT_AUTOCOMPLETE)
 async def autocomplete_places(
@@ -53,9 +91,10 @@ async def autocomplete_places(
     db: AsyncIOMotorDatabase = Depends(get_database),
 ) -> List[Dict[str, Any]]:
     """
-    Server-side geocoding & place search proxy.
-    Keeps Mapbox credentials strictly on the backend, while combining
-    external Mapbox place geocoding with local Durga Puja Pandals from MongoDB.
+    Live place & transit search proxy like Google Maps:
+    1. Pandals: Fetched from the MongoDB Durga Puja database.
+    2. All other locations (Metro stations, Train stations, Bus stands, Ferry ghats,
+       Landmarks, Streets, Addresses): Live fetched from OpenStreetMap (Photon & Nominatim).
     """
     trimmed = q.strip()
     if not trimmed:
@@ -69,11 +108,11 @@ async def autocomplete_places(
     results: List[Dict[str, Any]] = []
     seen_coords = set()
 
-    # Determine if query is explicitly a transit/metro search
-    transit_keywords = ["metro", "station", "railway", "train", "terminus", "terminal"]
+    # Determine if query is transit-oriented
+    transit_keywords = ["metro", "station", "railway", "train", "terminus", "terminal", "airport", "ghat", "bus"]
     is_transit_search = any(w in trimmed.lower() for w in transit_keywords)
 
-    # 1. Search local MongoDB STRICTLY for Durga Puja Pandals only by pandal name (NEVER for transit queries)
+    # 1. Search MongoDB for Durga Puja Pandals (unless explicitly a transit-only search)
     if not is_transit_search and db is not None:
         try:
             cursor = db[settings.PANDAL_COLLECTION_NAME].find(
@@ -84,7 +123,7 @@ async def autocomplete_places(
                 lat = loc.get("latitude")
                 lng = loc.get("longitude")
                 if lat and lng:
-                    key = (round(lat, 5), round(lng, 5))
+                    key = (round(lat, 4), round(lng, 4))
                     if key not in seen_coords:
                         seen_coords.add(key)
                         region = doc.get("region") or "Kolkata"
@@ -98,172 +137,117 @@ async def autocomplete_places(
                             "subtitle": " • ".join(sub_parts),
                             "latitude": float(lat),
                             "longitude": float(lng),
+                            "category": "pandal",
+                            "badge": "🛕 Pandal",
                         })
         except Exception:
             pass
 
-    # 2. Fetch everything else (metro stations, transit hubs, places, addresses) in real-time from Mapbox Live Map API
-    token = settings.MAPBOX_ACCESS_TOKEN
-    if token and token.startswith("pk.") and "your_" not in token:
-        client = get_http_client()
-        remaining_slots = max(1, limit - len(results))
-
-        # A. Mapbox SearchBox API: High-precision real-time transit & metro station search
-        try:
-            sb_url = "https://api.mapbox.com/search/searchbox/v1/suggest"
-            sb_params = {
-                "q": trimmed,
-                "access_token": token,
-                "session_token": "00000000-0000-0000-0000-000000000001",
-                "proximity": "88.3639,22.5726",
-                "bbox": "88.15,22.35,88.55,22.75",
-                "limit": str(min(10, remaining_slots + 4)),
-            }
-            res_sb = await client.get(sb_url, params=sb_params, timeout=3.5)
-            if res_sb.status_code == 200:
-                sugs = res_sb.json().get("suggestions", [])
-                candidates = []
-                for s in sugs:
-                    maki = str(s.get("maki") or "").lower()
-                    name = str(s.get("name") or "")
-                    n_low = name.lower()
-                    if is_transit_search:
-                        if any(bad in n_low for bad in ["co-operative", "housing", "bypass", "gali", "guest house", "plaza", "optician", "lodge", "hotel", "shop", "pg", "medplus"]):
-                            continue
-                        if maki in ["lodging", "hospital", "optician", "shop"]:
-                            continue
-                    candidates.append(s)
-
-                def rank_candidate(s):
-                    maki = str(s.get("maki") or "").lower()
-                    name = str(s.get("name") or "")
-                    n_low = name.lower()
-                    is_gate = "gate" in n_low or "get" in n_low
-                    is_stn = "station" in n_low
-                    if is_stn and not is_gate:
-                        return 0
-                    elif is_stn or "rail" in maki or "transit" in maki:
-                        return 1
-                    return 2
-
-                if is_transit_search:
-                    candidates.sort(key=rank_candidate)
-
-                for s in candidates:
-                    mid = s.get("mapbox_id")
-                    if not mid:
-                        continue
-
-                    ret_url = f"https://api.mapbox.com/search/searchbox/v1/retrieve/{mid}"
-                    ret_res = await client.get(
-                        ret_url,
-                        params={"access_token": token, "session_token": "00000000-0000-0000-0000-000000000001"},
-                        timeout=3.0,
-                    )
-                    if ret_res.status_code == 200:
-                        feats = ret_res.json().get("features", [])
-                        if feats:
-                            f = feats[0]
-                            coords = f.get("geometry", {}).get("coordinates", [])
-                            if len(coords) == 2:
-                                lng, lat = float(coords[0]), float(coords[1])
-                                key = (round(lat, 5), round(lng, 5))
-                                if key not in seen_coords:
-                                    seen_coords.add(key)
-                                    full_addr = f.get("properties", {}).get("full_address") or s.get("place_formatted") or ""
-                                    name_val = s.get("name") or f.get("properties", {}).get("name") or ""
-                                    if name_val.islower():
-                                        name_val = name_val.title()
-                                    results.append({
-                                        "id": f"mapbox_sb_{mid}",
-                                        "title": name_val,
-                                        "subtitle": full_addr,
-                                        "latitude": lat,
-                                        "longitude": lng,
-                                    })
-                                    if len(results) >= limit:
-                                        break
-        except Exception:
-            pass
-
-        # B. Mapbox Geocoding v5 API: Real-time POI, locality, neighborhood, and address search
-        if len(results) < limit:
-            try:
-                gc_params = {
-                    "access_token": token,
-                    "country": "IN",
-                    "proximity": "88.3639,22.5726",
-                    "bbox": "88.15,22.35,88.55,22.75",
-                    "limit": str(limit - len(results)),
-                }
-                res_gc = await client.get(
-                    f"https://api.mapbox.com/geocoding/v5/mapbox.places/{trimmed}.json",
-                    params=gc_params,
-                    timeout=3.5,
-                )
-                if res_gc.status_code == 200:
-                    for f in res_gc.json().get("features", []):
-                        center = f.get("center", [])
-                        if len(center) == 2:
-                            lng, lat = float(center[0]), float(center[1])
-                            key = (round(lat, 5), round(lng, 5))
-                            if key not in seen_coords:
-                                text = f.get("text") or f.get("place_name", "").split(",")[0]
-                                full = f.get("place_name", "")
-                                text_low = (text + " " + full).lower()
-                                if is_transit_search and any(bad in text_low for bad in ["co-operative", "housing", "bypass", "gali", "plaza", "optician", "shop", "floor"]):
-                                    continue
-                                seen_coords.add(key)
-                                results.append({
-                                    "id": f.get("id"),
-                                    "title": text,
-                                    "subtitle": full,
-                                    "latitude": lat,
-                                    "longitude": lng,
-                                })
-            except Exception:
-                pass
-
-    # 3. OpenStreetMap Nominatim search: Free real-time POI, transit hubs, stations, and addresses
+    # 2. Live fetch ALL other locations from OpenStreetMap (Photon & Nominatim)
     if len(results) < limit:
         client = get_http_client()
+        browser_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "application/json",
+        }
+        nom_headers = {
+            "User-Agent": "DebiDorshon-LiveSearch/1.0 (https://github.com/Debi-Dorshon)",
+            "Accept": "application/json",
+        }
+
+        # A. OpenStreetMap Photon API (instant autocomplete biased to Kolkata coordinates)
         try:
-            nom_params = {
+            photon_url = "https://photon.komoot.io/api/"
+            photon_params = {
                 "q": trimmed,
-                "format": "json",
-                "limit": str(limit - len(results)),
-                "countrycodes": "in",
-                "viewbox": "88.15,22.75,88.55,22.35",
-                "bounded": "0",
+                "lat": "22.5726",
+                "lon": "88.3639",
+                "limit": str(min(10, limit - len(results) + 4)),
             }
-            res_nom = await client.get(
-                "https://nominatim.openstreetmap.org/search",
-                params=nom_params,
-                headers={"User-Agent": "DebiDorshon-RoutePlanner/1.0"},
-                timeout=3.5,
-            )
-            if res_nom.status_code == 200:
-                for item in res_nom.json():
-                    lat_str = item.get("lat")
-                    lon_str = item.get("lon")
-                    if lat_str and lon_str:
-                        lat, lng = float(lat_str), float(lon_str)
-                        key = (round(lat, 5), round(lng, 5))
+            res_ph = await client.get(photon_url, params=photon_params, headers=browser_headers, timeout=3.0)
+            if res_ph.status_code == 200:
+                features = res_ph.json().get("features", [])
+                for f in features:
+                    coords = f.get("geometry", {}).get("coordinates", [])
+                    if len(coords) == 2:
+                        lng, lat = float(coords[0]), float(coords[1])
+                        key = (round(lat, 4), round(lng, 4))
                         if key not in seen_coords:
+                            props = f.get("properties", {})
+                            name_val = props.get("name") or props.get("street") or trimmed
+                            osm_val = str(props.get("osm_value") or "")
+                            osm_type = str(props.get("osm_type") or "")
+
+                            sub_parts = [
+                                props.get("district"),
+                                props.get("city"),
+                                props.get("state"),
+                            ]
+                            sub_clean = ", ".join([p for p in sub_parts if p]) or "Kolkata Region"
+
+                            category, badge = classify_place(name_val, sub_clean, osm_val, osm_type)
                             seen_coords.add(key)
-                            name_val = item.get("name") or (item.get("display_name", "").split(",")[0])
-                            full_addr = item.get("display_name") or ""
                             results.append({
-                                "id": f"osm_{item.get('place_id')}",
+                                "id": f"osm_ph_{props.get('osm_id', round(lat, 4))}",
                                 "title": name_val,
-                                "subtitle": full_addr,
+                                "subtitle": sub_clean,
                                 "latitude": lat,
                                 "longitude": lng,
+                                "category": category,
+                                "badge": badge,
                             })
                             if len(results) >= limit:
                                 break
         except Exception:
             pass
+
+        # B. OpenStreetMap Nominatim API (precise named stations, landmarks, airports, roads)
+        if len(results) < limit:
+            try:
+                nom_params = {
+                    "q": trimmed,
+                    "format": "jsonv2",
+                    "addressdetails": "1",
+                    "extratags": "1",
+                    "countrycodes": "in",
+                    "viewbox": "88.0,22.85,88.6,22.25",
+                    "bounded": "0",
+                    "limit": str(limit - len(results)),
+                }
+                res_nom = await client.get(
+                    "https://nominatim.openstreetmap.org/search",
+                    params=nom_params,
+                    headers=nom_headers,
+                    timeout=3.5,
+                )
+                if res_nom.status_code == 200:
+                    for item in res_nom.json():
+                        lat_str = item.get("lat")
+                        lon_str = item.get("lon")
+                        if lat_str and lon_str:
+                            lat, lng = float(lat_str), float(lon_str)
+                            key = (round(lat, 4), round(lng, 4))
+                            if key not in seen_coords:
+                                name_val = item.get("name") or item.get("display_name", "").split(",")[0]
+                                full_addr = item.get("display_name", "")
+                                osm_type = str(item.get("type") or "")
+                                osm_class = str(item.get("class") or "")
+
+                                category, badge = classify_place(name_val, full_addr, osm_type, osm_class)
+                                seen_coords.add(key)
+                                results.append({
+                                    "id": f"osm_nom_{item.get('place_id')}",
+                                    "title": name_val,
+                                    "subtitle": full_addr,
+                                    "latitude": lat,
+                                    "longitude": lng,
+                                    "category": category,
+                                    "badge": badge,
+                                })
+                                if len(results) >= limit:
+                                    break
+            except Exception:
+                pass
 
     final_results = results[:limit]
     await cache.set_json(cache_key, final_results, expire=settings.CACHE_TTL_AUTOCOMPLETE)

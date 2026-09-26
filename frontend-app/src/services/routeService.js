@@ -215,10 +215,15 @@ export async function fetchAutocompletePlaces(query, limit = 6) {
 
   if (results.length >= limit) return results;
 
-  // Fallback 2: Photon Geocoder
+  // Fallback 2: OpenStreetMap Photon Geocoder
   try {
-    const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(trimmed)}&lat=22.5726&lon=88.3639&limit=5`;
-    const res = await fetch(photonUrl);
+    const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(trimmed)}&lat=22.5726&lon=88.3639&limit=8`;
+    const res = await fetch(photonUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        Accept: 'application/json',
+      },
+    });
     if (res.ok) {
       const data = await res.json();
       (data.features || []).forEach((f) => {
@@ -226,19 +231,43 @@ export async function fetchAutocompletePlaces(query, limit = 6) {
         if (coords && coords.length === 2) {
           const lng = coords[0];
           const lat = coords[1];
-          const name = f.properties?.name || f.properties?.street || trimmed;
-          const key = `${lat}_${lng}`;
+          const props = f.properties || {};
+          const name = props.name || props.street || trimmed;
+          const key = `${roundCoord(lat)}_${roundCoord(lng)}`;
           if (!seen.has(key)) {
             seen.add(key);
-            const isMetro = name.toLowerCase().includes('metro');
+            const text = `${name} ${props.osm_value || ''} ${props.osm_type || ''}`.toLowerCase();
+            let cat = 'place';
+            let badge = '📍 Place';
+            if (text.includes('metro') || ['subway', 'subway_entrance'].includes(props.osm_value)) {
+              cat = 'metro';
+              badge = '🚇 Metro Station';
+            } else if (text.includes('railway') || text.includes('junction') || (text.includes('station') && !text.includes('metro')) || props.osm_value === 'station') {
+              cat = 'train';
+              badge = '🚆 Railway Station';
+            } else if (text.includes('airport') || props.osm_value === 'aerodrome') {
+              cat = 'airport';
+              badge = '✈️ Airport';
+            } else if (text.includes('ghat') || text.includes('ferry') || props.osm_value === 'ferry_terminal') {
+              cat = 'ferry';
+              badge = '⛴️ Ferry Ghat';
+            } else if (text.includes('bus') || ['bus_station', 'bus_stop'].includes(props.osm_value)) {
+              cat = 'bus';
+              badge = '🚌 Bus Stand';
+            } else if (['memorial', 'monument', 'museum', 'temple', 'park', 'garden'].some((k) => text.includes(k))) {
+              cat = 'landmark';
+              badge = '🏛️ Landmark';
+            }
+
+            const sub = [props.district, props.city, props.state].filter(Boolean).join(', ') || 'Kolkata Region';
             results.push({
-              id: `photon_${f.properties?.osm_id || Math.random()}`,
+              id: `photon_${props.osm_id || Math.random()}`,
               title: name,
-              subtitle: f.properties?.city || f.properties?.state || 'Kolkata Region',
+              subtitle: sub,
               latitude: lat,
               longitude: lng,
-              category: isMetro ? 'metro' : 'place',
-              badge: isMetro ? '🚇 Metro' : '📍 Place',
+              category: cat,
+              badge: badge,
             });
           }
         }
@@ -247,6 +276,10 @@ export async function fetchAutocompletePlaces(query, limit = 6) {
   } catch (e) {}
 
   return results.slice(0, limit);
+}
+
+function roundCoord(c) {
+  return Math.round((c || 0) * 10000) / 10000;
 }
 
 export async function fetchMultiStopRoute(stopIds) {
