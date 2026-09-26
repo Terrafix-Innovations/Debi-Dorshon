@@ -15,29 +15,29 @@ import { useAuth } from './context/AuthContext';
 const MAX_DETOUR_KM = 2.5;
 const CAROUSEL_INSET = 200; // px reserved at bottom for carousel + tab bar
 
-// Popular Route Presets
+// Popular Route Presets with exact OpenStreetMap surveyed coordinates
 const POPULAR_PRESETS = {
   heritage: {
     origin: {
-      latitude: 22.5960,
-      longitude: 88.3640,
+      latitude: 22.595881,
+      longitude: 88.3652,
       name: 'Sovabazar Metro Station',
     },
     destination: {
-      latitude: 22.6020,
-      longitude: 88.3610,
+      latitude: 22.602,
+      longitude: 88.361,
       name: 'Bagbazar Sarbojanin Durgotsav',
       cluster: 'North Kolkata',
     },
   },
   south_mega: {
     origin: {
-      latitude: 22.5082,
-      longitude: 88.3458,
+      latitude: 22.5083,
+      longitude: 88.3444,
       name: 'Rabindra Sarobar Metro',
     },
     destination: {
-      latitude: 22.5180,
+      latitude: 22.518,
       longitude: 88.3685,
       name: 'Ekdalia Evergreen Club',
       cluster: 'South Kolkata',
@@ -177,14 +177,17 @@ export default function App() {
     if (!pandal) return;
 
     if (station) {
-      const stationCoords = station.location || {
-        latitude: station.latitude || 22.5179,
-        longitude: station.longitude || 88.3437,
-      };
+      const stationCoords = station.location || (station.latitude && station.longitude ? {
+        latitude: station.latitude,
+        longitude: station.longitude,
+      } : {
+        latitude: 22.5726,
+        longitude: 88.3639,
+      });
       setOrigin({
         latitude: stationCoords.latitude,
         longitude: stationCoords.longitude,
-        name: station.name || 'Station',
+        name: station.name ? `${station.name} Station` : 'Station',
       });
     } else if (!origin) {
       // If no start location set yet, default to central Kolkata or nearest point

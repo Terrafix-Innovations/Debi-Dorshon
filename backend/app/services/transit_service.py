@@ -32,6 +32,28 @@ class TransitService:
                 self._raw_data = []
         return self._raw_data
 
+    def _get_metro_stations_dataset(self) -> Dict[str, Dict]:
+        if not hasattr(self, "_metro_dataset") or self._metro_dataset is None:
+            search_paths = [
+                Path(__file__).resolve().parent.parent.parent / "data" / "processed" / "metro_stations.json",
+                Path(__file__).resolve().parent.parent.parent.parent / "data" / "processed" / "metro_stations.json",
+                Path("/app/data/processed/metro_stations.json"),
+            ]
+            self._metro_dataset = {}
+            for p in search_paths:
+                if p.exists():
+                    try:
+                        with open(p, "r", encoding="utf-8") as f:
+                            items = json.load(f)
+                            for it in items:
+                                self._metro_dataset[it["name"].lower()] = it
+                                for a in it.get("aliases", []):
+                                    self._metro_dataset[a.lower()] = it
+                        break
+                    except Exception:
+                        pass
+        return self._metro_dataset
+
     def _get_metro_stations_from_json(self) -> List[Dict]:
         data = self._get_raw_data()
         counts = {}
@@ -43,10 +65,22 @@ class TransitService:
                 counts[name] = counts.get(name, 0) + 1
                 if name not in lines and m.get("line"):
                     lines[name] = m["line"]
-        results = [
-            {"name": name, "line": lines.get(name), "pandal_count": count}
-            for name, count in sorted(counts.items(), key=lambda x: x[1], reverse=True)
-        ]
+
+        coords_map = self._get_metro_stations_dataset()
+        results = []
+        for name, count in sorted(counts.items(), key=lambda x: x[1], reverse=True):
+            entry = coords_map.get(name.lower(), {})
+            loc = entry.get("location") or {}
+            lat = loc.get("latitude")
+            lng = loc.get("longitude")
+            results.append({
+                "name": name,
+                "line": lines.get(name) or entry.get("line"),
+                "pandal_count": count,
+                "latitude": lat,
+                "longitude": lng,
+                "location": {"latitude": lat, "longitude": lng} if lat and lng else None,
+            })
         return results
 
     def _get_pandals_by_metro_from_json(self, station_name: str, line: Optional[str] = None) -> List[Dict]:
@@ -103,11 +137,11 @@ class TransitService:
         return pandals
 
     async def get_metro_stations(self) -> List[Dict]:
-        """Aggregate all distinct metro stations with pandal counts (cached)."""
-        if self.collection is None:
+        """Aggregate all distinct metro stations with pandal counts and exact OSM GPS coordinates (cached)."""
+        if self.collection is None or self.db is None:
             return self._get_metro_stations_from_json()
 
-        cache_key = "cache:transit:metro:stations"
+        cache_key = "cache:transit:metro:stations:v2"
         cached = await cache.get_json(cache_key)
         if cached is not None:
             return cached
@@ -125,13 +159,48 @@ class TransitService:
                 },
                 {"$sort": {"pandal_count": -1, "_id.name": 1}}
             ]
-            results = []
+            counts_map = {}
             async for doc in self.collection.aggregate(pipeline):
-                results.append({
-                    "name": doc["_id"]["name"],
+                st_name = doc["_id"]["name"]
+                counts_map[st_name.lower()] = {
                     "line": doc["_id"].get("line"),
-                    "pandal_count": doc["pandal_count"]
+                    "count": doc["pandal_count"],
+                }
+
+            metro_col = self.db[getattr(settings, "METRO_COLLECTION_NAME", "metro_stations")]
+            results = []
+            seen = set()
+
+            async for m_doc in metro_col.find({}).sort("name", 1):
+                m_name = m_doc["name"]
+                m_lower = m_name.lower()
+                p_info = counts_map.get(m_lower)
+                if not p_info:
+                    for alias in m_doc.get("aliases", []):
+                        if alias.lower() in counts_map:
+                            p_info = counts_map[alias.lower()]
+                            break
+
+                p_count = p_info["count"] if p_info else m_doc.get("pandal_count", 0)
+                line = p_info.get("line") if p_info and p_info.get("line") else m_doc.get("line")
+                loc = m_doc.get("location") or {}
+                lat = loc.get("latitude") or m_doc.get("latitude")
+                lng = loc.get("longitude") or m_doc.get("longitude")
+
+                results.append({
+                    "name": m_name,
+                    "line": line,
+                    "pandal_count": p_count,
+                    "latitude": lat,
+                    "longitude": lng,
+                    "location": {"latitude": lat, "longitude": lng} if lat and lng else None,
                 })
+                seen.add(m_lower)
+
+            if not results:
+                return self._get_metro_stations_from_json()
+
+            results.sort(key=lambda s: (-s["pandal_count"], s["name"]))
             await cache.set_json(cache_key, results, expire=settings.CACHE_TTL_TRANSIT)
             return results
         except Exception:

@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     MONGODB_URL: str = "mongodb://localhost:27017"
     MONGODB_DB_NAME: str = "debi_dorshon_db"
     PANDAL_COLLECTION_NAME: str = "pandals"
+    METRO_COLLECTION_NAME: str = "metro_stations"
 
     # Routing Engine Settings (OSRM)
     OSRM_BASE_URL: str = "http://router.project-osrm.org"

@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional
+import re
 import httpx
 from fastapi import APIRouter, Depends, Query, Request, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -68,13 +69,48 @@ async def autocomplete_places(
     results: List[Dict[str, Any]] = []
     seen_coords = set()
 
-    # 1. Check curated Kolkata Metro Stations and Major Transit Hubs
-    metro_matches = search_kolkata_transit_hubs(trimmed, limit=4)
-    for m in metro_matches:
-        key = (round(m["latitude"], 4), round(m["longitude"], 4))
-        if key not in seen_coords:
-            seen_coords.add(key)
-            results.append(m)
+    # 1. Check OpenStreetMap-surveyed Kolkata Metro Stations from MongoDB
+    escaped_term = re.escape(trimmed)
+    try:
+        metro_col = db[getattr(settings, "METRO_COLLECTION_NAME", "metro_stations")]
+        metro_cursor = metro_col.find({
+            "$or": [
+                {"name": {"$regex": escaped_term, "$options": "i"}},
+                {"aliases": {"$regex": escaped_term, "$options": "i"}},
+                {"full_name": {"$regex": escaped_term, "$options": "i"}},
+            ]
+        }).limit(4)
+        async for m_doc in metro_cursor:
+            loc = m_doc.get("location") or {}
+            lat = loc.get("latitude") or m_doc.get("latitude")
+            lon = loc.get("longitude") or m_doc.get("longitude")
+            if lat and lon:
+                key = (round(lat, 4), round(lon, 4))
+                if key not in seen_coords:
+                    seen_coords.add(key)
+                    line_name = m_doc.get("line") or "Metro"
+                    p_count = m_doc.get("pandal_count", 0)
+                    sub = f"{line_name} • {p_count} Pandals nearby" if p_count else line_name
+                    results.append({
+                        "id": f"metro_{m_doc.get('osm_id') or m_doc.get('name')}",
+                        "title": m_doc.get("full_name") or f"{m_doc['name']} Metro Station",
+                        "subtitle": sub,
+                        "latitude": lat,
+                        "longitude": lon,
+                        "category": "metro",
+                        "badge": "🚇 Metro",
+                    })
+    except Exception:
+        pass
+
+    # Fallback to curated transit hubs (railway stations, ferry ghats, or backup metro)
+    if not results:
+        metro_matches = search_kolkata_transit_hubs(trimmed, limit=4)
+        for m in metro_matches:
+            key = (round(m["latitude"], 4), round(m["longitude"], 4))
+            if key not in seen_coords:
+                seen_coords.add(key)
+                results.append(m)
 
     # 2. Search local MongoDB Pandals (Exact matching)
     try:

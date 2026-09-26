@@ -13,6 +13,9 @@ class MetroStationResponse(BaseModel):
     name: str = Field(..., json_schema_extra={"example": "Shyambazar"})
     line: Optional[str] = Field(None, json_schema_extra={"example": "Blue Line"})
     pandal_count: int = Field(..., json_schema_extra={"example": 8})
+    latitude: Optional[float] = Field(None, json_schema_extra={"example": 22.603889})
+    longitude: Optional[float] = Field(None, json_schema_extra={"example": 88.371944})
+    location: Optional[dict] = None
 
 
 class TrainStationResponse(BaseModel):
