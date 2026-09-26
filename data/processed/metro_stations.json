@@ -10,10 +10,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "baranagar metro",
-      "baranagar station",
+      "baranagar",
       "bornagar",
-      "baranagar"
+      "baranagar metro",
+      "baranagar station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 8475640176
@@ -66,8 +66,8 @@
     "pandal_count": 8,
     "aliases": [
       "behala bazar",
-      "behala tram depot metro",
       "behala bazar metro",
+      "behala tram depot metro",
       "behala bazar station"
     ],
     "source": "OpenStreetMap",
@@ -84,11 +84,11 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "behala chowrasta",
-      "behala chowrasta station",
-      "diamond harbour road",
+      "behala chowrasta metro",
       "chowrasta metro",
-      "behala chowrasta metro"
+      "diamond harbour road",
+      "behala chowrasta station",
+      "behala chowrasta"
     ],
     "source": "OpenStreetMap",
     "osm_id": 9321292345
@@ -104,9 +104,9 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "beleghata metro",
+      "beleghata station",
       "beleghata",
-      "beleghata station"
+      "beleghata metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 13088458999
@@ -122,11 +122,11 @@
     },
     "pandal_count": 4,
     "aliases": [
-      "belgachhia metro",
-      "belgachia station",
-      "belgachhia",
       "belgachia",
-      "belgachia metro"
+      "belgachhia",
+      "belgachia station",
+      "belgachia metro",
+      "belgachhia metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421548359
@@ -143,30 +143,12 @@
     "pandal_count": 0,
     "aliases": [
       "bengal chemical station",
-      "bengal chemical metro",
       "maniktala main road metro",
+      "bengal chemical metro",
       "bengal chemical"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7976140066
-  },
-  {
-    "name": "Biswa Bangla Convention Centre",
-    "short_name": "Biswa Bangla Convention Centre",
-    "full_name": "Biswa Bangla Convention Centre Metro Station",
-    "line": "Orange Line",
-    "location": {
-      "latitude": 22.582475,
-      "longitude": 88.473117
-    },
-    "pandal_count": 0,
-    "aliases": [
-      "biswa bangla convention centre metro",
-      "biswa bangla convention centre",
-      "biswa bangla convention centre station"
-    ],
-    "source": "OpenStreetMap",
-    "osm_id": 1548570334
   },
   {
     "name": "Central",
@@ -179,8 +161,8 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "central station",
       "central",
+      "central station",
       "medical college metro",
       "bowbazar metro",
       "central metro"
@@ -199,10 +181,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "central park metro",
+      "central park station",
       "central park",
-      "karunamoyee central park",
-      "central park station"
+      "central park metro",
+      "karunamoyee central park"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7976140060
@@ -218,12 +200,12 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "chandni chowk station",
       "chandni chowk metro",
-      "chandni chowk",
+      "e-mall metro",
       "chandni",
       "chandney chawk",
-      "e-mall metro"
+      "chandni chowk station",
+      "chandni chowk"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421543316
@@ -239,11 +221,11 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "city centre",
-      "city centre 1",
-      "city centre metro",
+      "city centre station",
       "cc1 metro",
-      "city centre station"
+      "city centre 1",
+      "city centre",
+      "city centre metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7976140063
@@ -260,10 +242,10 @@
     "pandal_count": 0,
     "aliases": [
       "dakhineswar",
-      "dakshineshwar",
-      "dakshineswar station",
       "dakshineswar metro",
-      "dakshineswar"
+      "dakshineswar station",
+      "dakshineswar",
+      "dakshineshwar"
     ],
     "source": "OpenStreetMap",
     "osm_id": 10036655361
@@ -279,11 +261,11 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "dumdum",
-      "dum dum junction",
       "dum dum",
       "dum dum metro",
-      "dum dum station"
+      "dumdum",
+      "dum dum station",
+      "dum dum junction"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421537963
@@ -299,30 +281,12 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "dum dum cantonment station",
       "dum dum cantonment",
-      "dum dum cantonment metro"
+      "dum dum cantonment metro",
+      "dum dum cantonment station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 13088491874
-  },
-  {
-    "name": "Eco Park",
-    "short_name": "Eco Park",
-    "full_name": "Eco Park Metro Station",
-    "line": "Orange Line",
-    "location": {
-      "latitude": 22.611158,
-      "longitude": 88.467157
-    },
-    "pandal_count": 0,
-    "aliases": [
-      "eco park",
-      "eco park station",
-      "eco park metro"
-    ],
-    "source": "OpenStreetMap",
-    "osm_id": 1548570337
   },
   {
     "name": "Esplanade",
@@ -335,12 +299,12 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "dharmatala metro",
-      "dharmatala",
-      "esplanade metro",
-      "curzon park",
       "esplanade",
-      "esplanade station"
+      "dharmatala metro",
+      "curzon park",
+      "esplanade metro",
+      "esplanade station",
+      "dharmatala"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421545051
@@ -356,11 +320,11 @@
     },
     "pandal_count": 4,
     "aliases": [
+      "girish park",
       "girish park station",
       "giris park",
-      "girish park",
-      "girish park metro",
-      "girish park more"
+      "girish park more",
+      "girish park metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421546475
@@ -376,11 +340,11 @@
     },
     "pandal_count": 1,
     "aliases": [
-      "gitanjali metro",
-      "naktala metro",
       "gitanjali station",
       "naktala",
-      "gitanjali"
+      "gitanjali",
+      "gitanjali metro",
+      "naktala metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 535333554
@@ -396,13 +360,13 @@
     },
     "pandal_count": 4,
     "aliases": [
-      "ruby",
-      "hemanta mukhopadhyay metro",
-      "hemanta mukhopadhyay station",
-      "ruby metro",
       "ruby hospital",
+      "hemanta mukhopadhyay station",
+      "ruby",
+      "hemanta mukhopadhyay",
       "ruby crossing",
-      "hemanta mukhopadhyay"
+      "ruby metro",
+      "hemanta mukhopadhyay metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11447425091
@@ -419,10 +383,10 @@
     "pandal_count": 0,
     "aliases": [
       "howrah station",
-      "howrah railway station",
-      "howrah metro",
+      "howrah station metro",
       "howrah",
-      "howrah station metro"
+      "howrah metro",
+      "howrah railway station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11699268224
@@ -438,9 +402,9 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "howrah maidan",
+      "howrah maidan station",
       "howrah maidan metro",
-      "howrah maidan station"
+      "howrah maidan"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11699268225
@@ -456,9 +420,9 @@
     },
     "pandal_count": 0,
     "aliases": [
+      "jai hind metro",
       "jai hind station",
-      "jai hind",
-      "jai hind metro"
+      "jai hind"
     ],
     "source": "OpenStreetMap",
     "osm_id": 13088491840
@@ -474,12 +438,12 @@
     },
     "pandal_count": 3,
     "aliases": [
-      "jatin das park station",
+      "hazra crossing",
+      "jatin das park metro",
+      "hazra metro",
       "jatin das park",
       "hazra park",
-      "hazra metro",
-      "jatin das park metro",
-      "hazra crossing"
+      "jatin das park station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421540159
@@ -495,10 +459,10 @@
     },
     "pandal_count": 5,
     "aliases": [
-      "jessore road metro",
-      "jessore road",
       "dum dum airport jessore road",
-      "jessore road station"
+      "jessore road",
+      "jessore road station",
+      "jessore road metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 13088491871
@@ -514,10 +478,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "iim calcutta metro",
+      "joka metro",
       "joka",
-      "joka station",
-      "joka metro"
+      "iim calcutta metro",
+      "joka station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 10296539478
@@ -533,11 +497,11 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "mukundapur",
-      "jyotirindra nandi metro",
+      "jyotirindra nandi",
       "rn tagore metro",
       "jyotirindra nandi station",
-      "jyotirindra nandi"
+      "jyotirindra nandi metro",
+      "mukundapur"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11447425095
@@ -553,9 +517,9 @@
     },
     "pandal_count": 18,
     "aliases": [
-      "deshapriya park metro",
-      "kalighat metro",
       "rashbehari crossing",
+      "kalighat metro",
+      "deshapriya park metro",
       "kalighat",
       "kalighat station"
     ],
@@ -573,10 +537,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "karunamoyee station",
       "karunamoyee metro",
-      "karunamoyee",
-      "salt lake bus stand metro"
+      "salt lake bus stand metro",
+      "karunamoyee station",
+      "karunamoyee"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7976140059
@@ -592,9 +556,9 @@
     },
     "pandal_count": 1,
     "aliases": [
-      "kavi nazrul metro",
       "garia bazar",
       "garia metro",
+      "kavi nazrul metro",
       "kavi nazrul station",
       "kavi nazrul"
     ],
@@ -612,12 +576,12 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "kavi subhash station",
-      "new garia",
-      "kavi subhash",
-      "kavi subhash metro",
       "new garia metro",
-      "peerless hospital metro"
+      "kavi subhash",
+      "new garia",
+      "kavi subhash station",
+      "peerless hospital metro",
+      "kavi subhash metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11703389776
@@ -633,9 +597,9 @@
     },
     "pandal_count": 0,
     "aliases": [
+      "kavi subhash (blue line) metro",
       "kavi subhash (blue line)",
-      "kavi subhash (blue line) station",
-      "kavi subhash (blue line) metro"
+      "kavi subhash (blue line) station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421533467
@@ -651,11 +615,11 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "kalikapur metro",
+      "kavi sukanta station",
       "kavi sukanta",
       "kavi sukanta metro",
-      "kavi sukanta station",
-      "kalikapur"
+      "kalikapur",
+      "kalikapur metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11447425092
@@ -671,11 +635,11 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "mahakaran station",
-      "bbd bagh metro",
       "mahakaran",
+      "bbd bagh metro",
+      "writers building metro",
       "mahakaran metro",
-      "writers building metro"
+      "mahakaran station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11699268223
@@ -691,12 +655,12 @@
     },
     "pandal_count": 0,
     "aliases": [
+      "mahanayak uttam kumar",
       "mahanayak uttam kumar station",
-      "tollygunge metro",
       "uttam kumar metro",
-      "mahanayak uttam kumar metro",
       "tollygunge",
-      "mahanayak uttam kumar"
+      "tollygunge metro",
+      "mahanayak uttam kumar metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421536497
@@ -712,13 +676,13 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "mahatma gandhi road metro",
-      "m g road",
-      "burrabazar metro",
       "mahatma gandhi road station",
-      "mahatma gandhi road",
+      "mahatma gandhi road metro",
       "college street metro",
-      "mg road"
+      "burrabazar metro",
+      "m g road",
+      "mg road",
+      "mahatma gandhi road"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421545390
@@ -734,10 +698,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "maidan",
       "maidan metro",
-      "brigade parade ground",
-      "maidan station"
+      "maidan",
+      "maidan station",
+      "brigade parade ground"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421543288
@@ -753,10 +717,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "majerhat",
-      "majerhat railway station metro",
       "majerhat metro",
-      "majerhat station"
+      "majerhat railway station metro",
+      "majerhat station",
+      "majerhat"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11699268226
@@ -772,50 +736,14 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "masterda surya sen",
-      "masterda surya sen station",
-      "masterda surya sen metro",
       "bansdroni metro",
-      "bansdroni"
+      "masterda surya sen station",
+      "bansdroni",
+      "masterda surya sen metro",
+      "masterda surya sen"
     ],
     "source": "OpenStreetMap",
     "osm_id": 469357608
-  },
-  {
-    "name": "Mother's Wax Museum",
-    "short_name": "Mother's Wax Museum",
-    "full_name": "Mother's Wax Museum Metro Station",
-    "line": "Orange Line",
-    "location": {
-      "latitude": 22.602233,
-      "longitude": 88.470604
-    },
-    "pandal_count": 0,
-    "aliases": [
-      "mother's wax museum station",
-      "mother's wax museum metro",
-      "mother's wax museum"
-    ],
-    "source": "OpenStreetMap",
-    "osm_id": 1548570336
-  },
-  {
-    "name": "Nabadiganta",
-    "short_name": "Nabadiganta",
-    "full_name": "Nabadiganta Metro Station",
-    "line": "Blue Line",
-    "location": {
-      "latitude": 22.580168,
-      "longitude": 88.439589
-    },
-    "pandal_count": 0,
-    "aliases": [
-      "nabadiganta metro",
-      "nabadiganta station",
-      "nabadiganta"
-    ],
-    "source": "OpenStreetMap",
-    "osm_id": 1548568213
   },
   {
     "name": "Nalban",
@@ -829,29 +757,11 @@
     "pandal_count": 0,
     "aliases": [
       "nalban station",
-      "nalban",
-      "nalban metro"
+      "nalban metro",
+      "nalban"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7944684393
-  },
-  {
-    "name": "Nazrul Tirtha",
-    "short_name": "Nazrul Tirtha",
-    "full_name": "Nazrul Tirtha Metro Station",
-    "line": "Orange Line",
-    "location": {
-      "latitude": 22.581672,
-      "longitude": 88.453234
-    },
-    "pandal_count": 0,
-    "aliases": [
-      "nazrul tirtha",
-      "nazrul tirtha metro",
-      "nazrul tirtha station"
-    ],
-    "source": "OpenStreetMap",
-    "osm_id": 1548568214
   },
   {
     "name": "Netaji",
@@ -864,11 +774,11 @@
     },
     "pandal_count": 3,
     "aliases": [
-      "netaji station",
       "kudghat",
+      "netaji metro",
       "kudghat metro",
       "netaji",
-      "netaji metro"
+      "netaji station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421533468
@@ -882,11 +792,11 @@
       "latitude": 22.533182,
       "longitude": 88.345927
     },
-    "pandal_count": 6,
+    "pandal_count": 5,
     "aliases": [
-      "netaji bhavan",
       "bhawanipur metro",
       "netaji bhavan station",
+      "netaji bhavan",
       "netaji bhavan metro",
       "netaji subhash metro"
     ],
@@ -905,9 +815,9 @@
     "pandal_count": 1,
     "aliases": [
       "nowapara",
-      "noapara metro",
       "noapara station",
-      "noapara"
+      "noapara",
+      "noapara metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421551283
@@ -923,10 +833,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "mother teresa sarani",
-      "park street",
       "park street station",
-      "park street metro"
+      "mother teresa sarani",
+      "park street metro",
+      "park street"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421528503
@@ -943,10 +853,10 @@
     "pandal_count": 0,
     "aliases": [
       "kankurgachi metro",
-      "phoolbagan",
       "phoolbagan crossing",
-      "phoolbagan metro",
-      "phoolbagan station"
+      "phoolbagan",
+      "phoolbagan station",
+      "phoolbagan metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7976140072
@@ -963,11 +873,11 @@
     "pandal_count": 0,
     "aliases": [
       "exide metro",
-      "exide crossing",
-      "rabindra sadan metro",
       "rabindra sadan",
+      "nandan metro",
+      "rabindra sadan metro",
       "rabindra sadan station",
-      "nandan metro"
+      "exide crossing"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421542551
@@ -983,11 +893,11 @@
     },
     "pandal_count": 7,
     "aliases": [
-      "rabindra sarobar metro",
+      "rabindra sarobar",
       "rabindra sarobar station",
       "charu market metro",
       "lake metro",
-      "rabindra sarobar"
+      "rabindra sarobar metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421538365
@@ -1003,9 +913,9 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "ritwik ghatak",
+      "ritwik ghatak station",
       "ritwik ghatak metro",
-      "ritwik ghatak station"
+      "ritwik ghatak"
     ],
     "source": "OpenStreetMap",
     "osm_id": 13088485704
@@ -1021,10 +931,10 @@
     },
     "pandal_count": 2,
     "aliases": [
-      "sakherbazar",
       "sakher bazar",
+      "sakher bazar metro",
       "sakher bazar station",
-      "sakher bazar metro"
+      "sakherbazar"
     ],
     "source": "OpenStreetMap",
     "osm_id": 10296539474
@@ -1040,12 +950,12 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "sector v",
-      "sector 5",
-      "salt lake sector v metro",
-      "salt lake sector v",
       "wipro metro",
-      "salt lake sector v station"
+      "salt lake sector v",
+      "salt lake sector v metro",
+      "salt lake sector v station",
+      "sector v",
+      "sector 5"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7976140073
@@ -1061,10 +971,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "salt lake stadium station",
-      "salt lake stadium",
       "yuva bharati krirangan metro",
-      "salt lake stadium metro"
+      "salt lake stadium",
+      "salt lake stadium metro",
+      "salt lake stadium station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 7976140069
@@ -1080,11 +990,11 @@
     },
     "pandal_count": 0,
     "aliases": [
+      "satyajit ray",
       "satyajit ray metro",
       "ajaynagar",
-      "satyajit ray station",
       "hiland park metro",
-      "satyajit ray"
+      "satyajit ray station"
     ],
     "source": "OpenStreetMap",
     "osm_id": 11447425096
@@ -1100,11 +1010,11 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "sealdah station metro",
+      "sealdah metro",
       "sealdah railway metro",
       "sealdah station",
-      "sealdah",
-      "sealdah metro"
+      "sealdah station metro",
+      "sealdah"
     ],
     "source": "OpenStreetMap",
     "osm_id": 9884790401
@@ -1120,11 +1030,11 @@
     },
     "pandal_count": 0,
     "aliases": [
+      "shahid khudiram station",
       "shahid khudiram metro",
       "briji",
       "dhalai bridge metro",
-      "shahid khudiram",
-      "shahid khudiram station"
+      "shahid khudiram"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421533466
@@ -1140,16 +1050,16 @@
     },
     "pandal_count": 7,
     "aliases": [
-      "shobhabazar sutanuti station",
       "sutanuti",
-      "shobhabazar",
-      "shovabazar sutanuti",
-      "shobhabazar sutanuti metro",
-      "shovabazar",
       "sovabazar sutanuti",
       "sovabazar",
+      "shobhabazar",
+      "shovabazar sutanuti",
+      "shovabazar",
+      "shobhabazar sutanuti",
+      "shobhabazar sutanuti station",
       "sovabazar-sutanuti",
-      "shobhabazar sutanuti"
+      "shobhabazar sutanuti metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421546940
@@ -1163,34 +1073,16 @@
       "latitude": 22.601335,
       "longitude": 88.372497
     },
-    "pandal_count": 14,
+    "pandal_count": 13,
     "aliases": [
       "shambazar",
       "shyambazar 5 point",
-      "shyambazar metro",
       "shyambazar station",
-      "shyambazar"
+      "shyambazar",
+      "shyambazar metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 5421546974
-  },
-  {
-    "name": "Siksha Tirtha",
-    "short_name": "Siksha Tirtha",
-    "full_name": "Siksha Tirtha Metro Station",
-    "line": "Blue Line",
-    "location": {
-      "latitude": 22.590558,
-      "longitude": 88.474722
-    },
-    "pandal_count": 0,
-    "aliases": [
-      "siksha tirtha",
-      "siksha tirtha metro",
-      "siksha tirtha station"
-    ],
-    "source": "OpenStreetMap",
-    "osm_id": 1548570335
   },
   {
     "name": "Subway to CTC Bus Stand and Road Crossing",
@@ -1222,9 +1114,9 @@
     "pandal_count": 3,
     "aliases": [
       "taratala",
-      "taratala station",
       "taratala metro",
       "taratala crossing",
+      "taratala station",
       "taratala bridge"
     ],
     "source": "OpenStreetMap",
@@ -1241,10 +1133,10 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "thakurpukur station",
-      "thakurpukur",
+      "thakurpukur metro",
       "thakurpukur 3a bus stand",
-      "thakurpukur metro"
+      "thakurpukur station",
+      "thakurpukur"
     ],
     "source": "OpenStreetMap",
     "osm_id": 10296539469
@@ -1260,9 +1152,9 @@
     },
     "pandal_count": 0,
     "aliases": [
-      "vip bazar metro",
+      "vip bazar",
       "vip bazar station",
-      "vip bazar"
+      "vip bazar metro"
     ],
     "source": "OpenStreetMap",
     "osm_id": 13088485707
