@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl';
 
 /**
  * Compact autocomplete search field used inside the floating route card.
@@ -55,6 +56,32 @@ export default function SearchInput({
         }
       } catch (err) {
         console.warn('Backend autocomplete unreachable, trying fallback:', err);
+      }
+
+      if (results.length === 0 && mapboxgl.accessToken) {
+        try {
+          const mbUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(trimmed)}.json?access_token=${encodeURIComponent(mapboxgl.accessToken)}&proximity=88.3639,22.5726&bbox=88.15,22.35,88.55,22.75&country=IN&limit=6`;
+          const mbRes = await fetch(mbUrl);
+          if (mbRes.ok) {
+            const mbData = await mbRes.json();
+            (mbData.features || []).forEach((f) => {
+              const text = f.text || f.place_name?.split(',')[0] || trimmed;
+              const full = f.place_name || '';
+              const isMetro = /metro|station|subway/i.test(text + ' ' + full);
+              results.push({
+                id: f.id,
+                title: text,
+                subtitle: full,
+                latitude: f.center[1],
+                longitude: f.center[0],
+                category: isMetro ? 'metro' : 'place',
+                badge: isMetro ? '🚇 Metro' : '📍 Place',
+              });
+            });
+          }
+        } catch (mbErr) {
+          console.warn('Mapbox client-side fallback geocode error:', mbErr);
+        }
       }
 
       if (results.length === 0) {

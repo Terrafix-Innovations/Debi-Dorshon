@@ -11,7 +11,6 @@ from app.core.http_client import get_http_client
 from app.core.rate_limit import limiter
 from app.schemas.route import RoutePlanRequest, RoutePlanResponse
 from app.services.route_planner import RoutePlannerService
-from app.core.transit_data import search_kolkata_transit_hubs
 
 router = APIRouter()
 
@@ -69,60 +68,17 @@ async def autocomplete_places(
     results: List[Dict[str, Any]] = []
     seen_coords = set()
 
-    # 1. Check OpenStreetMap-surveyed Kolkata Metro Stations from MongoDB
-    escaped_term = re.escape(trimmed)
-    try:
-        metro_col = db[getattr(settings, "METRO_COLLECTION_NAME", "metro_stations")]
-        metro_cursor = metro_col.find({
-            "$or": [
-                {"name": {"$regex": escaped_term, "$options": "i"}},
-                {"aliases": {"$regex": escaped_term, "$options": "i"}},
-                {"full_name": {"$regex": escaped_term, "$options": "i"}},
-            ]
-        }).limit(4)
-        async for m_doc in metro_cursor:
-            loc = m_doc.get("location") or {}
-            lat = loc.get("latitude") or m_doc.get("latitude")
-            lon = loc.get("longitude") or m_doc.get("longitude")
-            if lat and lon:
-                key = (round(lat, 4), round(lon, 4))
-                if key not in seen_coords:
-                    seen_coords.add(key)
-                    line_name = m_doc.get("line") or "Metro"
-                    p_count = m_doc.get("pandal_count", 0)
-                    sub = f"{line_name} • {p_count} Pandals nearby" if p_count else line_name
-                    results.append({
-                        "id": f"metro_{m_doc.get('osm_id') or m_doc.get('name')}",
-                        "title": m_doc.get("full_name") or f"{m_doc['name']} Metro Station",
-                        "subtitle": sub,
-                        "latitude": lat,
-                        "longitude": lon,
-                        "category": "metro",
-                        "badge": "🚇 Metro",
-                    })
-    except Exception:
-        pass
-
-    # Fallback to curated transit hubs (railway stations, ferry ghats, or backup metro)
-    if not results:
-        metro_matches = search_kolkata_transit_hubs(trimmed, limit=4)
-        for m in metro_matches:
-            key = (round(m["latitude"], 4), round(m["longitude"], 4))
-            if key not in seen_coords:
-                seen_coords.add(key)
-                results.append(m)
-
-    # 2. Search local MongoDB Pandals (Exact matching)
+    # 1. Search local MongoDB STRICTLY for Durga Puja Pandals only
     try:
         cursor = db[settings.PANDAL_COLLECTION_NAME].find(
-            {"name": {"$regex": trimmed, "$options": "i"}}
-        ).limit(4)
+            {"name": {"$regex": re.escape(trimmed), "$options": "i"}}
+        ).limit(limit)
         async for doc in cursor:
             loc = doc.get("location") or {}
             lat = loc.get("latitude")
             lng = loc.get("longitude")
             if lat and lng:
-                key = (round(lat, 4), round(lng, 4))
+                key = (round(lat, 5), round(lng, 5))
                 if key not in seen_coords:
                     seen_coords.add(key)
                     region = doc.get("region") or "Kolkata"
@@ -137,57 +93,117 @@ async def autocomplete_places(
                         "id": str(doc.get("_id")),
                         "title": doc.get("name"),
                         "subtitle": " • ".join(sub_parts),
-                        "latitude": lat,
-                        "longitude": lng,
+                        "latitude": float(lat),
+                        "longitude": float(lng),
                         "category": "pandal",
                         "badge": "🛕 Pandal",
                     })
     except Exception:
         pass
 
-    # 2. Query Mapbox Geocoding using backend token
+    # 2. Fetch everything else (metro stations, transit hubs, places, addresses) in real-time from Mapbox Live Map API
     token = settings.MAPBOX_ACCESS_TOKEN
     if token and token.startswith("pk.") and "your_" not in token:
+        client = get_http_client()
+        remaining_slots = max(1, limit - len(results))
+
+        # A. Mapbox SearchBox API: High-precision real-time transit & metro station search
         try:
-            url = (
-                f"https://api.mapbox.com/geocoding/v5/mapbox.places/{httpx.URL(trimmed).raw_path.decode('utf-8')}.json"
-            )
-            params = {
+            sb_url = "https://api.mapbox.com/search/searchbox/v1/suggest"
+            sb_params = {
+                "q": trimmed,
                 "access_token": token,
-                "country": "IN",
+                "session_token": "00000000-0000-0000-0000-000000000001",
                 "proximity": "88.3639,22.5726",
                 "bbox": "88.15,22.35,88.55,22.75",
-                "types": "poi,address,neighborhood,locality,place",
-                "limit": str(limit),
+                "limit": str(remaining_slots),
             }
-            client = get_http_client()
-            res = await client.get(
-                f"https://api.mapbox.com/geocoding/v5/mapbox.places/{trimmed}.json",
-                params=params,
-                timeout=4.0,
-            )
-            if res.status_code == 200:
-                data = res.json()
-                for f in data.get("features", []):
-                    center = f.get("center", [])
-                    if len(center) == 2:
-                        lng, lat = center[0], center[1]
-                        key = (round(lat, 4), round(lng, 4))
-                        if key not in seen_coords:
-                            seen_coords.add(key)
-                            text = f.get("text") or f.get("place_name", "").split(",")[0]
-                            is_metro = "metro" in text.lower()
-                            results.append({
-                                "id": f.get("id"),
-                                "title": text,
-                                "subtitle": f.get("place_name"),
-                                "latitude": lat,
-                                "longitude": lng,
-                                "category": "metro" if is_metro else "place",
-                                "badge": "🚇 Metro" if is_metro else "📍 Place",
-                            })
+            res_sb = await client.get(sb_url, params=sb_params, timeout=3.5)
+            if res_sb.status_code == 200:
+                sugs = res_sb.json().get("suggestions", [])
+                for s in sugs:
+                    maki = str(s.get("maki") or "").lower()
+                    name = str(s.get("name") or "")
+                    # Filter out commercial lodgings/shops if searching for transit
+                    if maki in ("lodging", "hospital", "optician", "shop") and any(w in trimmed.lower() for w in ["metro", "station"]):
+                        continue
+
+                    mid = s.get("mapbox_id")
+                    if not mid:
+                        continue
+
+                    ret_url = f"https://api.mapbox.com/search/searchbox/v1/retrieve/{mid}"
+                    ret_res = await client.get(
+                        ret_url,
+                        params={"access_token": token, "session_token": "00000000-0000-0000-0000-000000000001"},
+                        timeout=3.0,
+                    )
+                    if ret_res.status_code == 200:
+                        feats = ret_res.json().get("features", [])
+                        if feats:
+                            f = feats[0]
+                            coords = f.get("geometry", {}).get("coordinates", [])
+                            if len(coords) == 2:
+                                lng, lat = float(coords[0]), float(coords[1])
+                                key = (round(lat, 5), round(lng, 5))
+                                if key not in seen_coords:
+                                    seen_coords.add(key)
+                                    full_addr = f.get("properties", {}).get("full_address") or s.get("place_formatted") or ""
+                                    is_metro = (
+                                        "rail" in maki
+                                        or any(t in (name + " " + full_addr).lower() for t in ["metro", "subway", "railway station"])
+                                    )
+                                    results.append({
+                                        "id": f"mapbox_sb_{mid}",
+                                        "title": name,
+                                        "subtitle": full_addr,
+                                        "latitude": lat,
+                                        "longitude": lng,
+                                        "category": "metro" if is_metro else "place",
+                                        "badge": "🚇 Metro" if is_metro else "📍 Place",
+                                    })
+                                    if len(results) >= limit:
+                                        break
         except Exception:
             pass
+
+        # B. Mapbox Geocoding v5 API: Real-time POI, locality, neighborhood, and address search
+        if len(results) < limit:
+            try:
+                gc_params = {
+                    "access_token": token,
+                    "country": "IN",
+                    "proximity": "88.3639,22.5726",
+                    "bbox": "88.15,22.35,88.55,22.75",
+                    "limit": str(limit - len(results)),
+                }
+                res_gc = await client.get(
+                    f"https://api.mapbox.com/geocoding/v5/mapbox.places/{trimmed}.json",
+                    params=gc_params,
+                    timeout=3.5,
+                )
+                if res_gc.status_code == 200:
+                    for f in res_gc.json().get("features", []):
+                        center = f.get("center", [])
+                        if len(center) == 2:
+                            lng, lat = float(center[0]), float(center[1])
+                            key = (round(lat, 5), round(lng, 5))
+                            if key not in seen_coords:
+                                seen_coords.add(key)
+                                text = f.get("text") or f.get("place_name", "").split(",")[0]
+                                full = f.get("place_name", "")
+                                is_metro = any(t in (text + " " + full).lower() for t in ["metro", "station", "subway"])
+                                results.append({
+                                    "id": f.get("id"),
+                                    "title": text,
+                                    "subtitle": full,
+                                    "latitude": lat,
+                                    "longitude": lng,
+                                    "category": "metro" if is_metro else "place",
+                                    "badge": "🚇 Metro" if is_metro else "📍 Place",
+                                })
+            except Exception:
+                pass
 
     final_results = results[:limit]
     await cache.set_json(cache_key, final_results, expire=settings.CACHE_TTL_AUTOCOMPLETE)
