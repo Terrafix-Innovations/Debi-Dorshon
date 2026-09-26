@@ -248,7 +248,7 @@ export default function SideDrawer({
       />
 
       {/* Sliding Ivory Drawer Panel */}
-      <aside className="relative z-10 w-full max-w-[320px] h-full bg-[#FAF5ED] shadow-2xl flex flex-col justify-between overflow-hidden animate-slide-right border-r border-[#EBDCC9]">
+      <aside className="relative z-10 w-full max-w-[320px] h-full backdrop-blur-md shadow-2xl flex flex-col justify-between overflow-hidden animate-slide-right border-r border-[#EBDCC9]" style={{ backgroundColor: 'rgba(250, 245, 237, 0.75)' }}>
         {/* Background Watermark */}
         <div
           className="absolute inset-0 opacity-[0.12] bg-cover bg-center pointer-events-none"

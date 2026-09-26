@@ -24,7 +24,7 @@ export default function Layout({
       }}
     >
       {/* Translucent Warm Parchment Tint */}
-      <div className="absolute inset-0 bg-[#fbf6ed]/85 pointer-events-none z-0" />
+      <div className="absolute inset-0 pointer-events-none z-0" style={{ backgroundColor: 'rgba(251, 246, 237, 0.75)' }} />
 
       {/* Sacred Durga Puja Header — Universal across all pages */}
       <Header onMenuClick={onMenuClick} onProfileClick={onProfileClick} />

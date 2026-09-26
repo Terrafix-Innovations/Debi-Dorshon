@@ -129,14 +129,14 @@ export default function MetroTransitView({
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {/* Translucent Warm Parchment Tint */}
-      <div className="absolute inset-0 bg-[#fbf6ed]/90 pointer-events-none" />
+      {/* Translucent Warm Parchment Tint — fixed so it doesn't scroll with content */}
+      <div className="fixed inset-0 pointer-events-none" style={{ backgroundColor: 'rgba(251, 246, 237, 0.75)' }} />
 
       {/* Main Responsive Body Container (Where Is My Train layout style) */}
       <div className="relative z-10 max-w-md mx-auto space-y-3.5">
         
         {/* Sticky Top Header Controls for Seamless One-Handed Scrolling */}
-        <div className="sticky top-0 z-30 pt-1 pb-2 bg-[#fbf6ed]/95 backdrop-blur-sm -mx-1 px-1 space-y-3">
+        <div className="sticky top-0 z-30 pt-1 pb-2 backdrop-blur-sm -mx-1 px-1 space-y-3" style={{ backgroundColor: 'rgba(251, 246, 237, 0.80)' }}>
           
           {/* 1. Metro / Train Segmented Bar */}
           <div className="flex bg-[#fffdf9] border border-[#ebdcc9] rounded-2xl p-1 shadow-sm">
@@ -149,7 +149,7 @@ export default function MetroTransitView({
                   : 'text-[#564338] hover:text-[#903f00]'
               }`}
             >
-              <span className="text-base">🚇</span>
+
               <span>Metro</span>
             </button>
 
@@ -162,7 +162,7 @@ export default function MetroTransitView({
                   : 'text-[#564338] hover:text-[#903f00]'
               }`}
             >
-              <span className="text-base">🚆</span>
+
               <span>Train</span>
             </button>
           </div>
@@ -173,9 +173,7 @@ export default function MetroTransitView({
               className="relative flex items-center bg-[#fffdf9] border border-[#ebdcc9] rounded-2xl shadow-sm focus-within:ring-2 focus-within:ring-[#903f00]/30 focus-within:border-[#903f00] transition-all"
               style={{ WebkitTapHighlightColor: 'transparent', outline: 'none' }}
             >
-              <span className="pl-3.5 text-base text-[#903f00] pointer-events-none select-none">
-                {activeTab === 'metro' ? '🚇' : '🚆'}
-              </span>
+
               <input
                 ref={inputRef}
                 type="text"

@@ -8,10 +8,7 @@ export default function HomeScreen({
     <div className="relative h-full w-full overflow-y-auto no-scrollbar pt-24 pb-32 px-4 sm:px-6 max-w-2xl mx-auto">
       {/* 1. Hero Title & Subtext */}
       <div className="mt-2 mb-5">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8E1B1B]/10 text-[#8E1B1B] text-xs font-black tracking-wide mb-2 uppercase">
-          <span>🪷</span>
-          <span>Debi Dorshon (দেবী দর্শন)</span>
-        </div>
+
         <h1 className="text-3xl sm:text-4xl font-extrabold text-[#3D241B] tracking-tight leading-tight font-serif">
           Debi Dorshon<br />
           <span className="text-xl sm:text-2xl text-[#8E1B1B] font-sans font-bold">Puja Parikrama Guide</span>
@@ -87,7 +84,7 @@ export default function HomeScreen({
                 </svg>
                 <span>Choose Start Location</span>
               </div>
-              <span className="text-[#D8A52B] text-sm">🎯</span>
+
             </button>
 
             <button
@@ -102,7 +99,7 @@ export default function HomeScreen({
                 </svg>
                 <span>Choose Destination</span>
               </div>
-              <span className="text-[#8E1B1B] text-sm">🚩</span>
+
             </button>
           </div>
         </div>
