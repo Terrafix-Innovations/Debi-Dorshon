@@ -246,12 +246,7 @@ export default function FloatingRouteCard({
                   <Ionicons name="close-circle" size={18} color="#8A7B6E" />
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity
-                  onPress={handlePressCurrentLocation}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <MaterialCommunityIcons name="target" size={18} color={GOLD} />
-                </TouchableOpacity>
+                <Ionicons name="ellipse-outline" size={14} color="#8A7B6E" />
               )}
             </View>
           </View>
@@ -336,23 +331,7 @@ export default function FloatingRouteCard({
             keyboardShouldPersistTaps="handled"
             nestedScrollEnabled
           >
-            {/* If Start is active, show Use Current Location at top */}
-            {activeField === 'start' && (
-              <TouchableOpacity
-                style={styles.currentLocItem}
-                onPress={handlePressCurrentLocation}
-                activeOpacity={0.7}
-              >
-                <View style={styles.currentLocIconWrap}>
-                  <MaterialCommunityIcons name="crosshairs-gps" size={18} color={MAROON} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.currentLocTitle}>Use Current Location</Text>
-                  <Text style={styles.currentLocSubtitle}>Your GPS coordinates in Kolkata</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color="rgba(138, 123, 110, 0.6)" />
-              </TouchableOpacity>
-            )}
+
 
             {/* Suggestions Loading */}
             {loadingSuggestions && (
@@ -603,36 +582,7 @@ const styles = StyleSheet.create({
   dropdownScroll: {
     maxHeight: 220,
   },
-  currentLocItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(235, 220, 201, 0.9)',
-    marginBottom: 6,
-    gap: 10,
-  },
-  currentLocIconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#FAEEE4',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  currentLocTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: colors.espresso,
-  },
-  currentLocSubtitle: {
-    fontSize: 11,
-    color: '#8A7B6E',
-    marginTop: 1,
-  },
+
   dropdownLoadingRow: {
     flexDirection: 'row',
     alignItems: 'center',

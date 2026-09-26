@@ -40,35 +40,42 @@ export function AboutScreen({ navigation }) {
 }
 
 export function ContactScreen({ navigation }) {
+  const email = 'debidorshonapp@gmail.com';
+
+  const handleEmailPress = () => {
+    Linking.openURL(`mailto:${email}`);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <HeaderNavbar navigation={navigation} title="Contact Us • দেবী দর্শন" />
+      <HeaderNavbar navigation={navigation} title="Contact Us" />
       <SideDrawer navigation={navigation} />
 
       <ScreenBackground>
-        <ScrollView contentContainerStyle={styles.container}>
-          <View style={styles.card}>
-            <MaterialCommunityIcons name="headset" size={48} color={colors.primaryMaroon} />
-            <Text style={styles.title}>We'd Love to Hear From You</Text>
-            <Text style={styles.desc}>
-              Have questions, feedback, or need help navigating Kolkata Durga Puja 2026? Reach out to our support team.
+        <ScrollView
+          contentContainerStyle={styles.contactScrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.minimalContactCard}>
+            <View style={styles.contactIconCircle}>
+              <MaterialCommunityIcons name="email-outline" size={32} color={colors.primaryMaroon} />
+            </View>
+
+            <Text style={styles.contactTitle}>Get in Touch</Text>
+            <Text style={styles.contactSubtitle}>
+              For inquiries, feedback, or support regarding Debi Dorshon, reach out to us directly:
             </Text>
 
             <TouchableOpacity
-              style={styles.contactBtn}
-              onPress={() => Linking.openURL('mailto:support@debidorshon.com')}
+              activeOpacity={0.85}
+              style={styles.emailPill}
+              onPress={handleEmailPress}
             >
-              <MaterialCommunityIcons name="email-outline" size={22} color={colors.white} />
-              <Text style={styles.contactBtnText}>support@debidorshon.com</Text>
+              <MaterialCommunityIcons name="email-fast-outline" size={20} color={colors.white} />
+              <Text style={styles.emailText}>{email}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.contactBtn, { backgroundColor: colors.espresso }]}
-              onPress={() => Linking.openURL('tel:+919876543210')}
-            >
-              <MaterialCommunityIcons name="phone-outline" size={22} color={colors.white} />
-              <Text style={styles.contactBtnText}>+91 98765 43210 (Helpline)</Text>
-            </TouchableOpacity>
+            <Text style={styles.emailHint}>Tap to compose email</Text>
           </View>
         </ScrollView>
       </ScreenBackground>
@@ -134,4 +141,75 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   contactBtnText: { color: colors.white, fontWeight: '800', fontSize: 14 },
+  contactScrollContainer: {
+    padding: spacing.lg,
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  minimalContactCard: {
+    backgroundColor: '#FFFDF9',
+    paddingVertical: 40,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#E8D8C5',
+    alignItems: 'center',
+    shadowColor: colors.espresso,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 3,
+  },
+  contactIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(142, 27, 27, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  contactTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.primaryMaroon,
+    marginBottom: spacing.xs,
+    letterSpacing: -0.3,
+  },
+  contactSubtitle: {
+    fontSize: 13,
+    color: '#6E5D53',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 24,
+    maxWidth: 280,
+  },
+  emailPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primaryMaroon,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    gap: 10,
+    width: '100%',
+    shadowColor: colors.primaryMaroon,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  emailText: {
+    color: colors.white,
+    fontWeight: '700',
+    fontSize: 15,
+    letterSpacing: 0.2,
+  },
+  emailHint: {
+    fontSize: 11,
+    color: '#9E9086',
+    marginTop: 12,
+    fontWeight: '500',
+  },
 });

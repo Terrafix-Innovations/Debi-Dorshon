@@ -135,7 +135,6 @@ export default function MetroScreen({ navigation, route }) {
               style={[styles.toggleBtn, activeTab === 'metro' && styles.toggleBtnActive]}
               onPress={() => setActiveTab('metro')}
             >
-              <Text style={styles.toggleEmoji}>🚇</Text>
               <Text style={[styles.toggleText, activeTab === 'metro' && styles.toggleTextActive]}>
                 Metro
               </Text>
@@ -146,7 +145,6 @@ export default function MetroScreen({ navigation, route }) {
               style={[styles.toggleBtn, activeTab === 'train' && styles.toggleBtnActive]}
               onPress={() => setActiveTab('train')}
             >
-              <Text style={styles.toggleEmoji}>🚆</Text>
               <Text style={[styles.toggleText, activeTab === 'train' && styles.toggleTextActive]}>
                 Train
               </Text>
@@ -156,9 +154,6 @@ export default function MetroScreen({ navigation, route }) {
           {/* 2. Responsive Search Bar with Dropdown (Where Is My Train style) */}
           <View style={styles.searchContainer}>
             <View style={styles.searchBar}>
-              <Text style={styles.inputPrefixEmoji}>
-                {activeTab === 'metro' ? '🚇' : '🚆'}
-              </Text>
               <TextInput
                 style={styles.input}
                 value={searchQuery}
@@ -372,9 +367,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  toggleEmoji: {
-    fontSize: 16,
-  },
   toggleText: {
     fontSize: 14,
     fontWeight: '800',
@@ -397,17 +389,13 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     borderColor: '#EBDCC9',
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     height: 48,
     shadowColor: colors.espresso,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
     elevation: 2,
-  },
-  inputPrefixEmoji: {
-    fontSize: 16,
-    marginRight: 8,
   },
   input: {
     flex: 1,

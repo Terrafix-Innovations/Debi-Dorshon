@@ -41,12 +41,26 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-export default function TripScreen({ navigation }) {
+export default function TripScreen({ navigation, route }) {
   // Origin and Destination state - initialized to null for manual entry
   const [startPlace, setStartPlace] = useState(null);
   const [endPlace, setEndPlace] = useState(null);
   const [startText, setStartText] = useState('');
   const [endText, setEndText] = useState('');
+
+  // Read incoming navigation params (e.g. from RouteScreen "Plan Route Here")
+  useEffect(() => {
+    if (route?.params?.endPlace) {
+      const ep = route.params.endPlace;
+      setEndPlace(ep);
+      setEndText(ep.title || ep.name || '');
+    }
+    if (route?.params?.startPlace) {
+      const sp = route.params.startPlace;
+      setStartPlace(sp);
+      setStartText(sp.title || sp.name || '');
+    }
+  }, [route?.params]);
 
   // Route calculation state
   const [routePlan, setRoutePlan] = useState(null);
