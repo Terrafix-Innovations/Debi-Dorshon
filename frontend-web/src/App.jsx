@@ -9,6 +9,7 @@ import InfoModals from './components/InfoModals';
 import MapBackground from './components/MapBackground';
 import RoutePanel from './components/RoutePanel';
 import RouteSummaryChip from './components/RouteSummaryChip';
+import PandalCarousel from './components/PandalCarousel';
 import { useAuth } from './context/AuthContext';
 
 const MAX_DETOUR_KM = 2.5;

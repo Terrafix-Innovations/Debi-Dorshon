@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { getFestivalGreeting, PUJA_TITHIS, REST_DAY_GREETING } from '../utils/festivalDate';
+import React, { useEffect, useRef } from 'react';
+import { getFestivalGreeting } from '../utils/festivalDate';
 import { useAuth } from '../context/AuthContext';
 
 /**
@@ -10,13 +10,11 @@ import { useAuth } from '../context/AuthContext';
  * - Traditional Dhak (drums) with Kasful plumes, drumsticks & golden alpona motifs
  * - Dynamic Bengali typography: "শুভ ষষ্ঠী" (ranges from Tritiya to Dashami; rest days "শুভ শারদীয়া")
  * - Left hamburger menu button & right profile avatar badge
- * - Interactive Tithi switcher popover for instant testing / demonstration
  */
 export default function Header({
   onMenuClick,
   onProfileClick,
   overrideDay = null,
-  onDayChange,
 }) {
   const {
     user,
@@ -29,36 +27,7 @@ export default function Header({
     closeAuthModal,
   } = useAuth();
 
-  const [selectedDayKey, setSelectedDayKey] = useState(() => {
-    return localStorage.getItem('debi_dorshon_tithi_override') || overrideDay || null;
-  });
-  const [showPicker, setShowPicker] = useState(false);
-  const pickerRef = useRef(null);
   const authModalRef = useRef(null);
-
-  // Sync when prop changes
-  useEffect(() => {
-    if (overrideDay !== undefined && overrideDay !== selectedDayKey) {
-      setSelectedDayKey(overrideDay);
-    }
-  }, [overrideDay]);
-
-  // Close picker on outside click
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
-        setShowPicker(false);
-      }
-    }
-    if (showPicker) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [showPicker]);
 
   // Close auth modal on outside click
   useEffect(() => {
@@ -77,20 +46,7 @@ export default function Header({
     };
   }, [isAuthModalOpen, closeAuthModal]);
 
-
-
-  const greeting = getFestivalGreeting(selectedDayKey);
-
-  const handleSelectDay = (key) => {
-    setSelectedDayKey(key);
-    if (key) {
-      localStorage.setItem('debi_dorshon_tithi_override', key);
-    } else {
-      localStorage.removeItem('debi_dorshon_tithi_override');
-    }
-    if (onDayChange) onDayChange(key);
-    setShowPicker(false);
-  };
+  const greeting = getFestivalGreeting(overrideDay || null);
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-40 w-full flex flex-col items-center">
@@ -159,11 +115,7 @@ export default function Header({
           </button>
 
           {/* Center: Sacred Durga Puja Traditional Banner */}
-          <div
-            className="relative flex flex-col items-center justify-center cursor-pointer group"
-            onClick={() => setShowPicker((prev) => !prev)}
-            title="Click to switch festival day (Tritiya to Dashami or Sharodiya)"
-          >
+          <div className="relative flex flex-col items-center justify-center select-none">
             {/* Sacred Trishul with Solar Flourishes */}
             <div className="flex items-center justify-center gap-1.5 -mb-0.5">
               {/* Left flourish accent */}
@@ -515,75 +467,6 @@ export default function Header({
         </div>
       )}
 
-      {/* Interactive Festival Tithi Picker Popover */}
-      {showPicker && (
-        <div
-          ref={pickerRef}
-          className="pointer-events-auto mt-2 w-full max-w-sm rounded-2xl bg-[#fffefc] p-3 shadow-2xl border border-[#ebdcc9] animate-fade-in z-50 text-[#381e18]"
-        >
-          <div className="flex items-center justify-between pb-2 border-b border-[#f0e4d6] mb-2">
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm">🛕</span>
-              <span className="text-xs font-bold text-[#831917]">Select Durga Puja Day</span>
-            </div>
-            <button
-              onClick={() => setShowPicker(false)}
-              className="text-xs text-[#a08470] hover:text-[#381e18] p-1"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-1.5">
-            {/* Auto (Today) */}
-            <button
-              type="button"
-              onClick={() => handleSelectDay(null)}
-              className={`col-span-2 flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                selectedDayKey === null
-                  ? 'bg-[#831917] text-white font-bold'
-                  : 'bg-[#f7f2ea] text-[#553b30] hover:bg-[#ede3d4]'
-              }`}
-            >
-              <span>📅 Auto (Calendar Date)</span>
-              <span className="text-[11px] opacity-80">
-                {selectedDayKey === null ? 'Active' : ''}
-              </span>
-            </button>
-
-            {/* Puja Days (Tritiya to Dashami) */}
-            {PUJA_TITHIS.map((tithi) => (
-              <button
-                key={tithi.key}
-                type="button"
-                onClick={() => handleSelectDay(tithi.key)}
-                className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors font-bengali ${
-                  selectedDayKey === tithi.key
-                    ? 'bg-[#831917] text-white font-bold'
-                    : 'bg-[#faf6ee] text-[#4a3228] hover:bg-[#f0e5d6]'
-                }`}
-              >
-                <span>{tithi.fullGreeting}</span>
-                <span className="font-sans text-[10px] opacity-75">{tithi.english}</span>
-              </button>
-            ))}
-
-            {/* Rest of the year (Shubho Sharodiya) */}
-            <button
-              type="button"
-              onClick={() => handleSelectDay(REST_DAY_GREETING.key)}
-              className={`col-span-2 flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors font-bengali ${
-                selectedDayKey === REST_DAY_GREETING.key
-                  ? 'bg-[#831917] text-white font-bold'
-                  : 'bg-[#faf6ee] text-[#4a3228] hover:bg-[#f0e5d6]'
-              }`}
-            >
-              <span>🍂 {REST_DAY_GREETING.fullGreeting}</span>
-              <span className="font-sans text-[10px] opacity-75">(Rest of the year)</span>
-            </button>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
