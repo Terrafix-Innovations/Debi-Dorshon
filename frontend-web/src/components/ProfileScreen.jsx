@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 export default function ProfileScreen({
   onNavigateToPandal,
   onNavigateToTrip,
+  onOpenBackendSwitcher,
 }) {
   const {
     user,
@@ -16,6 +17,7 @@ export default function ProfileScreen({
     toggleFavoritePandal,
     savedTrips,
     deleteSavedTrip,
+    apiBaseUrl,
   } = useAuth();
 
   const [authLoading, setAuthLoading] = useState(false);
@@ -152,6 +154,33 @@ export default function ProfileScreen({
                 </div>
                 <span className="text-[#8E1B1B] font-bold text-lg group-hover:translate-x-1 transition-transform">
                   →
+                </span>
+              </button>
+
+              {/* Backend Server Settings */}
+              <button
+                type="button"
+                onClick={onOpenBackendSwitcher}
+                className="w-full flex items-center p-4 rounded-2xl bg-[#FFFDF8] border border-[#E5D2A8] shadow-sm hover:shadow-md hover:border-[#8E1B1B]/40 active:scale-[0.99] transition-all text-left group"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-700 mr-3.5 flex-shrink-0 text-lg">
+                  ⚙️
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-extrabold text-[15px] text-[#3D241B]">
+                      Backend Server
+                    </h3>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                      {apiBaseUrl?.includes('vercel') ? 'Vercel Serverless' : apiBaseUrl?.includes('localhost') ? 'Localhost' : 'Render Cloud'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#856E63] font-medium mt-0.5 truncate">
+                    {apiBaseUrl}
+                  </p>
+                </div>
+                <span className="text-[#8E1B1B] font-bold text-xs group-hover:translate-x-1 transition-transform">
+                  Switch →
                 </span>
               </button>
 
@@ -420,6 +449,20 @@ export default function ProfileScreen({
               Privacy Policy
             </a>.
           </p>
+
+          {/* Guest Backend Server Switcher Option */}
+          <div className="mt-4 pt-3 border-t border-[#E5D2A8]/60 flex items-center justify-between text-xs">
+            <span className="text-[11px] text-[#8C674B]">Active Backend:</span>
+            <button
+              type="button"
+              onClick={onOpenBackendSwitcher}
+              className="px-2.5 py-1 rounded-xl bg-[#FAF0DC] hover:bg-[#F3E2C2] text-[11px] font-bold text-[#8E1B1B] border border-[#E5D2A8] transition-all flex items-center gap-1"
+            >
+              <span>⚙️</span>
+              <span>{apiBaseUrl?.includes('vercel') ? 'Vercel' : apiBaseUrl?.includes('localhost') ? 'Localhost' : 'Render'}</span>
+              <span className="text-[9px] opacity-70">Switch</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

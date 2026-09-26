@@ -18,12 +18,21 @@ export default function Header({
   overrideDay = null,
   onDayChange,
 }) {
-  const { user, loginWithGoogle, logout, isAuthenticated } = useAuth();
+  const {
+    user,
+    loginWithGoogle,
+    logout,
+    isAuthenticated,
+    isAuthModalOpen,
+    authModalReason,
+    openAuthModal,
+    closeAuthModal,
+  } = useAuth();
+
   const [selectedDayKey, setSelectedDayKey] = useState(() => {
     return localStorage.getItem('debi_dorshon_tithi_override') || overrideDay || null;
   });
   const [showPicker, setShowPicker] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const pickerRef = useRef(null);
   const authModalRef = useRef(null);
 
@@ -55,10 +64,10 @@ export default function Header({
   useEffect(() => {
     function handleClickOutside(event) {
       if (authModalRef.current && !authModalRef.current.contains(event.target)) {
-        setShowAuthModal(false);
+        closeAuthModal();
       }
     }
-    if (showAuthModal) {
+    if (isAuthModalOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('touchstart', handleClickOutside);
     }
@@ -66,7 +75,7 @@ export default function Header({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [showAuthModal]);
+  }, [isAuthModalOpen, closeAuthModal]);
 
 
 
@@ -357,7 +366,14 @@ export default function Header({
           {/* Right: User Profile Avatar Circle */}
           <button
             type="button"
-            onClick={() => (onProfileClick ? onProfileClick() : setShowAuthModal((prev) => !prev))}
+            onClick={() => {
+              if (isAuthenticated) {
+                if (onProfileClick) onProfileClick();
+                else openAuthModal();
+              } else {
+                openAuthModal('Sign in with Google to view your profile, manage favorite pandals, and access saved Parikrama routes from any device.');
+              }
+            }}
             aria-label="User Profile"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f2e6d6] text-[#3e221b] hover:bg-[#ebdcc9] active:scale-95 transition-all focus:outline-none shadow-sm overflow-hidden border border-[#ebdcc9]"
           >
@@ -375,7 +391,7 @@ export default function Header({
       </div>
 
       {/* User Account / Google Sign-In Modal */}
-      {showAuthModal && (
+      {isAuthModalOpen && (
         <div
           ref={authModalRef}
           className="pointer-events-auto mt-2 w-full max-w-sm rounded-3xl bg-[#fffefc] p-4 shadow-2xl border border-[#ebdcc9] animate-fade-in z-50 text-[#381e18]"
@@ -397,7 +413,7 @@ export default function Header({
                   </div>
                 </div>
                 <button
-                  onClick={() => setShowAuthModal(false)}
+                  onClick={closeAuthModal}
                   className="text-xs text-[#a08470] hover:text-[#381e18] p-1"
                 >
                   ✕
@@ -431,7 +447,7 @@ export default function Header({
                 type="button"
                 onClick={() => {
                   logout();
-                  setShowAuthModal(false);
+                  closeAuthModal();
                 }}
                 className="w-full py-2.5 rounded-xl bg-[#fff5f5] text-[#b91c1c] hover:bg-[#fee2e2] text-xs font-bold transition-all border border-[#fecaca] flex items-center justify-center gap-1.5"
               >
@@ -449,16 +465,23 @@ export default function Header({
                   </div>
                 </div>
                 <button
-                  onClick={() => setShowAuthModal(false)}
+                  onClick={closeAuthModal}
                   className="text-xs text-[#a08470] hover:text-[#381e18] p-1"
                 >
                   ✕
                 </button>
               </div>
 
-              <p className="text-xs text-[#553b30] leading-relaxed mb-3.5">
-                Sign in with your Google account to save custom pandal routes, track visited pandals, and earn Puja reward passes. Your data remains completely isolated and private to your account.
-              </p>
+              {authModalReason ? (
+                <div className="mb-3.5 p-2.5 rounded-xl bg-[#faf0dc] border border-[#e5d2a8] text-xs font-semibold text-[#8e1b1b] flex items-start gap-2">
+                  <span className="text-sm">✨</span>
+                  <span>{authModalReason}</span>
+                </div>
+              ) : (
+                <p className="text-xs text-[#553b30] leading-relaxed mb-3.5">
+                  Sign in with your Google account to save custom pandal routes, track visited pandals, and earn Puja reward passes. Your data remains completely isolated and private to your account.
+                </p>
+              )}
 
               {/* Google Button */}
               <div className="flex justify-center my-3">
@@ -467,7 +490,6 @@ export default function Header({
                   onClick={async () => {
                     try {
                       await loginWithGoogle();
-                      setShowAuthModal(false);
                     } catch (e) {
                       console.error('Failed to sign in with Google:', e);
                     }

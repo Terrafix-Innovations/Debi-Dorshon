@@ -176,70 +176,138 @@ async def get_auth_config():
     }
 
 
-@router.post("/supabase-sync", response_model=UserProfile, summary="Sync Supabase User with MongoDB")
+@router.post("/supabase-sync", response_model=AuthResponse, summary="Sync Supabase User with MongoDB")
 async def sync_supabase_user(
     payload: dict,
     db: AsyncIOMotorDatabase = Depends(get_database),
 ):
     """
     Called when a user logs in via Supabase Auth (e.g. Google Sign-In).
-    Finds or creates the user in the MongoDB 'users' collection and returns their profile.
+    Finds or creates the user in the MongoDB 'users' collection and returns their profile + signed JWT.
     """
-    user_id = payload.get("id")
     email = (payload.get("email") or "").strip().lower()
+    user_id = str(payload.get("id") or "")
     user_metadata = payload.get("user_metadata") or {}
-    name = user_metadata.get("full_name") or user_metadata.get("name") or (email.split("@")[0] if email else "Puja Pilgrim")
+    name = (
+        user_metadata.get("full_name")
+        or user_metadata.get("name")
+        or (email.split("@")[0] if email else "Puja Pilgrim")
+    )
     picture = user_metadata.get("avatar_url") or user_metadata.get("picture")
-
-    user_collection = db[settings.USER_COLLECTION_NAME]
-    user = await user_collection.find_one({"$or": [{"supabase_id": user_id}, {"email": email}]}) if email else None
     now_iso = datetime.now(timezone.utc).isoformat()
 
-    if not user:
-        new_user_doc = {
-            "supabase_id": user_id,
-            "email": email,
-            "name": name,
-            "picture": picture,
-            "completed_trips": 0,
-            "redeem_points": 50,  # 50 welcome points
-            "favorite_pandals": [],
-            "created_at": now_iso,
-            "last_login": now_iso,
-        }
-        res = await user_collection.insert_one(new_user_doc)
-        mongo_id = str(res.inserted_id)
-        user = new_user_doc
-        user["_id"] = res.inserted_id
-    else:
-        mongo_id = str(user["_id"])
-        await user_collection.update_one(
-            {"_id": user["_id"]},
-            {
-                "$set": {
-                    "supabase_id": user_id,
-                    "name": name or user.get("name"),
-                    "picture": picture or user.get("picture"),
-                    "last_login": now_iso,
-                }
+    try:
+        user_collection = db[settings.USER_COLLECTION_NAME]
+        user = None
+        if email or user_id:
+            query_conds = []
+            if user_id:
+                query_conds.append({"supabase_id": user_id})
+            if email:
+                query_conds.append({"email": email})
+            user = await user_collection.find_one({"$or": query_conds})
+
+        if not user:
+            new_user_doc = {
+                "supabase_id": user_id,
+                "email": email,
+                "name": name,
+                "picture": picture,
+                "completed_trips": 0,
+                "redeem_points": 50,  # 50 welcome points
+                "favorite_pandals": [],
+                "created_at": now_iso,
+                "last_login": now_iso,
             }
+            res = await user_collection.insert_one(new_user_doc)
+            mongo_id = str(res.inserted_id)
+            user = new_user_doc
+            user["_id"] = res.inserted_id
+        else:
+            mongo_id = str(user["_id"])
+            await user_collection.update_one(
+                {"_id": user["_id"]},
+                {
+                    "$set": {
+                        "supabase_id": user_id or user.get("supabase_id"),
+                        "name": name or user.get("name"),
+                        "picture": picture or user.get("picture"),
+                        "last_login": now_iso,
+                    }
+                }
+            )
+
+        # Count trips and favorites safely
+        trip_count = 0
+        try:
+            trip_count = await db[settings.TRIP_COLLECTION_NAME].count_documents({"user_id": mongo_id})
+        except Exception:
+            pass
+
+        favorite_pandals = []
+        try:
+            fav_docs = await db[settings.FAVORITE_COLLECTION_NAME].find({"user_id": mongo_id}).to_list(1000)
+            favorite_pandals = [doc["pandal_id"] for doc in fav_docs if "pandal_id" in doc]
+        except Exception:
+            pass
+
+        if not favorite_pandals and user.get("favorite_pandals"):
+            favorite_pandals = user.get("favorite_pandals", [])
+
+        completed_trips = user.get("completed_trips")
+        if completed_trips is None:
+            completed_trips = 0
+
+        redeem_points = user.get("redeem_points")
+        if redeem_points is None:
+            redeem_points = 50
+
+        profile = UserProfile(
+            id=mongo_id,
+            email=user.get("email") or email or "",
+            name=user.get("name") or name or "Puja Pilgrim",
+            picture=user.get("picture") or picture,
+            completed_trips=max(trip_count, completed_trips),
+            redeem_points=redeem_points,
+            favorite_pandals=favorite_pandals or [],
+            created_at=user.get("created_at") or now_iso,
         )
 
-    # Count trips and favorites
-    trip_count = await db[settings.TRIP_COLLECTION_NAME].count_documents({"user_id": mongo_id})
-    fav_docs = await db[settings.FAVORITE_COLLECTION_NAME].find({"user_id": mongo_id}).to_list(1000)
-    favorite_pandals = [doc["pandal_id"] for doc in fav_docs if "pandal_id" in doc]
+        access_token = create_access_token({
+            "sub": mongo_id,
+            "email": profile.email,
+            "name": profile.name,
+        })
 
-    return UserProfile(
-        id=mongo_id,
-        email=user.get("email", ""),
-        name=user.get("name", ""),
-        picture=user.get("picture"),
-        completed_trips=max(trip_count, user.get("completed_trips", 0)),
-        redeem_points=user.get("redeem_points", 50),
-        favorite_pandals=favorite_pandals,
-        created_at=user.get("created_at"),
-    )
+        return AuthResponse(
+            access_token=access_token,
+            token_type="bearer",
+            user=profile,
+        )
+    except Exception as e:
+        logger.exception("Error during Supabase MongoDB sync: %s", e)
+        # Fallback profile so user is NEVER blocked
+        fallback_id = user_id or "user_fallback"
+        fallback_profile = UserProfile(
+            id=fallback_id,
+            email=email,
+            name=name,
+            picture=picture,
+            completed_trips=0,
+            redeem_points=50,
+            favorite_pandals=[],
+            created_at=now_iso,
+        )
+        access_token = create_access_token({
+            "sub": fallback_id,
+            "email": email,
+            "name": name,
+        })
+        return AuthResponse(
+            access_token=access_token,
+            token_type="bearer",
+            user=fallback_profile,
+        )
 
 
 @router.post("/google", response_model=AuthResponse, summary="Sign in with Google OAuth")

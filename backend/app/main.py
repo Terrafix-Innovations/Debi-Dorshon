@@ -56,7 +56,7 @@ app.add_middleware(
         "http://localhost:8000",
         "http://localhost:3000",
     ],
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origin_regex=r"https://.*\.vercel\.app|https?://localhost(:[0-9]+)?|https?://127\.0\.0\.1(:[0-9]+)?|https?://192\.168\.\d+\.\d+(:[0-9]+)?|https?://10\.\d+\.\d+\.\d+(:[0-9]+)?|https?://172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+(:[0-9]+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

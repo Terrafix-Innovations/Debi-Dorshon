@@ -210,6 +210,16 @@ export default function SideDrawer({
       },
     },
     {
+      label: 'Backend Server',
+      icon: (
+        <span className="text-lg">⚙️</span>
+      ),
+      action: () => {
+        onClose();
+        onOpenModal('backend');
+      },
+    },
+    {
       label: 'Privacy Policy',
       icon: (
         <svg className="w-5 h-5 text-[#7A1614]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

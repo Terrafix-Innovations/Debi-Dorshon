@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { getActiveBackendUrl } from '../config/backendConfig';
 
 const AuthContext = createContext(null);
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const TOKEN_KEY = 'debi_dorshon_token';
 const USER_KEY = 'debi_dorshon_user';
 const FAVORITES_KEY = 'debi_dorshon_favorites';
@@ -62,7 +62,30 @@ export function AuthProvider({ children }) {
   });
 
   const [loading, setLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalReason, setAuthModalReason] = useState('');
+  const [apiBaseUrl, setApiBaseUrl] = useState(getActiveBackendUrl);
   const isSyncingRef = useRef(false);
+
+  useEffect(() => {
+    const handleBackendChange = (e) => {
+      if (e.detail?.url) {
+        setApiBaseUrl(e.detail.url);
+      }
+    };
+    window.addEventListener('debi_dorshon_backend_change', handleBackendChange);
+    return () => window.removeEventListener('debi_dorshon_backend_change', handleBackendChange);
+  }, []);
+
+  const openAuthModal = useCallback((reason = '') => {
+    setAuthModalReason(reason);
+    setIsAuthModalOpen(true);
+  }, []);
+
+  const closeAuthModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+    setAuthModalReason('');
+  }, []);
 
   // 1. Sync Supabase authenticated session with MongoDB Atlas
   const syncWithMongo = useCallback(async (sbUser, sbToken) => {
@@ -70,7 +93,7 @@ export function AuthProvider({ children }) {
     isSyncingRef.current = true;
 
     try {
-      const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
+      const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
       const res = await fetch(`${cleanUrl}/api/v1/auth/supabase-sync`, {
         method: 'POST',
         headers: {
@@ -85,14 +108,26 @@ export function AuthProvider({ children }) {
       });
 
       if (res.ok) {
-        const mongoProfile = await res.json();
+        const data = await res.json();
+        const mongoProfile = data.user || data;
+        const newJwt = data.access_token;
+        if (newJwt) {
+          setToken(newJwt);
+          localStorage.setItem(TOKEN_KEY, newJwt);
+        }
         setUser(mongoProfile);
         localStorage.setItem(USER_KEY, JSON.stringify(mongoProfile));
+
+        // Sync backend favorites
         if (mongoProfile.favorite_pandals?.length > 0) {
-          setFavorites((prev) => Array.from(new Set([...prev, ...mongoProfile.favorite_pandals])));
+          setFavorites((prev) => {
+            const merged = Array.from(new Set([...prev.map((p) => (typeof p === 'string' ? p : p.id || p.name)), ...mongoProfile.favorite_pandals]));
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(merged));
+            return merged;
+          });
         }
       } else {
-        // Fallback to basic Supabase profile if backend is sleeping
+        // Fallback to basic Supabase profile if backend is cold-starting
         const meta = sbUser.user_metadata || {};
         const fallbackProfile = {
           id: sbUser.id,
@@ -134,7 +169,7 @@ export function AuthProvider({ children }) {
 
       // Fetch dynamic backend auth config (if customized)
       try {
-        const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
+        const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
         const res = await fetch(`${cleanUrl}/api/v1/auth/config`);
         if (res.ok) {
           const cfg = await res.json();
@@ -160,6 +195,15 @@ export function AuthProvider({ children }) {
         await syncWithMongo(session.user, session.access_token);
       }
 
+      // Clean query and hash parameters after OAuth redirect
+      if (typeof window !== 'undefined' && (window.location.hash || window.location.search.includes('code='))) {
+        setTimeout(() => {
+          try {
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } catch {}
+        }, 800);
+      }
+
       if (isMounted) setLoading(false);
 
       // Listen for auth state changes (OAuth redirects, logins, logouts)
@@ -172,6 +216,7 @@ export function AuthProvider({ children }) {
               setToken(newSession.access_token);
               localStorage.setItem(TOKEN_KEY, newSession.access_token);
               await syncWithMongo(newSession.user, newSession.access_token);
+              setIsAuthModalOpen(false);
             }
           } else if (event === 'SIGNED_OUT') {
             setToken(null);
@@ -193,15 +238,22 @@ export function AuthProvider({ children }) {
     };
   }, [syncWithMongo]);
 
-  // 3. Login with Google (Clean standard OAuth via Supabase)
+  // 3. Login with Google (Works across any device: mobile, desktop, Vercel, localhost)
   const loginWithGoogle = useCallback(async () => {
     const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
     if (!sb) throw new Error('Supabase client not initialized.');
 
+    // Always normalize origin without trailing slash
+    const redirectUrl = (window.location.origin || '').trim().replace(/\/+$/, '');
+
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     });
 
@@ -231,6 +283,7 @@ export function AuthProvider({ children }) {
         setToken(data.session.access_token);
         localStorage.setItem(TOKEN_KEY, data.session.access_token);
         await syncWithMongo(data.user, data.session.access_token);
+        setIsAuthModalOpen(false);
       }
       return data.user;
     },
@@ -262,6 +315,7 @@ export function AuthProvider({ children }) {
         setToken(data.session.access_token);
         localStorage.setItem(TOKEN_KEY, data.session.access_token);
         await syncWithMongo(data.user, data.session.access_token);
+        setIsAuthModalOpen(false);
       }
       return data.user;
     },
@@ -280,36 +334,86 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, [supabase]);
 
-  // 7. Favorite pandals management
-  const toggleFavoritePandal = useCallback((pandal) => {
-    if (!pandal) return;
-    setFavorites((prev) => {
-      const pandalId = pandal.id || pandal._id || pandal.name;
-      const exists = prev.some((p) => (p.id || p._id || p.name) === pandalId);
-      let updated;
-      if (exists) {
-        updated = prev.filter((p) => (p.id || p._id || p.name) !== pandalId);
-      } else {
-        updated = [...prev, pandal];
+  // 7. Favorite pandals management (strictly gated for signed-in users)
+  const toggleFavoritePandal = useCallback(
+    async (pandal) => {
+      if (!pandal) return false;
+
+      // Gate: Must be authenticated
+      if (!user) {
+        openAuthModal('Sign in with Google to add pandals to your favorites and access them across all your devices.');
+        return false;
       }
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+
+      const pandalId = pandal.id || pandal._id || pandal.name;
+      let isNowFav = false;
+
+      setFavorites((prev) => {
+        const exists = prev.some((p) => {
+          const id = typeof p === 'string' ? p : p.id || p._id || p.name;
+          return id === pandalId;
+        });
+
+        let updated;
+        if (exists) {
+          updated = prev.filter((p) => {
+            const id = typeof p === 'string' ? p : p.id || p._id || p.name;
+            return id !== pandalId;
+          });
+          isNowFav = false;
+        } else {
+          updated = [...prev, pandal];
+          isNowFav = true;
+        }
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+        return updated;
+      });
+
+      // Background sync with MongoDB if backend is connected
+      if (token) {
+        try {
+          const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
+          await fetch(`${cleanUrl}/api/v1/user/favorites/toggle`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ pandal_id: String(pandalId) }),
+          });
+        } catch (e) {
+          console.warn('[AuthContext] Backend favorite sync deferred:', e.message);
+        }
+      }
+
+      return true;
+    },
+    [user, token, apiBaseUrl, openAuthModal]
+  );
 
   const isFavoritePandal = useCallback(
     (pandal) => {
       if (!pandal) return false;
       const pandalId = pandal.id || pandal._id || pandal.name;
-      return favorites.some((p) => (p.id || p._id || p.name) === pandalId);
+      return favorites.some((p) => {
+        const id = typeof p === 'string' ? p : p.id || p._id || p.name;
+        return id === pandalId;
+      });
     },
     [favorites]
   );
 
-  // 8. Saved routes management
-  const saveTrip = useCallback((trip) => {
-    if (!trip) return;
-    setSavedTrips((prev) => {
+  // 8. Saved routes management (strictly gated for signed-in users)
+  const saveTrip = useCallback(
+    async (trip) => {
+      if (!trip) return false;
+
+      // Gate: Must be authenticated
+      if (!user) {
+        openAuthModal('Sign in with Google to save your custom Parikrama routes to your account.');
+        return false;
+      }
+
       const newTrip = {
         id: `trip_${Date.now()}`,
         name: trip.name || 'Puja Parikrama Route',
@@ -319,11 +423,41 @@ export function AuthProvider({ children }) {
         pandalCount: trip.pandalCount,
         savedAt: new Date().toISOString(),
       };
-      const updated = [newTrip, ...prev];
-      localStorage.setItem(SAVED_TRIPS_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+
+      setSavedTrips((prev) => {
+        const updated = [newTrip, ...prev];
+        localStorage.setItem(SAVED_TRIPS_KEY, JSON.stringify(updated));
+        return updated;
+      });
+
+      // Background sync with MongoDB
+      if (token) {
+        try {
+          const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
+          await fetch(`${cleanUrl}/api/v1/user/trips`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              title: newTrip.name,
+              origin_name: trip.origin?.name || 'Origin',
+              destination_name: trip.destination?.name || 'Destination',
+              origin: trip.origin?.location || { latitude: 22.5726, longitude: 88.3639 },
+              destination: trip.destination?.location || { latitude: 22.5726, longitude: 88.3639 },
+              distance_km: trip.distanceKm || 0.0,
+            }),
+          });
+        } catch (e) {
+          console.warn('[AuthContext] Backend trip sync deferred:', e.message);
+        }
+      }
+
+      return true;
+    },
+    [user, token, apiBaseUrl, openAuthModal]
+  );
 
   const deleteSavedTrip = useCallback((tripId) => {
     setSavedTrips((prev) => {
@@ -340,6 +474,11 @@ export function AuthProvider({ children }) {
         token,
         loading,
         isAuthenticated: Boolean(user),
+        apiBaseUrl,
+        isAuthModalOpen,
+        authModalReason,
+        openAuthModal,
+        closeAuthModal,
         loginWithGoogle,
         loginWithEmail,
         registerWithEmail,

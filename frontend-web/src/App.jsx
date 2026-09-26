@@ -10,9 +10,10 @@ import MapBackground from './components/MapBackground';
 import RoutePanel from './components/RoutePanel';
 import RouteSummaryChip from './components/RouteSummaryChip';
 import PandalCarousel from './components/PandalCarousel';
+import BackendSwitcherModal from './components/BackendSwitcherModal';
 import { useAuth } from './context/AuthContext';
+import { getActiveBackendUrl } from './config/backendConfig';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const MAX_DETOUR_KM = 2.5;
 const CAROUSEL_INSET = 200; // px reserved at bottom for carousel + tab bar
 
@@ -47,7 +48,7 @@ const POPULAR_PRESETS = {
 };
 
 export default function App() {
-  const { saveTrip } = useAuth();
+  const { saveTrip, isAuthenticated, openAuthModal, apiBaseUrl } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -58,8 +59,9 @@ export default function App() {
   const [navigationTargetPandal, setNavigationTargetPandal] = useState(null);
   const [isRouteSaved, setIsRouteSaved] = useState(false);
 
-  // Side Drawer & Info Modals
+  // Side Drawer, Backend Switcher & Info Modals
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isBackendSwitcherOpen, setIsBackendSwitcherOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // 'recommendations' | 'about' | 'contact' | 'privacy' | 'redeem' | null
   const [saveSuccessToast, setSaveSuccessToast] = useState(false);
 
@@ -127,7 +129,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
+      const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
       const body = {
         origin: { latitude: origin.latitude, longitude: origin.longitude },
         destination: { latitude: destination.latitude, longitude: destination.longitude },
@@ -253,19 +255,25 @@ export default function App() {
     }
   };
 
-  // Save current route
-  const handleSaveCurrentRoute = () => {
+  // Save current route (strictly gated for signed-in accounts)
+  const handleSaveCurrentRoute = async () => {
     if (!origin || !destination) return;
-    saveTrip({
+    if (!isAuthenticated) {
+      openAuthModal('Sign in with Google to save your custom Parikrama routes to your account.');
+      return;
+    }
+    const success = await saveTrip({
       name: `${destination.name} Parikrama`,
       origin,
       destination,
       distanceKm,
       pandalCount: itinerary.length,
     });
-    setIsRouteSaved(true);
-    setSaveSuccessToast(true);
-    setTimeout(() => setSaveSuccessToast(false), 3000);
+    if (success !== false) {
+      setIsRouteSaved(true);
+      setSaveSuccessToast(true);
+      setTimeout(() => setSaveSuccessToast(false), 3000);
+    }
   };
 
   return (
@@ -286,7 +294,7 @@ export default function App() {
 
       {activeTab === 'navigation' && (
         <NavigationScreen
-          apiBaseUrl={API_BASE_URL}
+          apiBaseUrl={apiBaseUrl}
           targetPandal={navigationTargetPandal}
           onNavigateToPandal={handleNavigateToPandal}
         />
@@ -294,7 +302,7 @@ export default function App() {
 
       {activeTab === 'metro' && (
         <MetroTransitView
-          apiBaseUrl={API_BASE_URL}
+          apiBaseUrl={apiBaseUrl}
           onNavigateToPandal={handleMetroNavigateToPandal}
         />
       )}
@@ -303,6 +311,7 @@ export default function App() {
         <ProfileScreen
           onNavigateToPandal={handleNavigateToPandal}
           onNavigateToTrip={handleLoadSavedTrip}
+          onOpenBackendSwitcher={() => setIsBackendSwitcherOpen(true)}
         />
       )}
 
@@ -319,7 +328,7 @@ export default function App() {
             onUpdateOrigin={handleUpdateOrigin}
             onUpdateDestination={handleUpdateDestination}
             bottomInset={CAROUSEL_INSET}
-            apiBaseUrl={API_BASE_URL}
+            apiBaseUrl={apiBaseUrl}
           />
 
           {/* Floating route card */}
@@ -332,7 +341,7 @@ export default function App() {
             onClearDestination={() => { setDestination(null); resetRoute(); }}
             onSwap={handleSwap}
             loading={loading}
-            apiBaseUrl={API_BASE_URL}
+            apiBaseUrl={apiBaseUrl}
           />
 
           {/* Dedicated Aesthetic Save Button & Compact Summary Bar (Floats right above bottom carousel, leaving map 100% visible) */}
@@ -402,7 +411,11 @@ export default function App() {
         setIsDrawerOpen(false);
       }}
       onOpenModal={(modal) => {
-        setActiveModal(modal);
+        if (modal === 'backend') {
+          setIsBackendSwitcherOpen(true);
+        } else {
+          setActiveModal(modal);
+        }
         setIsDrawerOpen(false);
       }}
     />
@@ -412,6 +425,12 @@ export default function App() {
       activeModal={activeModal}
       onClose={() => setActiveModal(null)}
       onSelectRecommendation={handleSelectRecommendation}
+    />
+
+    {/* Server Switcher Modal (Render Cloud / Vercel Serverless / Localhost) */}
+    <BackendSwitcherModal
+      isOpen={isBackendSwitcherOpen}
+      onClose={() => setIsBackendSwitcherOpen(false)}
     />
   </>
   );

@@ -103,5 +103,14 @@ async def close_mongo_connection():
 
 
 def get_database() -> AsyncIOMotorDatabase:
-    """Dependency injection helper to get MongoDB database instance."""
+    """Dependency injection helper to get MongoDB database instance with lazy fallback."""
+    if db.db is None:
+        db.client = AsyncIOMotorClient(
+            settings.MONGODB_URL,
+            maxPoolSize=50,
+            minPoolSize=5,
+            maxIdleTimeMS=45000,
+            serverSelectionTimeoutMS=5000,
+        )
+        db.db = db.client[settings.MONGODB_DB_NAME]
     return db.db
