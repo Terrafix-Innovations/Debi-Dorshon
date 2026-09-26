@@ -33,6 +33,7 @@ async def get_map_config() -> Dict[str, Any]:
     token = settings.MAPBOX_ACCESS_TOKEN
     is_configured = bool(token and token.startswith("pk.") and "your_" not in token)
     return {
+        "map_provider": settings.MAP_PROVIDER,
         "mapbox_configured": is_configured,
         "mapbox_token": token if is_configured else None,
         "default_center": [88.375, 22.595],
@@ -222,6 +223,47 @@ async def autocomplete_places(
                                 })
             except Exception:
                 pass
+
+    # 3. OpenStreetMap Nominatim search: Free real-time POI, transit hubs, stations, and addresses
+    if len(results) < limit:
+        client = get_http_client()
+        try:
+            nom_params = {
+                "q": trimmed,
+                "format": "json",
+                "limit": str(limit - len(results)),
+                "countrycodes": "in",
+                "viewbox": "88.15,22.75,88.55,22.35",
+                "bounded": "0",
+            }
+            res_nom = await client.get(
+                "https://nominatim.openstreetmap.org/search",
+                params=nom_params,
+                headers={"User-Agent": "DebiDorshon-RoutePlanner/1.0"},
+                timeout=3.5,
+            )
+            if res_nom.status_code == 200:
+                for item in res_nom.json():
+                    lat_str = item.get("lat")
+                    lon_str = item.get("lon")
+                    if lat_str and lon_str:
+                        lat, lng = float(lat_str), float(lon_str)
+                        key = (round(lat, 5), round(lng, 5))
+                        if key not in seen_coords:
+                            seen_coords.add(key)
+                            name_val = item.get("name") or (item.get("display_name", "").split(",")[0])
+                            full_addr = item.get("display_name") or ""
+                            results.append({
+                                "id": f"osm_{item.get('place_id')}",
+                                "title": name_val,
+                                "subtitle": full_addr,
+                                "latitude": lat,
+                                "longitude": lng,
+                            })
+                            if len(results) >= limit:
+                                break
+        except Exception:
+            pass
 
     final_results = results[:limit]
     await cache.set_json(cache_key, final_results, expire=settings.CACHE_TTL_AUTOCOMPLETE)

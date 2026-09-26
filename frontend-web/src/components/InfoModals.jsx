@@ -147,7 +147,7 @@ export default function InfoModals({
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="text-[#8E1B1B]">✔</span>
-                  <span>Interactive Mapbox Kolkata map with 500+ pinned pandals</span>
+                  <span>Interactive OpenStreetMap Kolkata map with 500+ pinned pandals</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="text-[#8E1B1B]">✔</span>

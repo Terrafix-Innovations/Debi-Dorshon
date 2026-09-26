@@ -1,35 +1,30 @@
 import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
+import L from 'leaflet';
 
-const KOLKATA_CENTER = [88.3639, 22.5726]; // [lng, lat]
+const KOLKATA_CENTER = [22.5726, 88.3639]; // [lat, lng] for Leaflet
 
-function createPinElement(type, label = '', isActive = false) {
-  const el = document.createElement('div');
-  el.className = 'custom-pin-wrapper cursor-pointer';
-
+function createPinHtml(type, label = '', isActive = false) {
   if (type === 'pandal') {
-    el.innerHTML = `
+    return `
       <div class="pin-pandal ${isActive ? 'active-pin' : ''}">
         <img src="/pandal_marker.png" alt="Pandal" class="pin-pandal-img" />
         ${label ? `<span class="pin-pandal-badge">${label}</span>` : ''}
       </div>
     `;
   } else if (type === 'dest') {
-    el.innerHTML = `
+    return `
       <div class="pin-pandal active-pin">
         <img src="/pandal_marker.png" alt="Destination" class="pin-pandal-img" />
         <span class="pin-pandal-badge" style="background:#059669;">📍</span>
       </div>
     `;
   } else {
-    const pinClass = 'pin-s';
-    el.innerHTML = `<div class="${pinClass}"><span>${label}</span></div>`;
+    return `<div class="pin-s"><span>${label}</span></div>`;
   }
-  return el;
 }
 
 /**
- * Full-screen Mapbox map that lives in the background of the app.
+ * Full-screen OpenStreetMap (Leaflet) that lives in the background of the app.
  * All floating UI is layered above it via absolute positioning in App.
  */
 export default function MapBackground({
@@ -42,13 +37,13 @@ export default function MapBackground({
   onUpdateOrigin,
   onUpdateDestination,
   bottomInset = 0,
-  apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const originMarkerRef = useRef(null);
   const destMarkerRef = useRef(null);
   const pandalMarkersRef = useRef([]);
+  const routeLayersRef = useRef([]);
   const isDraggingRef = useRef(false);
 
   // Keep latest callbacks in refs so the map init effect stays stable.
@@ -57,83 +52,53 @@ export default function MapBackground({
     cbRef.current = { onMapClick, onUpdateOrigin, onUpdateDestination };
   }, [onMapClick, onUpdateOrigin, onUpdateDestination]);
 
-  // 1. Initialize map (once)
+  // 1. Initialize Leaflet OpenStreetMap map (once)
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    let isSubscribed = true;
+    const map = L.map(mapContainerRef.current, {
+      center: KOLKATA_CENTER,
+      zoom: 12.5,
+      zoomControl: false,
+      attributionControl: true,
+    });
 
-    async function initMap() {
-      const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
-      let token = null;
+    // Canonical OpenStreetMap raster tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      subdomains: ['a', 'b', 'c'],
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    }).addTo(map);
 
-      try {
-        const res = await fetch(`${cleanBase}/api/v1/route/config`);
-        if (res.ok) {
-          const cfg = await res.json();
-          if (cfg.mapbox_configured && cfg.mapbox_token) {
-            token = cfg.mapbox_token;
-          }
-        }
-      } catch (err) {
-        console.warn('Map config endpoint unreachable, using fallback basemap:', err);
-      }
+    map.on('click', (e) => {
+      if (isDraggingRef.current) return;
+      const target = e.originalEvent?.target;
+      if (target && (target.closest('.custom-pin-wrapper') || target.closest('.leaflet-marker-icon'))) return;
+      cbRef.current.onMapClick?.(e.latlng.lat, e.latlng.lng);
+    });
 
-      if (!isSubscribed || !mapContainerRef.current) return;
+    mapInstanceRef.current = map;
 
-      if (token) mapboxgl.accessToken = token;
+    // Force map to recalculate container size
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
 
-      const mapStyle = token
-        ? 'mapbox://styles/mapbox/streets-v12'
-        : {
-            version: 8,
-            sources: {
-              'voyager-tiles': {
-                type: 'raster',
-                tiles: [
-                  'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                  'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                  'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                ],
-                tileSize: 256,
-                attribution: '&copy; CartoDB &copy; OpenStreetMap',
-              },
-            },
-            layers: [
-              { id: 'voyager-base', type: 'raster', source: 'voyager-tiles', minzoom: 0, maxzoom: 19 },
-            ],
-          };
-
-      const map = new mapboxgl.Map({
-        container: mapContainerRef.current,
-        style: mapStyle,
-        center: KOLKATA_CENTER,
-        zoom: 12.5,
-        pitch: 0,
-        bearing: 0,
-        attributionControl: false,
-      });
-
-      map.on('click', (e) => {
-        if (isDraggingRef.current) return;
-        const target = e.originalEvent?.target;
-        if (target && (target.closest('.custom-pin-wrapper') || target.closest('.mapboxgl-marker'))) return;
-        cbRef.current.onMapClick?.(e.lngLat.lat, e.lngLat.lng);
-      });
-
-      mapInstanceRef.current = map;
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
     }
 
-    initMap();
-
     return () => {
-      isSubscribed = false;
+      resizeObserver.disconnect();
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, [apiBaseUrl]);
+  }, []);
 
   // 2. Origin marker
   useEffect(() => {
@@ -146,23 +111,30 @@ export default function MapBackground({
       return;
     }
 
-    const lngLat = [origin.longitude, origin.latitude];
+    const latLng = [origin.latitude, origin.longitude];
     const popupHtml = `
       <div class="p-1">
         <div class="text-[10px] uppercase font-bold text-stone-500 tracking-wider">Start</div>
         <div class="font-bold text-sm text-stone-900 mt-0.5">${origin.name || 'Start Point'}</div>
       </div>`;
 
+    const icon = L.divIcon({
+      html: `<div class="custom-pin-wrapper cursor-pointer">${createPinHtml('origin', 'S')}</div>`,
+      className: 'custom-pin-icon',
+      iconSize: [34, 34],
+      iconAnchor: [17, 34],
+      popupAnchor: [0, -28],
+    });
+
     if (originMarkerRef.current) {
-      originMarkerRef.current.setLngLat(lngLat);
-      originMarkerRef.current.getPopup()?.setHTML(popupHtml);
+      originMarkerRef.current.setLatLng(latLng);
+      originMarkerRef.current.setPopupContent(popupHtml);
     } else {
-      const el = createPinElement('origin', 'S');
-      const marker = new mapboxgl.Marker({ element: el, draggable: true }).setLngLat(lngLat).addTo(map);
-      marker.setPopup(new mapboxgl.Popup({ offset: 22, closeButton: false }).setHTML(popupHtml));
+      const marker = L.marker(latLng, { icon, draggable: true }).addTo(map);
+      marker.bindPopup(popupHtml, { offset: [0, -10], closeButton: false });
       marker.on('dragstart', () => { isDraggingRef.current = true; });
       marker.on('dragend', () => {
-        const pos = marker.getLngLat();
+        const pos = marker.getLatLng();
         cbRef.current.onUpdateOrigin?.(pos.lat, pos.lng);
         setTimeout(() => { isDraggingRef.current = false; }, 250);
       });
@@ -181,7 +153,7 @@ export default function MapBackground({
       return;
     }
 
-    const lngLat = [destination.longitude, destination.latitude];
+    const latLng = [destination.latitude, destination.longitude];
     const popupHtml = `
       <div class="p-1.5 min-w-[200px]">
         <div class="text-[10px] uppercase font-black text-[#903f00] tracking-wider flex items-center gap-1">
@@ -193,20 +165,27 @@ export default function MapBackground({
         ${destination.nearest_metro?.name ? `<div class="mt-1 text-xs text-indigo-700 font-bold flex items-center gap-1">🚇 <span>${destination.nearest_metro.name}</span></div>` : ''}
       </div>`;
 
+    const icon = L.divIcon({
+      html: `<div class="custom-pin-wrapper cursor-pointer">${createPinHtml('dest', '📍')}</div>`,
+      className: 'custom-pin-icon',
+      iconSize: [34, 38],
+      iconAnchor: [17, 38],
+      popupAnchor: [0, -32],
+    });
+
     if (destMarkerRef.current) {
-      destMarkerRef.current.setLngLat(lngLat);
-      destMarkerRef.current.getPopup()?.setHTML(popupHtml);
-      if (!destMarkerRef.current.getPopup()?.isOpen()) {
-        destMarkerRef.current.togglePopup();
+      destMarkerRef.current.setLatLng(latLng);
+      destMarkerRef.current.setPopupContent(popupHtml);
+      if (!destMarkerRef.current.isPopupOpen()) {
+        destMarkerRef.current.openPopup();
       }
     } else {
-      const el = createPinElement('dest', '📍');
-      const marker = new mapboxgl.Marker({ element: el, draggable: true, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
-      marker.setPopup(new mapboxgl.Popup({ offset: 34, closeButton: false }).setHTML(popupHtml));
-      marker.togglePopup();
+      const marker = L.marker(latLng, { icon, draggable: true }).addTo(map);
+      marker.bindPopup(popupHtml, { offset: [0, -10], closeButton: false });
+      marker.openPopup();
       marker.on('dragstart', () => { isDraggingRef.current = true; });
       marker.on('dragend', () => {
-        const pos = marker.getLngLat();
+        const pos = marker.getLatLng();
         cbRef.current.onUpdateDestination?.(pos.lat, pos.lng);
         setTimeout(() => { isDraggingRef.current = false; }, 250);
       });
@@ -219,16 +198,21 @@ export default function MapBackground({
     const map = mapInstanceRef.current;
     if (!map || routeData || isDraggingRef.current) return;
 
-    const pad = { top: 180, bottom: bottomInset + 60, left: 60, right: 60 };
     if (origin && destination) {
-      const bounds = new mapboxgl.LngLatBounds();
-      bounds.extend([origin.longitude, origin.latitude]);
-      bounds.extend([destination.longitude, destination.latitude]);
-      map.fitBounds(bounds, { padding: pad, duration: 800 });
+      const bounds = L.latLngBounds([
+        [origin.latitude, origin.longitude],
+        [destination.latitude, destination.longitude],
+      ]);
+      map.fitBounds(bounds, {
+        paddingTopLeft: [60, 180],
+        paddingBottomRight: [60, bottomInset + 60],
+        maxZoom: 15,
+        animate: true,
+      });
     } else if (origin) {
-      map.flyTo({ center: [origin.longitude, origin.latitude], zoom: 14, duration: 800 });
+      map.flyTo([origin.latitude, origin.longitude], 14, { duration: 0.8 });
     } else if (destination) {
-      map.flyTo({ center: [destination.longitude, destination.latitude], zoom: 14, duration: 800 });
+      map.flyTo([destination.latitude, destination.longitude], 14, { duration: 0.8 });
     }
   }, [origin, destination, routeData, bottomInset]);
 
@@ -237,97 +221,100 @@ export default function MapBackground({
     const map = mapInstanceRef.current;
     if (!map) return;
 
+    // Clear old route polylines
+    routeLayersRef.current.forEach((layer) => layer.remove());
+    routeLayersRef.current = [];
+
+    // Clear old pandal markers
     pandalMarkersRef.current.forEach((m) => m.remove());
     pandalMarkersRef.current = [];
 
-    const removeRouteLayers = () => {
-      ['route-core', 'route-casing', 'route-glow'].forEach((id) => {
-        if (map.getLayer(id)) map.removeLayer(id);
-      });
-      if (map.getSource('route-corridor')) map.removeSource('route-corridor');
-    };
+    if (!routeData) return;
 
-    const drawWhenReady = () => {
-      if (!map.isStyleLoaded()) {
-        map.once('idle', drawWhenReady);
-        return;
-      }
+    const coords = routeData.route_geometry?.coordinates;
+    if (coords && Array.isArray(coords) && coords.length > 0) {
+      // GeoJSON is [lng, lat] -> Leaflet uses [lat, lng]
+      const latLngs = coords.map(([lng, lat]) => [lat, lng]);
 
-      if (!routeData) {
-        removeRouteLayers();
-        return;
-      }
+      const glow = L.polyline(latLngs, {
+        color: '#fed7aa',
+        weight: 10,
+        opacity: 0.7,
+        lineCap: 'round',
+        lineJoin: 'round',
+      }).addTo(map);
 
-      const coords = routeData.route_geometry?.coordinates;
-      if (coords && Array.isArray(coords) && coords.length > 0) {
-        removeRouteLayers();
-        map.addSource('route-corridor', {
-          type: 'geojson',
-          data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } },
-        });
-        map.addLayer({
-          id: 'route-glow', type: 'line', source: 'route-corridor',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#fed7aa', 'line-width': 10, 'line-opacity': 0.7 },
-        });
-        map.addLayer({
-          id: 'route-casing', type: 'line', source: 'route-corridor',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#903f00', 'line-width': 4.5, 'line-opacity': 0.95 },
-        });
-        map.addLayer({
-          id: 'route-core', type: 'line', source: 'route-corridor',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#ffedd5', 'line-width': 1.5 },
-        });
-      }
+      const casing = L.polyline(latLngs, {
+        color: '#903f00',
+        weight: 4.5,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round',
+      }).addTo(map);
 
-      const itinerary = routeData.itinerary || [];
-      const bounds = new mapboxgl.LngLatBounds();
-      if (origin) bounds.extend([origin.longitude, origin.latitude]);
-      if (destination) bounds.extend([destination.longitude, destination.latitude]);
+      const core = L.polyline(latLngs, {
+        color: '#ffedd5',
+        weight: 1.5,
+        opacity: 1.0,
+        lineCap: 'round',
+        lineJoin: 'round',
+      }).addTo(map);
 
-      itinerary.forEach((item) => {
-        const { step, pandal, detour_distance_km } = item;
-        const { latitude, longitude } = pandal.location;
-        const lngLat = [longitude, latitude];
-        bounds.extend(lngLat);
+      routeLayersRef.current = [glow, casing, core];
+    }
 
-        const isSelected = activePandal?.step === step;
-        const el = createPinElement('pandal', step, isSelected);
-        const popupHtml = `
-          <div class="p-1 min-w-[180px]">
-            <div class="text-[10px] uppercase font-bold text-stone-500">
-              Stop #${step} &bull; +${detour_distance_km.toFixed(2)} km
-            </div>
-            <h4 class="font-bold text-sm text-stone-900 mt-0.5">${pandal.name}</h4>
-            <p class="text-xs text-stone-500 mt-0.5">${pandal.region || 'Kolkata'}${pandal.cluster ? ` &bull; ${pandal.cluster}` : ''}</p>
-            ${pandal.nearest_metro?.name ? `<div class="mt-1 text-xs text-indigo-700 font-medium">🚇 ${pandal.nearest_metro.name}</div>` : ''}
-          </div>`;
+    const itinerary = routeData.itinerary || [];
+    const allPoints = [];
+    if (origin) allPoints.push([origin.latitude, origin.longitude]);
+    if (destination) allPoints.push([destination.latitude, destination.longitude]);
 
-        const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-          .setLngLat(lngLat)
-          .setPopup(new mapboxgl.Popup({ offset: 34 }).setHTML(popupHtml))
-          .addTo(map);
+    itinerary.forEach((item) => {
+      const { step, pandal, detour_distance_km } = item;
+      const { latitude, longitude } = pandal.location;
+      const latLng = [latitude, longitude];
+      allPoints.push(latLng);
 
-        marker.step = step;
-        marker.pandal = { ...pandal, step, detour_distance_km };
-        el.addEventListener('click', () => setActivePandal?.(marker.pandal));
-        pandalMarkersRef.current.push(marker);
+      const isSelected = activePandal?.step === step;
+      const popupHtml = `
+        <div class="p-1 min-w-[180px]">
+          <div class="text-[10px] uppercase font-bold text-stone-500">
+            Stop #${step} &bull; +${detour_distance_km.toFixed(2)} km
+          </div>
+          <h4 class="font-bold text-sm text-stone-900 mt-0.5">${pandal.name}</h4>
+          <p class="text-xs text-stone-500 mt-0.5">${pandal.region || 'Kolkata'}${pandal.cluster ? ` &bull; ${pandal.cluster}` : ''}</p>
+          ${pandal.nearest_metro?.name ? `<div class="mt-1 text-xs text-indigo-700 font-medium">🚇 ${pandal.nearest_metro.name}</div>` : ''}
+        </div>`;
+
+      const icon = L.divIcon({
+        html: `<div class="custom-pin-wrapper cursor-pointer" data-step="${step}">${createPinHtml('pandal', step, isSelected)}</div>`,
+        className: 'custom-pin-icon',
+        iconSize: [36, 42],
+        iconAnchor: [18, 42],
+        popupAnchor: [0, -36],
       });
 
-      if (!bounds.isEmpty()) {
-        map.fitBounds(bounds, {
-          padding: { top: 170, bottom: bottomInset + 70, left: 55, right: 55 },
-          duration: 900,
-          essential: true,
-        });
-      }
-    };
+      const marker = L.marker(latLng, { icon }).addTo(map);
+      marker.bindPopup(popupHtml, { offset: [0, -10], closeButton: false });
+      marker.step = step;
+      marker.pandal = { ...pandal, step, detour_distance_km };
 
-    drawWhenReady();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeData]);
+      marker.on('click', () => {
+        setActivePandal?.(marker.pandal);
+      });
+
+      pandalMarkersRef.current.push(marker);
+    });
+
+    if (allPoints.length > 0) {
+      const bounds = L.latLngBounds(allPoints);
+      map.fitBounds(bounds, {
+        paddingTopLeft: [55, 170],
+        paddingBottomRight: [55, bottomInset + 70],
+        maxZoom: 16,
+        animate: true,
+      });
+    }
+  }, [routeData, bottomInset]);
 
   // 6. Active pandal focus
   useEffect(() => {
@@ -335,30 +322,28 @@ export default function MapBackground({
     if (!map) return;
 
     pandalMarkersRef.current.forEach((m) => {
-      const inner = m.getElement().querySelector('.pin-pandal');
+      const el = m.getElement();
+      if (!el) return;
+      const inner = el.querySelector('.pin-pandal');
       if (!inner) return;
-      if (activePandal?.step === m.step) inner.classList.add('active-pin');
-      else inner.classList.remove('active-pin');
+      if (activePandal?.step === m.step) {
+        inner.classList.add('active-pin');
+        el.style.zIndex = '1000';
+      } else {
+        inner.classList.remove('active-pin');
+        el.style.zIndex = '';
+      }
     });
 
     if (activePandal?.location) {
       const { latitude, longitude } = activePandal.location;
-      map.flyTo({
-        center: [longitude, latitude],
-        zoom: 15.5,
-        offset: [0, -(bottomInset / 2)],
-        duration: 800,
-        essential: true,
-      });
+      map.flyTo([latitude, longitude], 15.5, { duration: 0.8 });
       const target = pandalMarkersRef.current.find((m) => m.step === activePandal.step);
-      if (target && !target.getPopup()?.isOpen()) target.togglePopup();
+      if (target && !target.isPopupOpen()) {
+        target.openPopup();
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePandal]);
 
   return <div ref={mapContainerRef} className="absolute inset-0 w-full h-full" />;
-}
-
-export function useMapControls() {
-  // Placeholder for potential imperative handle; kept simple for now.
 }

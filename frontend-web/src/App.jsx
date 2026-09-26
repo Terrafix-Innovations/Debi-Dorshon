@@ -15,7 +15,7 @@ import { useAuth } from './context/AuthContext';
 const MAX_DETOUR_KM = 2.5;
 const CAROUSEL_INSET = 200; // px reserved at bottom for carousel + tab bar
 
-// Popular Route Presets resolved live via real-time Mapbox transit & DB pandals
+// Popular Route Presets resolved live via real-time OpenStreetMap transit & DB pandals
 const POPULAR_PRESETS = {
   heritage: {
     originName: 'Sovabazar Metro Station',

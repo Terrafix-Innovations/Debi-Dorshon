@@ -1,12 +1,10 @@
-import React, { forwardRef, useImperativeHandle, useRef, useMemo, useState, useCallback, useEffect } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useMemo, useCallback, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { colors } from '../../theme/colors';
-import { API_BASE_URL } from '../../config/env';
 
 /**
- * InteractiveMapView: Interactive Mapbox map rendered inside a WebView.
- * Fetches token from backend and mirrors web UI behavior.
+ * InteractiveMapView: Interactive OpenStreetMap (Leaflet) map rendered inside a WebView.
+ * Replaces Mapbox with 100% free OpenStreetMap & CartoDB Voyager tiles, zero API token limits.
  */
 const InteractiveMapView = forwardRef(function InteractiveMapView(
   {
@@ -65,8 +63,8 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       .replace(/>/g, '&gt;');
   };
 
-  // Collect all markers for the Mapbox map.
-  // Popup content mirrors the web UI (frontend-web/src/components/MapBackground.jsx):
+  // Collect all markers for the Leaflet OpenStreetMap map.
+  // Popup content mirrors the web UI:
   //   - Origin/Destination -> "Start" / "End" badge + name
   //   - Pandal (routed)     -> "Stop #N • +X.XX km" badge + name + region/cluster + metro
   const allMarkers = useMemo(() => {
@@ -98,53 +96,44 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       });
     }
 
-    // Itinerary pandals (when a route is calculated) — full web-style popup
-    if (showPandals && itinerary.length > 0) {
-      itinerary.forEach((item, idx) => {
+    // Routed itinerary pandals (numbered stops)
+    if (showPandals && itinerary && itinerary.length > 0) {
+      itinerary.forEach((item) => {
         const p = item.pandal || item;
         const lat = p.location?.latitude ?? p.lat;
         const lng = p.location?.longitude ?? p.lng;
         if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) return;
-        const step = item.step ?? idx + 1;
-        const detour = typeof item.detour_distance_km === 'number' ? item.detour_distance_km : null;
-        const region = p.region || 'Kolkata';
-        const cluster = p.cluster || '';
-        const sub = cluster ? `${region} \u2022 ${cluster}` : region;
-        const metroName = p.nearest_metro?.name || '';
+
+        const detour = typeof item.detour_distance_km === 'number' ? ` • +${item.detour_distance_km.toFixed(2)} km` : '';
         markers.push({
           lat,
           lng,
           type: 'pandal',
-          label: String(step),
-          step,
-          badge: detour != null ? `Stop #${step} \u2022 +${detour.toFixed(2)} km` : `Stop #${step}`,
-          name: escapeText(p.name || `Pandal ${idx + 1}`),
-          sub: escapeText(sub),
-          metro: escapeText(metroName),
+          label: String(item.step || markers.length + 1),
+          badge: `Stop #${item.step || markers.length + 1}${detour}`,
+          name: escapeText(p.name || 'Pandal'),
+          sub: escapeText(p.cluster || p.zone || p.region || 'Kolkata'),
+          metro: escapeText(p.nearest_metro?.name || ''),
+          step: item.step,
           raw: p,
         });
       });
-    }
-
-    // General pandals (only if no active itinerary)
-    if (showPandals && itinerary.length === 0) {
+    } else if (showPandals && pandals && pandals.length > 0) {
+      // General explore pandals
       pandals.forEach((p, idx) => {
         const lat = p.location?.latitude ?? p.lat;
         const lng = p.location?.longitude ?? p.lng;
         if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) return;
-        const region = p.region || 'Kolkata';
-        const cluster = p.cluster || '';
-        const sub = cluster ? `${region} \u2022 ${cluster}` : region;
-        const metroName = p.nearest_metro?.name || '';
+
         markers.push({
           lat,
           lng,
           type: 'pandal',
-          label: '',
-          badge: 'Pandal',
-          name: escapeText(p.name || `Pandal ${idx + 1}`),
-          sub: escapeText(sub),
-          metro: escapeText(metroName),
+          label: String(idx + 1),
+          badge: 'Durga Puja Pandal',
+          name: escapeText(p.name || 'Pandal'),
+          sub: escapeText(p.cluster || p.zone || p.region || 'Kolkata'),
+          metro: escapeText(p.nearest_metro?.name || ''),
           raw: p,
         });
       });
@@ -191,64 +180,13 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     return markers;
   }, [origin, destination, itinerary, pandals, metroStations, trainStations, showPandals, showMetro, showTrain]);
 
-  // Build route path for Mapbox polyline
-  const mapPath = useMemo(() => {
-    return pathCoords.map((p) => [p.latitude, p.longitude]);
-  }, [pathCoords]);
-
-  // Calculate center and zoom
-  const mapCenter = useMemo(() => {
-    const pts = [...pathCoords];
-    if (userCoords && typeof userCoords.latitude === 'number' && typeof userCoords.longitude === 'number') {
-      pts.push(userCoords);
-    }
-    allMarkers.forEach((m) => pts.push({ latitude: m.lat, longitude: m.lng }));
-
-    if (pts.length === 0) return { lat: 22.5726, lng: 88.3639, zoom: 13 };
-
-    let minLat = pts[0].latitude, maxLat = pts[0].latitude;
-    let minLng = pts[0].longitude, maxLng = pts[0].longitude;
-    pts.forEach((p) => {
-      minLat = Math.min(minLat, p.latitude);
-      maxLat = Math.max(maxLat, p.latitude);
-      minLng = Math.min(minLng, p.longitude);
-      maxLng = Math.max(maxLng, p.longitude);
-    });
-
-    const latSpan = maxLat - minLat;
-    const lngSpan = maxLng - minLng;
-    const maxSpan = Math.max(latSpan, lngSpan);
-
-    let zoom = 13;
-    if (maxSpan > 0.3) zoom = 11;
-    else if (maxSpan > 0.15) zoom = 12;
-    else if (maxSpan > 0.05) zoom = 13;
-    else if (maxSpan > 0.02) zoom = 14;
-    else zoom = 15;
-
-    return {
-      lat: (minLat + maxLat) / 2,
-      lng: (minLng + maxLng) / 2,
-      zoom,
-    };
-  }, [pathCoords, userCoords, allMarkers]);
-
-  // Marker styling palette
-  const markerStyles = useMemo(() => ({
-    origin: { bg: '#1E7E34', color: '#ffffff', border: '#ffffff' },
-    destination: { bg: '#A31E22', color: '#ffffff', border: '#ffffff' },
-    pandal: { bg: '#8B1A1A', color: '#F4C430', border: '#F4C430' },
-    metro: { bg: '#2E7D32', color: '#ffffff', border: '#A5D6A7' },
-    train: { bg: '#1565C0', color: '#ffffff', border: '#90CAF9' },
-  }), []);
-
   // Expose imperative methods
   useImperativeHandle(ref, () => ({
     animateToRegion: (region) => {
       if (webRef.current) {
         webRef.current.injectJavaScript(`
           if (window._map) {
-            window._map.flyTo({ center: [${region.longitude}, ${region.latitude}], zoom: 15.5, duration: 800 });
+            window._map.flyTo([${region.latitude}, ${region.longitude}], 15.5, { duration: 0.8 });
           }
           true;
         `);
@@ -256,12 +194,12 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     },
     fitToCoordinates: (coords) => {
       if (webRef.current && coords && coords.length > 0) {
-        const rawCoords = coords.map((c) => [c.longitude ?? c.lng, c.latitude ?? c.lat]);
+        const rawCoords = coords.map((c) => [c.latitude ?? c.lat, c.longitude ?? c.lng]);
         webRef.current.injectJavaScript(`
-          if (window._map && window.mapboxgl) {
+          if (window._map && window.L) {
             const pts = ${JSON.stringify(rawCoords)};
-            const bounds = pts.reduce((b, c) => b.extend(c), new mapboxgl.LngLatBounds(pts[0], pts[0]));
-            window._map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
+            const bounds = L.latLngBounds(pts);
+            window._map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
           }
           true;
         `);
@@ -304,7 +242,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     webRef.current.injectJavaScript(`if (window.highlightStep) window.highlightStep(${step == null ? 'null' : step}); true;`);
   }, [selectedPlace, itinerary]);
 
-  // Handle messages from Mapbox webview / iframe
+  // Handle messages from Leaflet webview / iframe
   const handleMessageData = useCallback((rawPayload) => {
     try {
       const data = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload;
@@ -340,13 +278,11 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     return () => window.removeEventListener('message', onWebMessage);
   }, [handleMessageData]);
 
-  // Build the complete Mapbox HTML with embedded data
-  const mapboxHtml = useMemo(() => {
-    const pathJson = JSON.stringify(pathCoords.map(p => [p.longitude, p.latitude]));
+  // Build the complete OpenStreetMap Leaflet HTML with embedded data
+  const mapHtml = useMemo(() => {
+    const pathJson = JSON.stringify(pathCoords.map((p) => [p.latitude, p.longitude]));
     const markersJson = JSON.stringify(allMarkers);
-    const userJson = userCoords ? JSON.stringify([userCoords.longitude, userCoords.latitude]) : 'null';
-    const cleanBase = (API_BASE_URL || 'http://localhost:8000').trim().replace(/\/+$/, '');
-    const defaultEnvToken = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
+    const userJson = userCoords ? JSON.stringify([userCoords.latitude, userCoords.longitude]) : 'null';
 
     return `
       <!DOCTYPE html>
@@ -354,8 +290,8 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-        <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
-        <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body {
@@ -371,8 +307,12 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
             background: #FAF2E4;
           }
           
-          /* Custom Pins matching Web UI (frontend-web/src/index.css) */
+          /* Custom Pins matching Web UI */
           .custom-pin-wrapper { cursor: pointer; }
+          .leaflet-div-icon {
+            background: transparent !important;
+            border: none !important;
+          }
 
           .pin-s {
             width: 34px; height: 34px;
@@ -417,28 +357,28 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
             z-index: 1000 !important;
           }
 
-          /* Hover / press feedback (matches web) */
+          /* Hover / press feedback */
           .pin-s:active, .pin-e:active { transform: scale(1.12) rotate(-45deg); }
           .pin-pandal:active { transform: scale(1.16); }
-          @media (hover: hover) {
-            .pin-s:hover, .pin-e:hover { transform: scale(1.12) rotate(-45deg); }
-            .pin-pandal:hover { transform: scale(1.16); }
-          }
 
-          /* Mapbox Popup Styling (matches web) */
-          .mapboxgl-popup-content {
+          /* Leaflet Popup Styling */
+          .leaflet-popup-content-wrapper {
             background: #ffffff !important;
             color: #1b1c1a !important;
             border-radius: 14px !important;
             border: 1px solid #ddc1b3 !important;
             box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.15), 0 8px 12px -6px rgba(0, 0, 0, 0.1) !important;
-            padding: 12px 14px !important;
+            padding: 0 !important;
             overflow: hidden !important;
           }
-          .mapboxgl-popup-tip {
-            border-top-color: #ffffff !important;
-            border-bottom-color: #ffffff !important;
+          .leaflet-popup-content {
+            margin: 12px 14px !important;
+            line-height: 1.4 !important;
           }
+          .leaflet-popup-tip {
+            background: #ffffff !important;
+          }
+          .leaflet-popup-close-button { display: none !important; }
 
           .popup { min-width: 150px; }
           .popup-badge {
@@ -453,10 +393,11 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       <body>
         <div id="map"></div>
         <script>
-          const KOLKATA_CENTER = [88.3639, 22.5726];
+          const KOLKATA_CENTER = [22.5726, 88.3639];
           let map;
           let isDragging = false;
           let pandalMarkers = [];
+          let routeLayers = [];
 
           function sendToHost(obj) {
             const str = JSON.stringify(obj);
@@ -467,139 +408,105 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
             }
           }
 
-          async function init() {
-            let token = ${JSON.stringify(defaultEnvToken)};
-            if (!token || token.indexOf('your_') !== -1) {
-              try {
-                const res = await fetch('${cleanBase}/api/v1/route/config');
-                if (res.ok) {
-                  const cfg = await res.json();
-                  if (cfg.mapbox_configured && cfg.mapbox_token) {
-                    token = cfg.mapbox_token;
-                  }
-                }
-              } catch (err) {}
-            }
-
-            if (token) mapboxgl.accessToken = token;
-
-            const mapStyle = token
-              ? 'mapbox://styles/mapbox/streets-v12'
-              : {
-                  version: 8,
-                  sources: {
-                    'voyager-tiles': {
-                      type: 'raster',
-                      tiles: [
-                        'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                        'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                        'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                      ],
-                      tileSize: 256,
-                      attribution: '&copy; CartoDB &copy; OpenStreetMap',
-                    },
-                  },
-                  layers: [{ id: 'voyager-base', type: 'raster', source: 'voyager-tiles', minzoom: 0, maxzoom: 19 }],
-                };
-
-            map = new mapboxgl.Map({
-              container: 'map',
-              style: mapStyle,
+          function init() {
+            map = L.map('map', {
               center: KOLKATA_CENTER,
               zoom: 12.5,
-              attributionControl: false,
+              zoomControl: false,
+              attributionControl: false
             });
+
+            // Canonical OpenStreetMap raster tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              subdomains: ['a', 'b', 'c'],
+              maxZoom: 19,
+              attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
             window._map = map;
 
             map.on('click', (e) => {
               if (isDragging) return;
               const target = e.originalEvent?.target;
-              if (target && (target.closest('.custom-pin-wrapper') || target.closest('.mapboxgl-marker'))) return;
-              sendToHost({ type: 'map_click', lat: e.lngLat.lat, lng: e.lngLat.lng });
+              if (target && (target.closest('.custom-pin-wrapper') || target.closest('.leaflet-marker-icon'))) return;
+              sendToHost({ type: 'map_click', lat: e.latlng.lat, lng: e.latlng.lng });
             });
 
-            map.on('load', () => {
-              updateData(${pathJson}, ${markersJson}, ${userJson});
-            });
+            updateData(${pathJson}, ${markersJson}, ${userJson});
           }
 
-
           function createPinElement(type, label = '', isActive = false) {
-            const el = document.createElement('div');
-            el.className = 'custom-pin-wrapper';
             if (type === 'pandal') {
-              el.innerHTML = '<div class="pin-pandal ' + (isActive ? 'active-pin' : '') + '">' + label + '</div>';
+              return '<div class="pin-pandal ' + (isActive ? 'active-pin' : '') + '">' + label + '</div>';
             } else if (type === 'origin') {
-              el.innerHTML = '<div class="pin-s"><span>' + (label || 'S') + '</span></div>';
+              return '<div class="pin-s"><span>' + (label || 'S') + '</span></div>';
             } else if (type === 'destination') {
-              el.innerHTML = '<div class="pin-e"><span>' + (label || 'E') + '</span></div>';
-            } else {
-              el.innerHTML = '<div class="pin-pandal">' + label + '</div>';
+              return '<div class="pin-e"><span>' + (label || 'E') + '</span></div>';
+            } else if (type === 'metro') {
+              return '<div class="pin-pandal" style="background:#2E7D32;border-color:#A5D6A7;">' + (label || 'M') + '</div>';
+            } else if (type === 'train') {
+              return '<div class="pin-pandal" style="background:#1565C0;border-color:#90CAF9;">' + (label || 'T') + '</div>';
             }
-            return el;
+            return '<div class="pin-pandal">' + label + '</div>';
           }
 
           function updateData(pathPoints, markers, userCoords) {
             if (!map) return;
 
-            // Route Path — layered corridor matching the web UI (glow + casing + core)
-            if (map.getSource('route')) {
-              map.getSource('route').setData({
-                type: 'Feature',
-                geometry: { type: 'LineString', coordinates: pathPoints }
-              });
-            } else if (pathPoints && pathPoints.length > 0) {
-              map.addSource('route', {
-                type: 'geojson',
-                data: { type: 'Feature', geometry: { type: 'LineString', coordinates: pathPoints } }
-              });
-              map.addLayer({
-                id: 'route-glow', type: 'line', source: 'route',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#fed7aa', 'line-width': 10, 'line-opacity': 0.7 }
-              });
-              map.addLayer({
-                id: 'route-casing', type: 'line', source: 'route',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#903f00', 'line-width': 4.5, 'line-opacity': 0.95 }
-              });
-              map.addLayer({
-                id: 'route-core', type: 'line', source: 'route',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#ffedd5', 'line-width': 1.5 }
-              });
+            // Route Path
+            routeLayers.forEach(l => l.remove());
+            routeLayers = [];
+
+            if (pathPoints && pathPoints.length > 0) {
+              const glow = L.polyline(pathPoints, {
+                color: '#fed7aa', weight: 10, opacity: 0.7, lineCap: 'round', lineJoin: 'round'
+              }).addTo(map);
+              const casing = L.polyline(pathPoints, {
+                color: '#903f00', weight: 4.5, opacity: 0.95, lineCap: 'round', lineJoin: 'round'
+              }).addTo(map);
+              const core = L.polyline(pathPoints, {
+                color: '#ffedd5', weight: 1.5, opacity: 1.0, lineCap: 'round', lineJoin: 'round'
+              }).addTo(map);
+              routeLayers = [glow, casing, core];
             }
 
             // Markers
             pandalMarkers.forEach(m => m.remove());
             pandalMarkers = [];
 
-            const bounds = new mapboxgl.LngLatBounds();
+            const boundsPoints = [];
 
             markers.forEach(m => {
-              const el = createPinElement(m.type, m.label);
+              const pinHtml = createPinElement(m.type, m.label);
               const badge = m.badge || m.type;
               const popupHtml = '<div class="popup">' +
                 '<div class="popup-badge">' + badge + '</div>' +
                 '<div class="popup-title">' + m.name + '</div>' +
                 (m.sub ? '<div class="popup-sub">' + m.sub + '</div>' : '') +
-                (m.metro ? '<div class="popup-metro">\uD83D\uDE87 ' + m.metro + '</div>' : '') +
+                (m.metro ? '<div class="popup-metro">🚇 ' + m.metro + '</div>' : '') +
                 '</div>';
 
-              const marker = new mapboxgl.Marker({ 
-                element: el, 
-                draggable: (m.type === 'origin' || m.type === 'destination') 
-              })
-                .setLngLat([m.lng, m.lat])
-                .setPopup(new mapboxgl.Popup({ offset: 22, closeButton: false }).setHTML(popupHtml))
-                .addTo(map);
+              const isOriginOrDest = (m.type === 'origin' || m.type === 'destination');
+              const icon = L.divIcon({
+                html: '<div class="custom-pin-wrapper">' + pinHtml + '</div>',
+                className: 'custom-pin-wrapper',
+                iconSize: [34, 38],
+                iconAnchor: [17, 38],
+                popupAnchor: [0, -34],
+              });
 
+              const marker = L.marker([m.lat, m.lng], {
+                icon,
+                draggable: isOriginOrDest,
+              }).addTo(map);
+
+              marker.bindPopup(popupHtml, { offset: [0, -10], closeButton: false });
               if (typeof m.step !== 'undefined') marker._step = m.step;
 
-              if (m.type === 'origin' || m.type === 'destination') {
+              if (isOriginOrDest) {
                 marker.on('dragstart', () => { isDragging = true; });
-                marker.on('dragend', () => {
-                  const pos = marker.getLngLat();
+                marker.on('dragend', (e) => {
+                  const pos = e.target.getLatLng();
                   sendToHost({ 
                     type: 'marker_drag', 
                     markerType: m.type, 
@@ -610,32 +517,34 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
                 });
               }
 
-              el.addEventListener('click', () => {
+              marker.on('click', () => {
                 sendToHost({ type: 'marker_click', place: m });
               });
 
               pandalMarkers.push(marker);
-              bounds.extend([m.lng, m.lat]);
+              boundsPoints.push([m.lat, m.lng]);
             });
 
             if (userCoords) {
-              bounds.extend(userCoords);
+              boundsPoints.push([userCoords[0], userCoords[1]]);
             }
 
-            if (!bounds.isEmpty()) {
-              map.fitBounds(bounds, { padding: 50, maxZoom: 15, duration: 1000 });
+            if (boundsPoints.length > 0) {
+              const bounds = L.latLngBounds(boundsPoints);
+              map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
             }
           }
 
-          // Highlight a pandal pin by its step number and fly to it (mirrors web active-pin focus)
           window.highlightStep = function (step) {
             pandalMarkers.forEach((mk) => {
-              const inner = mk.getElement().querySelector('.pin-pandal');
+              const el = mk.getElement();
+              if (!el) return;
+              const inner = el.querySelector('.pin-pandal');
               if (!inner) return;
               if (step != null && mk._step === step) {
                 inner.classList.add('active-pin');
-                if (map) map.flyTo({ center: mk.getLngLat(), zoom: 15.5, duration: 800 });
-                if (mk.getPopup() && !mk.getPopup().isOpen()) mk.togglePopup();
+                if (map) map.flyTo(mk.getLatLng(), 15.5, { duration: 0.8 });
+                if (!mk.isPopupOpen()) mk.openPopup();
               } else {
                 inner.classList.remove('active-pin');
               }
@@ -654,7 +563,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     return (
       <View style={styles.container}>
         <iframe
-          srcDoc={mapboxHtml}
+          srcDoc={mapHtml}
           width="100%"
           height="100%"
           style={{ border: 0, width: '100%', height: '100%' }}
@@ -675,7 +584,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       <WebView
         ref={webRef}
         key={`map_route_${routePath?.length > 0 ? 'active' : 'idle'}_${activeFilter}`}
-        source={{ html: mapboxHtml }}
+        source={{ html: mapHtml }}
         style={styles.webView}
         originWhitelist={['*']}
         javaScriptEnabled={true}

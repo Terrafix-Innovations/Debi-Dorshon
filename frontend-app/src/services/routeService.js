@@ -160,7 +160,7 @@ export async function fetchMapConfig() {
       }
     } catch (e) {}
   }
-  return { mapbox_configured: false, default_center: [88.375, 22.595], default_zoom: 13 };
+  return { mapbox_configured: false, map_provider: 'openstreetmap', default_center: [88.375, 22.595], default_zoom: 13 };
 }
 
 export async function fetchAutocompletePlaces(query, limit = 6) {

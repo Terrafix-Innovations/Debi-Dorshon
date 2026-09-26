@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
+import L from 'leaflet';
 import { useAuth } from '../context/AuthContext';
 
-const KOLKATA_CENTER = [88.3639, 22.5726];
+const KOLKATA_CENTER = [22.5726, 88.3639]; // [lat, lng] for Leaflet
 
 export default function NavigationScreen({
   apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
@@ -26,47 +26,45 @@ export default function NavigationScreen({
       const lat = targetPandal.location?.latitude ?? targetPandal.lat;
       const lng = targetPandal.location?.longitude ?? targetPandal.lng;
       if (mapInstanceRef.current && typeof lat === 'number' && typeof lng === 'number') {
-        mapInstanceRef.current.flyTo({ center: [lng, lat], zoom: 15.5, duration: 800 });
+        mapInstanceRef.current.flyTo([lat, lng], 15.5, { duration: 0.8 });
       }
     }
   }, [targetPandal]);
 
   // Fetch all pandals from backend
   useEffect(() => {
-    let isMounted = true;
+    let isSubscribed = true;
     async function loadPandals() {
-      setLoading(true);
       try {
-        const cleanUrl = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
-        const res = await fetch(`${cleanUrl}/api/v1/pandals?limit=500`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (isMounted) {
-          const list = Array.isArray(data) ? data : (data.pandals || []);
-          setPandals(list);
+        const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
+        const res = await fetch(`${cleanBase}/api/v1/pandals/?limit=300`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isSubscribed) {
+            setPandals(Array.isArray(data) ? data : data.pandals || []);
+          }
         }
       } catch (err) {
-        console.warn('[NavigationScreen] Failed to load pandals from DB:', err.message);
+        console.warn('Failed to load pandals for navigation map:', err);
       } finally {
-        if (isMounted) setLoading(false);
+        if (isSubscribed) setLoading(false);
       }
     }
-
     loadPandals();
-    return () => { isMounted = false; };
+    return () => {
+      isSubscribed = false;
+    };
   }, [apiBaseUrl]);
 
-  // Filtered pandals based solely on search query
+  // Filter pandals by search term
   const filteredPandals = useMemo(() => {
+    if (!searchQuery.trim()) return pandals;
     const q = searchQuery.toLowerCase().trim();
-    if (!q) return pandals;
     return pandals.filter((p) => {
-      return (
-        (p.name && p.name.toLowerCase().includes(q)) ||
-        (p.cluster && p.cluster.toLowerCase().includes(q)) ||
-        (p.region && p.region.toLowerCase().includes(q)) ||
-        (p.nearest_metro?.name && p.nearest_metro.name.toLowerCase().includes(q))
-      );
+      const name = (p.name || '').toLowerCase();
+      const zone = (p.zone || p.cluster || p.region || '').toLowerCase();
+      const metro = (p.nearest_metro?.name || '').toLowerCase();
+      return name.includes(q) || zone.includes(q) || metro.includes(q);
     });
   }, [pandals, searchQuery]);
 
@@ -79,87 +77,55 @@ export default function NavigationScreen({
     });
   }, [filteredPandals]);
 
-  // Initialize Mapbox map (100% full screen)
+  // Initialize Leaflet OpenStreetMap map (100% full screen)
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    let isSubscribed = true;
+    const map = L.map(mapContainerRef.current, {
+      center: KOLKATA_CENTER,
+      zoom: 12.2,
+      zoomControl: false,
+      attributionControl: true,
+    });
 
-    async function initMap() {
-      const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
-      let token = null;
+    // Canonical OpenStreetMap raster tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      subdomains: ['a', 'b', 'c'],
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    }).addTo(map);
 
-      try {
-        const res = await fetch(`${cleanBase}/api/v1/route/config`);
-        if (res.ok) {
-          const cfg = await res.json();
-          if (cfg.mapbox_configured && cfg.mapbox_token) token = cfg.mapbox_token;
-        }
-      } catch (err) {
-        console.warn('Map token fetch failed:', err);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    if (targetPandal) {
+      const lat = targetPandal.location?.latitude ?? targetPandal.lat;
+      const lng = targetPandal.location?.longitude ?? targetPandal.lng;
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        map.flyTo([lat, lng], 15.5, { duration: 0.8 });
       }
-
-      if (!isSubscribed || !mapContainerRef.current) return;
-
-      if (token) mapboxgl.accessToken = token;
-
-      const mapStyle = token
-        ? 'mapbox://styles/mapbox/streets-v12'
-        : {
-            version: 8,
-            sources: {
-              'voyager-tiles': {
-                type: 'raster',
-                tiles: [
-                  'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                ],
-                tileSize: 256,
-              },
-            },
-            layers: [{ id: 'voyager-base', type: 'raster', source: 'voyager-tiles' }],
-          };
-
-      const map = new mapboxgl.Map({
-        container: mapContainerRef.current,
-        style: mapStyle,
-        center: KOLKATA_CENTER,
-        zoom: 12.2,
-        attributionControl: false,
-      });
-
-      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
-
-      map.on('load', () => {
-        if (targetPandal) {
-          const lat = targetPandal.location?.latitude ?? targetPandal.lat;
-          const lng = targetPandal.location?.longitude ?? targetPandal.lng;
-          if (typeof lat === 'number' && typeof lng === 'number') {
-            map.flyTo({ center: [lng, lat], zoom: 15.5, duration: 800 });
-          }
-        }
-      });
-
-      map.on('click', (e) => {
-        const target = e.originalEvent?.target;
-        if (!target || !target.closest('.navigation-pandal-marker')) {
-          // If clicked on empty map space, close card
-          // setSelectedPandal(null);
-        }
-      });
-
-      mapInstanceRef.current = map;
     }
 
-    initMap();
+    mapInstanceRef.current = map;
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
 
     return () => {
-      isSubscribed = false;
+      resizeObserver.disconnect();
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, [apiBaseUrl]);
+  }, []);
 
   // Render markers for all mappable pandals
   useEffect(() => {
@@ -176,23 +142,26 @@ export default function NavigationScreen({
 
       const isSelected = selectedPandal && (selectedPandal.id || selectedPandal._id) === (pandal.id || pandal._id);
 
-      const el = document.createElement('div');
-      el.className = `navigation-pandal-marker cursor-pointer ${isSelected ? 'active-pin z-30' : 'z-10'}`;
-      el.innerHTML = `
-        <div class="pin-pandal ${isSelected ? 'active-pin' : ''}">
-          <img src="/pandal_marker.png" alt="${pandal.name}" class="pin-pandal-img" />
-        </div>
-      `;
-
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setSelectedPandal(pandal);
-        map.flyTo({ center: [lng, lat], zoom: 14.5, duration: 600 });
+      const icon = L.divIcon({
+        html: `
+          <div class="navigation-pandal-marker cursor-pointer ${isSelected ? 'active-pin z-30' : 'z-10'}">
+            <div class="pin-pandal ${isSelected ? 'active-pin' : ''}">
+              <img src="/pandal_marker.png" alt="${pandal.name}" class="pin-pandal-img" />
+            </div>
+          </div>
+        `,
+        className: 'custom-pin-icon',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
       });
 
-      const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-        .setLngLat([lng, lat])
-        .addTo(map);
+      const marker = L.marker([lat, lng], { icon }).addTo(map);
+
+      marker.on('click', (e) => {
+        L.DomEvent.stopPropagation(e);
+        setSelectedPandal(pandal);
+        map.flyTo([lat, lng], 14.5, { duration: 0.6 });
+      });
 
       markersRef.current.push(marker);
     });
@@ -208,15 +177,14 @@ export default function NavigationScreen({
       const lat = p.location?.latitude ?? p.lat;
       const lng = p.location?.longitude ?? p.lng;
       setSelectedPandal(p);
-      map.flyTo({ center: [lng, lat], zoom: 15, duration: 800 });
+      map.flyTo([lat, lng], 15, { duration: 0.8 });
     } else if (mappablePandals.length > 1) {
-      const bounds = new mapboxgl.LngLatBounds();
-      mappablePandals.forEach((p) => {
-        const lat = p.location?.latitude ?? p.lat;
-        const lng = p.location?.longitude ?? p.lng;
-        if (lat && lng) bounds.extend([lng, lat]);
-      });
-      map.fitBounds(bounds, { padding: 80, maxZoom: 15, duration: 800 });
+      const bounds = L.latLngBounds(
+        mappablePandals
+          .map((p) => [p.location?.latitude ?? p.lat, p.location?.longitude ?? p.lng])
+          .filter(([lat, lng]) => typeof lat === 'number' && typeof lng === 'number')
+      );
+      map.fitBounds(bounds, { padding: [80, 80], maxZoom: 15 });
     }
   }, [searchQuery, mappablePandals]);
 

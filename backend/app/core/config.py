@@ -36,7 +36,8 @@ class Settings(BaseSettings):
     OSRM_BASE_URL: str = "http://router.project-osrm.org"
     OSRM_TIMEOUT_SECONDS: float = 10.0
 
-    # Optional Mapbox Access Token (kept securely on backend)
+    # Map Provider (defaults to OpenStreetMap)
+    MAP_PROVIDER: str = "openstreetmap"
     MAPBOX_ACCESS_TOKEN: Optional[str] = None
 
     # Google OAuth 2.0 Credentials
