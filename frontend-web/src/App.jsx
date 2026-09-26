@@ -9,10 +9,7 @@ import InfoModals from './components/InfoModals';
 import MapBackground from './components/MapBackground';
 import RoutePanel from './components/RoutePanel';
 import RouteSummaryChip from './components/RouteSummaryChip';
-import PandalCarousel from './components/PandalCarousel';
-import BackendSwitcherModal from './components/BackendSwitcherModal';
 import { useAuth } from './context/AuthContext';
-import { getActiveBackendUrl } from './config/backendConfig';
 
 const MAX_DETOUR_KM = 2.5;
 const CAROUSEL_INSET = 200; // px reserved at bottom for carousel + tab bar
@@ -59,9 +56,8 @@ export default function App() {
   const [navigationTargetPandal, setNavigationTargetPandal] = useState(null);
   const [isRouteSaved, setIsRouteSaved] = useState(false);
 
-  // Side Drawer, Backend Switcher & Info Modals
+  // Side Drawer & Info Modals
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isBackendSwitcherOpen, setIsBackendSwitcherOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // 'recommendations' | 'about' | 'contact' | 'privacy' | 'redeem' | null
   const [saveSuccessToast, setSaveSuccessToast] = useState(false);
 
@@ -129,7 +125,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
+      const cleanUrl = (apiBaseUrl || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
       const body = {
         origin: { latitude: origin.latitude, longitude: origin.longitude },
         destination: { latitude: destination.latitude, longitude: destination.longitude },
@@ -311,7 +307,6 @@ export default function App() {
         <ProfileScreen
           onNavigateToPandal={handleNavigateToPandal}
           onNavigateToTrip={handleLoadSavedTrip}
-          onOpenBackendSwitcher={() => setIsBackendSwitcherOpen(true)}
         />
       )}
 
@@ -411,11 +406,7 @@ export default function App() {
         setIsDrawerOpen(false);
       }}
       onOpenModal={(modal) => {
-        if (modal === 'backend') {
-          setIsBackendSwitcherOpen(true);
-        } else {
-          setActiveModal(modal);
-        }
+        setActiveModal(modal);
         setIsDrawerOpen(false);
       }}
     />
@@ -425,12 +416,6 @@ export default function App() {
       activeModal={activeModal}
       onClose={() => setActiveModal(null)}
       onSelectRecommendation={handleSelectRecommendation}
-    />
-
-    {/* Server Switcher Modal (Render Cloud / Vercel Serverless / Localhost) */}
-    <BackendSwitcherModal
-      isOpen={isBackendSwitcherOpen}
-      onClose={() => setIsBackendSwitcherOpen(false)}
     />
   </>
   );

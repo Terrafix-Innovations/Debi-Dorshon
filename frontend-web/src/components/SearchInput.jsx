@@ -10,7 +10,7 @@ export default function SearchInput({
   point,
   onSelectPoint,
   onClear,
-  apiBaseUrl = 'http://localhost:8000',
+  apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
 }) {
   const [query, setQuery] = useState(point?.name || '');
   const [suggestions, setSuggestions] = useState([]);
@@ -44,7 +44,7 @@ export default function SearchInput({
     setSelectedIndex(-1);
 
     const timer = setTimeout(async () => {
-      const cleanBase = (apiBaseUrl || 'http://localhost:8000').trim().replace(/\/+$/, '');
+      const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
       let results = [];
 
       try {

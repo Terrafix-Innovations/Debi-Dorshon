@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { getActiveBackendUrl } from '../config/backendConfig';
 
 const AuthContext = createContext(null);
 
@@ -9,7 +8,10 @@ const USER_KEY = 'debi_dorshon_user';
 const FAVORITES_KEY = 'debi_dorshon_favorites';
 const SAVED_TRIPS_KEY = 'debi_dorshon_saved_trips';
 
-// Fallback Supabase credentials from backend configuration
+// Production Vercel Serverless Backend
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
+
+// Fallback Supabase credentials
 const DEFAULT_SUPABASE_URL = 'https://asqszzkmxhcdysigfoty.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_PW9a7ut7NxwIXxrJufTWew_GNMnVvnI';
 
@@ -64,18 +66,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalReason, setAuthModalReason] = useState('');
-  const [apiBaseUrl, setApiBaseUrl] = useState(getActiveBackendUrl);
   const isSyncingRef = useRef(false);
-
-  useEffect(() => {
-    const handleBackendChange = (e) => {
-      if (e.detail?.url) {
-        setApiBaseUrl(e.detail.url);
-      }
-    };
-    window.addEventListener('debi_dorshon_backend_change', handleBackendChange);
-    return () => window.removeEventListener('debi_dorshon_backend_change', handleBackendChange);
-  }, []);
 
   const openAuthModal = useCallback((reason = '') => {
     setAuthModalReason(reason);
@@ -87,14 +78,13 @@ export function AuthProvider({ children }) {
     setAuthModalReason('');
   }, []);
 
-  // 1. Sync Supabase authenticated session with MongoDB Atlas
+  // 1. Sync Supabase authenticated session with MongoDB and load user's isolated data
   const syncWithMongo = useCallback(async (sbUser, sbToken) => {
     if (!sbUser || isSyncingRef.current) return;
     isSyncingRef.current = true;
 
     try {
-      const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
-      const res = await fetch(`${cleanUrl}/api/v1/auth/supabase-sync`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/auth/supabase-sync`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,16 +108,49 @@ export function AuthProvider({ children }) {
         setUser(mongoProfile);
         localStorage.setItem(USER_KEY, JSON.stringify(mongoProfile));
 
-        // Sync backend favorites
-        if (mongoProfile.favorite_pandals?.length > 0) {
-          setFavorites((prev) => {
-            const merged = Array.from(new Set([...prev.map((p) => (typeof p === 'string' ? p : p.id || p.name)), ...mongoProfile.favorite_pandals]));
-            localStorage.setItem(FAVORITES_KEY, JSON.stringify(merged));
-            return merged;
+        const activeJwt = newJwt || sbToken;
+
+        // Fetch authenticated user's isolated trips
+        try {
+          const tripsRes = await fetch(`${API_BASE_URL}/api/v1/user/trips`, {
+            headers: { Authorization: `Bearer ${activeJwt}` },
           });
+          if (tripsRes.ok) {
+            const tripsData = await tripsRes.json();
+            if (Array.isArray(tripsData)) {
+              const mapped = tripsData.map((t) => ({
+                id: t.id,
+                name: t.title || `${t.origin_name || 'Origin'} → ${t.destination_name || 'Destination'}`,
+                origin: t.origin,
+                destination: t.destination,
+                distanceKm: t.distance_km || 0,
+                pandalCount: t.pandal_ids?.length || t.pandals?.length || 0,
+                savedAt: t.created_at,
+              }));
+              setSavedTrips(mapped);
+              localStorage.setItem(SAVED_TRIPS_KEY, JSON.stringify(mapped));
+            }
+          }
+        } catch (e) {
+          console.warn('[AuthContext] Failed to fetch user trips:', e.message);
+        }
+
+        // Fetch authenticated user's isolated favorites
+        try {
+          const favsRes = await fetch(`${API_BASE_URL}/api/v1/user/favorites`, {
+            headers: { Authorization: `Bearer ${activeJwt}` },
+          });
+          if (favsRes.ok) {
+            const favsData = await favsRes.json();
+            const favPandals = favsData.pandals || [];
+            setFavorites(favPandals);
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favPandals));
+          }
+        } catch (e) {
+          console.warn('[AuthContext] Failed to fetch user favorites:', e.message);
         }
       } else {
-        // Fallback to basic Supabase profile if backend is cold-starting
+        // Fallback to basic Supabase profile
         const meta = sbUser.user_metadata || {};
         const fallbackProfile = {
           id: sbUser.id,
@@ -167,10 +190,8 @@ export function AuthProvider({ children }) {
     async function initAuth() {
       let sbClient = supabase;
 
-      // Fetch dynamic backend auth config (if customized)
       try {
-        const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
-        const res = await fetch(`${cleanUrl}/api/v1/auth/config`);
+        const res = await fetch(`${API_BASE_URL}/api/v1/auth/config`);
         if (res.ok) {
           const cfg = await res.json();
           if (cfg.supabase_url && cfg.supabase_anon_key) {
@@ -206,7 +227,7 @@ export function AuthProvider({ children }) {
 
       if (isMounted) setLoading(false);
 
-      // Listen for auth state changes (OAuth redirects, logins, logouts)
+      // Listen for auth state changes
       const { data: { subscription } } = sbClient.auth.onAuthStateChange(
         async (event, newSession) => {
           if (!isMounted) return;
@@ -221,8 +242,12 @@ export function AuthProvider({ children }) {
           } else if (event === 'SIGNED_OUT') {
             setToken(null);
             setUser(null);
+            setFavorites([]);
+            setSavedTrips([]);
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(USER_KEY);
+            localStorage.removeItem(FAVORITES_KEY);
+            localStorage.removeItem(SAVED_TRIPS_KEY);
           }
         }
       );
@@ -238,12 +263,11 @@ export function AuthProvider({ children }) {
     };
   }, [syncWithMongo]);
 
-  // 3. Login with Google (Works across any device: mobile, desktop, Vercel, localhost)
+  // 3. Login with Google
   const loginWithGoogle = useCallback(async () => {
     const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
     if (!sb) throw new Error('Supabase client not initialized.');
 
-    // Always normalize origin without trailing slash
     const redirectUrl = (window.location.origin || '').trim().replace(/\/+$/, '');
 
     const { error } = await sb.auth.signInWithOAuth({
@@ -263,7 +287,7 @@ export function AuthProvider({ children }) {
     }
   }, [supabase]);
 
-  // 4. Sign in with Email & Password via Supabase
+  // 4. Sign in with Email & Password
   const loginWithEmail = useCallback(
     async (email, password) => {
       const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
@@ -290,7 +314,7 @@ export function AuthProvider({ children }) {
     [supabase, syncWithMongo]
   );
 
-  // 5. Sign up with Email & Password via Supabase
+  // 5. Sign up with Email & Password
   const registerWithEmail = useCallback(
     async (email, password, name) => {
       const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
@@ -322,7 +346,7 @@ export function AuthProvider({ children }) {
     [supabase, syncWithMongo]
   );
 
-  // 6. Logout
+  // 6. Complete Clean Logout (Wipes tokens and cached user data)
   const logout = useCallback(async () => {
     const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
     if (sb) {
@@ -330,16 +354,20 @@ export function AuthProvider({ children }) {
     }
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(FAVORITES_KEY);
+    localStorage.removeItem(SAVED_TRIPS_KEY);
     setToken(null);
     setUser(null);
+    setFavorites([]);
+    setSavedTrips([]);
   }, [supabase]);
 
-  // 7. Favorite pandals management (strictly gated for signed-in users)
+  // 7. Favorite pandals management (strictly isolated to authenticated user)
   const toggleFavoritePandal = useCallback(
     async (pandal) => {
       if (!pandal) return false;
 
-      // Gate: Must be authenticated
+      // Security Gate: Must be authenticated
       if (!user) {
         openAuthModal('Sign in with Google to add pandals to your favorites and access them across all your devices.');
         return false;
@@ -369,11 +397,10 @@ export function AuthProvider({ children }) {
         return updated;
       });
 
-      // Background sync with MongoDB if backend is connected
+      // Sync with user's isolated backend collection
       if (token) {
         try {
-          const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
-          await fetch(`${cleanUrl}/api/v1/user/favorites/toggle`, {
+          await fetch(`${API_BASE_URL}/api/v1/user/favorites/toggle`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -388,7 +415,7 @@ export function AuthProvider({ children }) {
 
       return true;
     },
-    [user, token, apiBaseUrl, openAuthModal]
+    [user, token, openAuthModal]
   );
 
   const isFavoritePandal = useCallback(
@@ -403,19 +430,20 @@ export function AuthProvider({ children }) {
     [favorites]
   );
 
-  // 8. Saved routes management (strictly gated for signed-in users)
+  // 8. Saved routes management (strictly isolated to authenticated user)
   const saveTrip = useCallback(
     async (trip) => {
       if (!trip) return false;
 
-      // Gate: Must be authenticated
+      // Security Gate: Must be authenticated
       if (!user) {
         openAuthModal('Sign in with Google to save your custom Parikrama routes to your account.');
         return false;
       }
 
+      const tempId = `trip_${Date.now()}`;
       const newTrip = {
-        id: `trip_${Date.now()}`,
+        id: tempId,
         name: trip.name || 'Puja Parikrama Route',
         origin: trip.origin,
         destination: trip.destination,
@@ -430,11 +458,10 @@ export function AuthProvider({ children }) {
         return updated;
       });
 
-      // Background sync with MongoDB
+      // Sync with user's isolated backend collection
       if (token) {
         try {
-          const cleanUrl = (apiBaseUrl || getActiveBackendUrl()).trim().replace(/\/+$/, '');
-          await fetch(`${cleanUrl}/api/v1/user/trips`, {
+          const res = await fetch(`${API_BASE_URL}/api/v1/user/trips`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -444,11 +471,21 @@ export function AuthProvider({ children }) {
               title: newTrip.name,
               origin_name: trip.origin?.name || 'Origin',
               destination_name: trip.destination?.name || 'Destination',
-              origin: trip.origin?.location || { latitude: 22.5726, longitude: 88.3639 },
-              destination: trip.destination?.location || { latitude: 22.5726, longitude: 88.3639 },
+              origin: trip.origin?.location || trip.origin || { latitude: 22.5726, longitude: 88.3639 },
+              destination: trip.destination?.location || trip.destination || { latitude: 22.5726, longitude: 88.3639 },
               distance_km: trip.distanceKm || 0.0,
             }),
           });
+          if (res.ok) {
+            const savedDoc = await res.json();
+            if (savedDoc.id) {
+              setSavedTrips((prev) => {
+                const updated = prev.map((t) => (t.id === tempId ? { ...t, id: savedDoc.id } : t));
+                localStorage.setItem(SAVED_TRIPS_KEY, JSON.stringify(updated));
+                return updated;
+              });
+            }
+          }
         } catch (e) {
           console.warn('[AuthContext] Backend trip sync deferred:', e.message);
         }
@@ -456,16 +493,33 @@ export function AuthProvider({ children }) {
 
       return true;
     },
-    [user, token, apiBaseUrl, openAuthModal]
+    [user, token, openAuthModal]
   );
 
-  const deleteSavedTrip = useCallback((tripId) => {
-    setSavedTrips((prev) => {
-      const updated = prev.filter((t) => t.id !== tripId);
-      localStorage.setItem(SAVED_TRIPS_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+  const deleteSavedTrip = useCallback(
+    async (tripId) => {
+      setSavedTrips((prev) => {
+        const updated = prev.filter((t) => t.id !== tripId);
+        localStorage.setItem(SAVED_TRIPS_KEY, JSON.stringify(updated));
+        return updated;
+      });
+
+      // Delete from user's isolated backend collection
+      if (token) {
+        try {
+          await fetch(`${API_BASE_URL}/api/v1/user/trips/${tripId}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (e) {
+          console.warn('[AuthContext] Backend trip delete deferred:', e.message);
+        }
+      }
+    },
+    [token]
+  );
 
   return (
     <AuthContext.Provider
@@ -474,7 +528,7 @@ export function AuthProvider({ children }) {
         token,
         loading,
         isAuthenticated: Boolean(user),
-        apiBaseUrl,
+        apiBaseUrl: API_BASE_URL,
         isAuthModalOpen,
         authModalReason,
         openAuthModal,

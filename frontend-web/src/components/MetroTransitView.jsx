@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 export default function MetroTransitView({
-  apiBaseUrl = 'http://localhost:8000',
+  apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
   onNavigateToPandal,
 }) {
   const [activeTab, setActiveTab] = useState('metro'); // 'metro' | 'train'

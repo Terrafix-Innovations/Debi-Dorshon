@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 const KOLKATA_CENTER = [88.3639, 22.5726];
 
 export default function NavigationScreen({
-  apiBaseUrl = 'http://localhost:8000',
+  apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
   onNavigateToPandal,
   targetPandal = null,
 }) {
@@ -37,7 +37,7 @@ export default function NavigationScreen({
     async function loadPandals() {
       setLoading(true);
       try {
-        const cleanUrl = apiBaseUrl.trim().replace(/\/+$/, '');
+        const cleanUrl = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
         const res = await fetch(`${cleanUrl}/api/v1/pandals?limit=500`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
@@ -86,7 +86,7 @@ export default function NavigationScreen({
     let isSubscribed = true;
 
     async function initMap() {
-      const cleanBase = (apiBaseUrl || 'http://localhost:8000').trim().replace(/\/+$/, '');
+      const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
       let token = null;
 
       try {

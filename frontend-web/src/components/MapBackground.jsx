@@ -42,7 +42,7 @@ export default function MapBackground({
   onUpdateOrigin,
   onUpdateDestination,
   bottomInset = 0,
-  apiBaseUrl = 'http://localhost:8000',
+  apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -64,7 +64,7 @@ export default function MapBackground({
     let isSubscribed = true;
 
     async function initMap() {
-      const cleanBase = (apiBaseUrl || 'http://localhost:8000').trim().replace(/\/+$/, '');
+      const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
       let token = null;
 
       try {
