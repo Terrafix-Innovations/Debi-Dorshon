@@ -50,7 +50,13 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Set up CORS (Cross-Origin Resource Sharing) middleware for Frontend / Mobile apps
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust in production as needed
+    allow_origins=[
+        "https://debi-dorshon.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:8000",
+        "http://localhost:3000",
+    ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

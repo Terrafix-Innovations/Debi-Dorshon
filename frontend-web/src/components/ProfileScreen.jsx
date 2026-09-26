@@ -46,12 +46,8 @@ export default function ProfileScreen({
                 try {
                   await loginWithGoogleToken(response.credential);
                 } catch (err) {
-                  const msg = err.message || '';
-                  if (msg.includes('fetch') || msg.includes('Network') || msg.includes('Failed')) {
-                    setErrorMessage('Connecting to backend... Server may be waking up from sleep. Please try again.');
-                  } else {
-                    setErrorMessage(msg || 'Google sign-in failed');
-                  }
+                  console.error('[Google Sign-In Error]', err);
+                  setErrorMessage(err.message || 'Google sign-in failed. Please try again.');
                 } finally {
                   setAuthLoading(false);
                 }

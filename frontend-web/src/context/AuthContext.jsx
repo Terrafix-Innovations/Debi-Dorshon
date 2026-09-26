@@ -112,13 +112,14 @@ export function AuthProvider({ children }) {
       try {
         const res = await fetch(`${cleanUrl}/api/v1/auth/google`, {
           method: 'POST',
+          mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id_token: idToken }),
         });
 
         if (!res.ok) {
-          const errJson = await res.json().catch(() => ({ detail: 'Login failed' }));
-          throw new Error(errJson.detail || 'Authentication failed');
+          const errJson = await res.json().catch(() => ({ detail: `HTTP ${res.status}: ${res.statusText}` }));
+          throw new Error(errJson.detail || `Server returned status ${res.status}`);
         }
 
         const data = await res.json();
