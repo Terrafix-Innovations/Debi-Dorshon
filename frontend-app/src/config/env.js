@@ -1,12 +1,7 @@
 import { Platform } from 'react-native';
 
-// Resolve default host based on runtime platform if env variable is not set
-// The pre-start script (scripts/update-ip.js) auto-detects the local IP
-// and writes it to .env, so this fallback is only for edge cases.
-const defaultHost =
-  Platform.OS === 'web'
-    ? 'http://localhost:8000'
-    : 'http://10.0.2.2:8000'; // Android emulator fallback
+// Default to production Vercel backend (connected to MongoDB Atlas)
+const defaultHost = 'https://debi-dorshon-backend.vercel.app';
 
 // Primary API Base URL
 export const API_BASE_URL =
