@@ -74,8 +74,6 @@ export default function SearchInput({
                 subtitle: full,
                 latitude: f.center[1],
                 longitude: f.center[0],
-                category: isMetro ? 'metro' : 'place',
-                badge: isMetro ? '🚇 Metro' : '📍 Place',
               });
             });
           }
@@ -100,8 +98,6 @@ export default function SearchInput({
                 subtitle: sub || 'Kolkata Region',
                 latitude: f.geometry.coordinates[1],
                 longitude: f.geometry.coordinates[0],
-                category: 'place',
-                badge: '📍 Place',
               });
             });
           }
@@ -240,11 +236,6 @@ export default function SearchInput({
                   <div className="font-semibold text-xs text-on-surface truncate">{item.title}</div>
                   <div className="text-[11px] text-on-surface-variant/70 truncate mt-0.5">{item.subtitle}</div>
                 </div>
-                {item.badge && (
-                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant/80 shrink-0">
-                    {item.badge}
-                  </span>
-                )}
               </div>
             );
           })}

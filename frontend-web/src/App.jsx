@@ -15,33 +15,15 @@ import { useAuth } from './context/AuthContext';
 const MAX_DETOUR_KM = 2.5;
 const CAROUSEL_INSET = 200; // px reserved at bottom for carousel + tab bar
 
-// Popular Route Presets with exact OpenStreetMap surveyed coordinates
+// Popular Route Presets resolved live via real-time Mapbox transit & DB pandals
 const POPULAR_PRESETS = {
   heritage: {
-    origin: {
-      latitude: 22.595881,
-      longitude: 88.3652,
-      name: 'Sovabazar Metro Station',
-    },
-    destination: {
-      latitude: 22.602,
-      longitude: 88.361,
-      name: 'Bagbazar Sarbojanin Durgotsav',
-      cluster: 'North Kolkata',
-    },
+    originName: 'Sovabazar Metro Station',
+    destinationName: 'Bagbazar Sarbojanin Durgotsav',
   },
   south_mega: {
-    origin: {
-      latitude: 22.5083,
-      longitude: 88.3444,
-      name: 'Rabindra Sarobar Metro',
-    },
-    destination: {
-      latitude: 22.518,
-      longitude: 88.3685,
-      name: 'Ekdalia Evergreen Club',
-      cluster: 'South Kolkata',
-    },
+    originName: 'Rabindra Sarobar Metro',
+    destinationName: 'Ekdalia Evergreen Club',
   },
 };
 
@@ -176,25 +158,13 @@ export default function App() {
   const handleNavigateToPandal = (pandal, station) => {
     if (!pandal) return;
 
-    if (station) {
-      const stationCoords = station.location || (station.latitude && station.longitude ? {
-        latitude: station.latitude,
-        longitude: station.longitude,
-      } : {
-        latitude: 22.5726,
-        longitude: 88.3639,
-      });
+    if (station && (station.latitude || station.location?.latitude)) {
+      const lat = station.location?.latitude ?? station.latitude;
+      const lng = station.location?.longitude ?? station.longitude;
       setOrigin({
-        latitude: stationCoords.latitude,
-        longitude: stationCoords.longitude,
+        latitude: lat,
+        longitude: lng,
         name: station.name ? `${station.name} Station` : 'Station',
-      });
-    } else if (!origin) {
-      // If no start location set yet, default to central Kolkata or nearest point
-      setOrigin({
-        latitude: 22.5726,
-        longitude: 88.3639,
-        name: 'Kolkata City Center',
       });
     }
 
@@ -225,21 +195,65 @@ export default function App() {
   };
 
   // Select Popular Route Preset (North Kolkata Heritage, South Mega, etc.)
-  const handleSelectPopularRoute = (presetId) => {
+  const handleSelectPopularRoute = async (presetId) => {
     const preset = POPULAR_PRESETS[presetId];
     if (preset) {
-      setOrigin(preset.origin);
-      setDestination(preset.destination);
+      const cleanUrl = (apiBaseUrl || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
+      try {
+        const [origRes, destRes] = await Promise.all([
+          fetch(`${cleanUrl}/api/v1/route/autocomplete?q=${encodeURIComponent(preset.originName)}&limit=1`),
+          fetch(`${cleanUrl}/api/v1/route/autocomplete?q=${encodeURIComponent(preset.destinationName)}&limit=1`),
+        ]);
+        const [origList, destList] = await Promise.all([origRes.json(), destRes.json()]);
+        if (origList?.[0] && destList?.[0]) {
+          setOrigin({
+            latitude: origList[0].latitude,
+            longitude: origList[0].longitude,
+            name: origList[0].title,
+          });
+          setDestination({
+            latitude: destList[0].latitude,
+            longitude: destList[0].longitude,
+            name: destList[0].title,
+            cluster: destList[0].subtitle,
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to resolve preset live coordinates:', err);
+      }
       resetRoute();
       setActiveTab('trips');
     }
   };
 
   // Select Recommendation from Modal
-  const handleSelectRecommendation = (rec) => {
-    if (rec.origin && rec.destination) {
-      setOrigin(rec.origin);
-      setDestination(rec.destination);
+  const handleSelectRecommendation = async (rec) => {
+    const origQ = rec.originName || rec.origin?.name;
+    const destQ = rec.destinationName || rec.destination?.name;
+    if (origQ && destQ) {
+      const cleanUrl = (apiBaseUrl || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
+      try {
+        const [origRes, destRes] = await Promise.all([
+          fetch(`${cleanUrl}/api/v1/route/autocomplete?q=${encodeURIComponent(origQ)}&limit=1`),
+          fetch(`${cleanUrl}/api/v1/route/autocomplete?q=${encodeURIComponent(destQ)}&limit=1`),
+        ]);
+        const [origList, destList] = await Promise.all([origRes.json(), destRes.json()]);
+        if (origList?.[0] && destList?.[0]) {
+          setOrigin({
+            latitude: origList[0].latitude,
+            longitude: origList[0].longitude,
+            name: origList[0].title,
+          });
+          setDestination({
+            latitude: destList[0].latitude,
+            longitude: destList[0].longitude,
+            name: destList[0].title,
+            cluster: destList[0].subtitle,
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to resolve recommendation live coordinates:', err);
+      }
       resetRoute();
       setActiveTab('trips');
     }

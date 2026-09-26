@@ -68,38 +68,38 @@ async def autocomplete_places(
     results: List[Dict[str, Any]] = []
     seen_coords = set()
 
-    # 1. Search local MongoDB STRICTLY for Durga Puja Pandals only
-    try:
-        cursor = db[settings.PANDAL_COLLECTION_NAME].find(
-            {"name": {"$regex": re.escape(trimmed), "$options": "i"}}
-        ).limit(limit)
-        async for doc in cursor:
-            loc = doc.get("location") or {}
-            lat = loc.get("latitude")
-            lng = loc.get("longitude")
-            if lat and lng:
-                key = (round(lat, 5), round(lng, 5))
-                if key not in seen_coords:
-                    seen_coords.add(key)
-                    region = doc.get("region") or "Kolkata"
-                    cluster = doc.get("cluster") or ""
-                    metro = doc.get("nearest_metro", {}).get("name", "") if doc.get("nearest_metro") else ""
-                    sub_parts = [region]
-                    if cluster:
-                        sub_parts.append(cluster)
-                    if metro:
-                        sub_parts.append(f"Metro: {metro}")
-                    results.append({
-                        "id": str(doc.get("_id")),
-                        "title": doc.get("name"),
-                        "subtitle": " • ".join(sub_parts),
-                        "latitude": float(lat),
-                        "longitude": float(lng),
-                        "category": "pandal",
-                        "badge": "🛕 Pandal",
-                    })
-    except Exception:
-        pass
+    # Determine if query is explicitly a transit/metro search
+    transit_keywords = ["metro", "station", "railway", "train", "terminus", "terminal"]
+    is_transit_search = any(w in trimmed.lower() for w in transit_keywords)
+
+    # 1. Search local MongoDB STRICTLY for Durga Puja Pandals only by pandal name (NEVER for transit queries)
+    if not is_transit_search and db is not None:
+        try:
+            cursor = db[settings.PANDAL_COLLECTION_NAME].find(
+                {"name": {"$regex": re.escape(trimmed), "$options": "i"}}
+            ).limit(limit)
+            async for doc in cursor:
+                loc = doc.get("location") or {}
+                lat = loc.get("latitude")
+                lng = loc.get("longitude")
+                if lat and lng:
+                    key = (round(lat, 5), round(lng, 5))
+                    if key not in seen_coords:
+                        seen_coords.add(key)
+                        region = doc.get("region") or "Kolkata"
+                        cluster = doc.get("cluster") or ""
+                        sub_parts = [region]
+                        if cluster:
+                            sub_parts.append(cluster)
+                        results.append({
+                            "id": str(doc.get("_id")),
+                            "title": doc.get("name"),
+                            "subtitle": " • ".join(sub_parts),
+                            "latitude": float(lat),
+                            "longitude": float(lng),
+                        })
+        except Exception:
+            pass
 
     # 2. Fetch everything else (metro stations, transit hubs, places, addresses) in real-time from Mapbox Live Map API
     token = settings.MAPBOX_ACCESS_TOKEN
@@ -116,18 +116,39 @@ async def autocomplete_places(
                 "session_token": "00000000-0000-0000-0000-000000000001",
                 "proximity": "88.3639,22.5726",
                 "bbox": "88.15,22.35,88.55,22.75",
-                "limit": str(remaining_slots),
+                "limit": str(min(10, remaining_slots + 4)),
             }
             res_sb = await client.get(sb_url, params=sb_params, timeout=3.5)
             if res_sb.status_code == 200:
                 sugs = res_sb.json().get("suggestions", [])
+                candidates = []
                 for s in sugs:
                     maki = str(s.get("maki") or "").lower()
                     name = str(s.get("name") or "")
-                    # Filter out commercial lodgings/shops if searching for transit
-                    if maki in ("lodging", "hospital", "optician", "shop") and any(w in trimmed.lower() for w in ["metro", "station"]):
-                        continue
+                    n_low = name.lower()
+                    if is_transit_search:
+                        if any(bad in n_low for bad in ["co-operative", "housing", "bypass", "gali", "guest house", "plaza", "optician", "lodge", "hotel", "shop", "pg", "medplus"]):
+                            continue
+                        if maki in ["lodging", "hospital", "optician", "shop"]:
+                            continue
+                    candidates.append(s)
 
+                def rank_candidate(s):
+                    maki = str(s.get("maki") or "").lower()
+                    name = str(s.get("name") or "")
+                    n_low = name.lower()
+                    is_gate = "gate" in n_low or "get" in n_low
+                    is_stn = "station" in n_low
+                    if is_stn and not is_gate:
+                        return 0
+                    elif is_stn or "rail" in maki or "transit" in maki:
+                        return 1
+                    return 2
+
+                if is_transit_search:
+                    candidates.sort(key=rank_candidate)
+
+                for s in candidates:
                     mid = s.get("mapbox_id")
                     if not mid:
                         continue
@@ -149,18 +170,15 @@ async def autocomplete_places(
                                 if key not in seen_coords:
                                     seen_coords.add(key)
                                     full_addr = f.get("properties", {}).get("full_address") or s.get("place_formatted") or ""
-                                    is_metro = (
-                                        "rail" in maki
-                                        or any(t in (name + " " + full_addr).lower() for t in ["metro", "subway", "railway station"])
-                                    )
+                                    name_val = s.get("name") or f.get("properties", {}).get("name") or ""
+                                    if name_val.islower():
+                                        name_val = name_val.title()
                                     results.append({
                                         "id": f"mapbox_sb_{mid}",
-                                        "title": name,
+                                        "title": name_val,
                                         "subtitle": full_addr,
                                         "latitude": lat,
                                         "longitude": lng,
-                                        "category": "metro" if is_metro else "place",
-                                        "badge": "🚇 Metro" if is_metro else "📍 Place",
                                     })
                                     if len(results) >= limit:
                                         break
@@ -189,18 +207,18 @@ async def autocomplete_places(
                             lng, lat = float(center[0]), float(center[1])
                             key = (round(lat, 5), round(lng, 5))
                             if key not in seen_coords:
-                                seen_coords.add(key)
                                 text = f.get("text") or f.get("place_name", "").split(",")[0]
                                 full = f.get("place_name", "")
-                                is_metro = any(t in (text + " " + full).lower() for t in ["metro", "station", "subway"])
+                                text_low = (text + " " + full).lower()
+                                if is_transit_search and any(bad in text_low for bad in ["co-operative", "housing", "bypass", "gali", "plaza", "optician", "shop", "floor"]):
+                                    continue
+                                seen_coords.add(key)
                                 results.append({
                                     "id": f.get("id"),
                                     "title": text,
                                     "subtitle": full,
                                     "latitude": lat,
                                     "longitude": lng,
-                                    "category": "metro" if is_metro else "place",
-                                    "badge": "🚇 Metro" if is_metro else "📍 Place",
                                 })
             except Exception:
                 pass

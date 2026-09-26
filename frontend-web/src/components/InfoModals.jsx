@@ -51,8 +51,8 @@ export default function InfoModals({
                   desc: 'Sovabazar Rajbari, Bagbazar Sarbojanin, Ahiritola, Kumartuli Park',
                   tag: 'Heritage & Crowd Favorite',
                   icon: '🔥',
-                  origin: { name: 'Sovabazar Metro', latitude: 22.5960, longitude: 88.3640 },
-                  destination: { name: 'Bagbazar Sarbojanin', latitude: 22.6020, longitude: 88.3610 },
+                  originName: 'Sovabazar Metro Station',
+                  destinationName: 'Bagbazar Sarbojanin',
                 },
                 {
                   id: 'south_mega',
@@ -60,8 +60,8 @@ export default function InfoModals({
                   desc: 'Sree Bhumi, Ekdalia Evergreen, Singhi Park, Suruchi Sangha',
                   tag: 'Lighting & Theme Masterpieces',
                   icon: '⭐',
-                  origin: { name: 'Rabindra Sarobar Metro', latitude: 22.5082, longitude: 88.3458 },
-                  destination: { name: 'Ekdalia Evergreen', latitude: 22.5180, longitude: 88.3685 },
+                  originName: 'Rabindra Sarobar Metro',
+                  destinationName: 'Ekdalia Evergreen',
                 },
                 {
                   id: 'night_hopping',
@@ -69,8 +69,8 @@ export default function InfoModals({
                   desc: 'Chetla Agrani, Mudiali, Badamtala Ashar Sangha, Deshapriya Park',
                   tag: 'Low Traffic & Cool Breeze',
                   icon: '🌙',
-                  origin: { name: 'Kalighat Metro', latitude: 22.5186, longitude: 88.3468 },
-                  destination: { name: 'Chetla Agrani', latitude: 22.5140, longitude: 88.3410 },
+                  originName: 'Kalighat Metro Station',
+                  destinationName: 'Chetla Agrani',
                 },
                 {
                   id: 'food_hubs',
@@ -78,8 +78,8 @@ export default function InfoModals({
                   desc: 'Deckers Lane, Park Street, Hatibagan & College Street',
                   tag: 'Kolkata Delicacies',
                   icon: '🍢',
-                  origin: { name: 'Park Street Metro', latitude: 22.5539, longitude: 88.3512 },
-                  destination: { name: 'College Square', latitude: 22.5746, longitude: 88.3638 },
+                  originName: 'Park Street Metro Station',
+                  destinationName: 'College Square',
                 },
               ].map((item) => (
                 <div
