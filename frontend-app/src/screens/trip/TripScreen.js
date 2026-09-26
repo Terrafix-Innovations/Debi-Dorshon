@@ -21,7 +21,6 @@ import FloatingRouteCard from '../../components/trip/FloatingRouteCard';
 import RouteSummaryChip from '../../components/trip/RouteSummaryChip';
 import PandalCarousel from '../../components/trip/PandalCarousel';
 import { fetchRoutePlan } from '../../services/routeService';
-import { MOCK_PANDALS } from '../../data/mockData';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
 import InteractiveMapView from '../../components/map/InteractiveMapView';

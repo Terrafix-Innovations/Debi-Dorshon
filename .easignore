@@ -1,9 +1,9 @@
-# Ignore entire backend and non-mobile folders
-backend/
-frontend-web/
-data/
-scripts/
-.codegraph/
+# Ignore top-level non-mobile folders only (anchored to root so frontend-app/src/data is NOT ignored)
+/backend/
+/frontend-web/
+/data/
+/scripts/
+/.codegraph/
 
 # Virtual environments & node_modules
 **/.venv/
