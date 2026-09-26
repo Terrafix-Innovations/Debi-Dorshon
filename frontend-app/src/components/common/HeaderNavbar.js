@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -7,22 +7,17 @@ import {
   SafeAreaView,
   Platform,
   StatusBar,
-  Modal,
-  ScrollView,
-  TouchableOpacity,
 } from 'react-native';
 import Svg, { Path, Circle, Rect, Ellipse, Line, G } from 'react-native-svg';
 import { useDrawer } from '../../context/DrawerContext';
 import { useAuth } from '../../context/AuthContext';
-import { getPujaGreeting, PUJA_DAYS_2026, PUJA_SCHEDULE } from '../../utils/pujaCalendar';
+import { getPujaGreeting } from '../../utils/pujaCalendar';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
 
 export default function HeaderNavbar({ navigation, showBack = false, title = 'দেবী দর্শন' }) {
-  const { toggleDrawer, activePujaDay, setActivePujaDay } = useDrawer();
+  const { toggleDrawer, activePujaDay } = useDrawer();
   const { user } = useAuth();
-  const [showPicker, setShowPicker] = useState(false);
-  const [overrideDayKey, setOverrideDayKey] = useState(null);
 
   // Split active Puja greeting into prefix ("শুভ") and suffix (e.g. "ষষ্ঠী" or "শারদীয়া")
   const getGreetingParts = (fullGreeting) => {
@@ -34,26 +29,8 @@ export default function HeaderNavbar({ navigation, showBack = false, title = '�
     return { prefix: 'শুভ', suffix: fullGreeting };
   };
 
-  const currentGreetingText = overrideDayKey
-    ? (overrideDayKey === 'SHARODIYA' ? 'শুভ শারদীয়া' : (PUJA_SCHEDULE[2026]?.[overrideDayKey]?.greeting || activePujaDay))
-    : activePujaDay;
-
+  const currentGreetingText = activePujaDay || getPujaGreeting(new Date());
   const { prefix, suffix } = getGreetingParts(currentGreetingText);
-
-  const handleSelectDay = (dateKey) => {
-    if (dateKey === null) {
-      setOverrideDayKey(null);
-      setActivePujaDay(getPujaGreeting(new Date()));
-    } else if (dateKey === 'SHARODIYA') {
-      setOverrideDayKey('SHARODIYA');
-      setActivePujaDay('শুভ শারদীয়া');
-    } else {
-      setOverrideDayKey(dateKey);
-      const customGreeting = PUJA_SCHEDULE[2026]?.[dateKey]?.greeting || 'শুভ শারদীয়া';
-      setActivePujaDay(customGreeting);
-    }
-    setShowPicker(false);
-  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -119,11 +96,7 @@ export default function HeaderNavbar({ navigation, showBack = false, title = '�
           )}
 
           {/* Center Banner: Trishul, Flanking Dhak & Kasful Motifs, Dynamic Typography */}
-          <Pressable
-            style={styles.centerBanner}
-            onPress={() => setShowPicker(true)}
-            activeOpacity={0.8}
-          >
+          <View style={styles.centerBanner}>
             {/* Top Sacred Trishul & Solar Flourish Arcs */}
             <View style={styles.trishulRow}>
               <Svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -206,7 +179,7 @@ export default function HeaderNavbar({ navigation, showBack = false, title = '�
               <View style={styles.redDiamond} />
               <View style={styles.goldDot} />
             </View>
-          </Pressable>
+          </View>
 
           {/* Right Action: User Profile Circle */}
           <Pressable
@@ -226,88 +199,6 @@ export default function HeaderNavbar({ navigation, showBack = false, title = '�
           </Pressable>
         </View>
       </View>
-
-      {/* Interactive Festival Tithi Switcher Modal */}
-      <Modal
-        visible={showPicker}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowPicker(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalBackdrop}
-          activeOpacity={1}
-          onPress={() => setShowPicker(false)}
-        >
-          <View style={styles.pickerCard}>
-            <View style={styles.pickerHeader}>
-              <Text style={styles.pickerTitle}>🛕 Select Durga Puja Day</Text>
-              <TouchableOpacity onPress={() => setShowPicker(false)}>
-                <Text style={styles.closeBtn}>✕</Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={{ maxHeight: 320 }}>
-              {/* Auto / Real Calendar Choice */}
-              <TouchableOpacity
-                style={[
-                  styles.pickerOption,
-                  overrideDayKey === null && styles.pickerOptionActive,
-                ]}
-                onPress={() => handleSelectDay(null)}
-              >
-                <Text
-                  style={[
-                    styles.pickerOptionText,
-                    overrideDayKey === null && styles.pickerOptionTextActive,
-                  ]}
-                >
-                  📅 Auto (Device Calendar Date)
-                </Text>
-              </TouchableOpacity>
-
-              {/* Tithi Days (13 Oct to 21 Oct 2026) */}
-              {PUJA_DAYS_2026.slice(1).map((item, idx) => {
-                const dateKeys = ['10-13', '10-14', '10-15', '10-16', '10-17', '10-19', '10-20', '10-21'];
-                const dKey = dateKeys[idx] || '10-17';
-                const isSelected = overrideDayKey === dKey;
-                return (
-                  <TouchableOpacity
-                    key={idx}
-                    style={[styles.pickerOption, isSelected && styles.pickerOptionActive]}
-                    onPress={() => handleSelectDay(dKey)}
-                  >
-                    <Text style={[styles.pickerOptionText, isSelected && styles.pickerOptionTextActive]}>
-                      {item.label}
-                    </Text>
-                    <Text style={[styles.pickerDateText, isSelected && { color: '#FFF' }]}>
-                      {item.date}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-
-              {/* General Shubho Sharodiya */}
-              <TouchableOpacity
-                style={[
-                  styles.pickerOption,
-                  overrideDayKey === 'SHARODIYA' && styles.pickerOptionActive,
-                ]}
-                onPress={() => handleSelectDay('SHARODIYA')}
-              >
-                <Text
-                  style={[
-                    styles.pickerOptionText,
-                    overrideDayKey === 'SHARODIYA' && styles.pickerOptionTextActive,
-                  ]}
-                >
-                  🍂 শুভ শারদীয়া (Rest of the Year)
-                </Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-        </TouchableOpacity>
-      </Modal>
     </SafeAreaView>
   );
 }
@@ -452,73 +343,5 @@ const styles = StyleSheet.create({
     color: '#381E18',
     fontWeight: '800',
     fontSize: 16,
-  },
-
-  /* Picker Modal */
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.md,
-  },
-  pickerCard: {
-    width: '100%',
-    maxWidth: 340,
-    backgroundColor: '#FFFEFC',
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: '#EBDCC9',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-  },
-  pickerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0E4D6',
-    marginBottom: spacing.xs,
-  },
-  pickerTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#831917',
-  },
-  closeBtn: {
-    fontSize: 14,
-    color: '#A08470',
-    fontWeight: 'bold',
-    padding: 4,
-  },
-  pickerOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: radius.md,
-    backgroundColor: '#FAF6EE',
-    marginBottom: 6,
-  },
-  pickerOptionActive: {
-    backgroundColor: '#831917',
-  },
-  pickerOptionText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#4A3228',
-  },
-  pickerOptionTextActive: {
-    color: '#FFFFFF',
-  },
-  pickerDateText: {
-    fontSize: 11,
-    color: '#8A7B6E',
   },
 });

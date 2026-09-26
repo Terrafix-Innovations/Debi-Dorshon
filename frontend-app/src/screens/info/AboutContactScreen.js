@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Linking, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
 import ScreenBackground from '../../components/common/ScreenBackground';
@@ -40,10 +41,21 @@ export function AboutScreen({ navigation }) {
 }
 
 export function ContactScreen({ navigation }) {
+  const [copied, setCopied] = useState(false);
   const email = 'debidorshonapp@gmail.com';
 
-  const handleEmailPress = () => {
-    Linking.openURL(`mailto:${email}`);
+  const handleCopy = async () => {
+    try {
+      if (Clipboard && Clipboard.setStringAsync) {
+        await Clipboard.setStringAsync(email);
+      } else if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(email);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.warn('Failed to copy to clipboard', err);
+    }
   };
 
   return (
@@ -57,25 +69,28 @@ export function ContactScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.minimalContactCard}>
-            <View style={styles.contactIconCircle}>
-              <MaterialCommunityIcons name="email-outline" size={32} color={colors.primaryMaroon} />
-            </View>
-
-            <Text style={styles.contactTitle}>Get in Touch</Text>
+            <Text style={styles.contactTitle}>Contact</Text>
             <Text style={styles.contactSubtitle}>
-              For inquiries, feedback, or support regarding Debi Dorshon, reach out to us directly:
+              For any queries, feedback, or support:
             </Text>
 
             <TouchableOpacity
-              activeOpacity={0.85}
-              style={styles.emailPill}
-              onPress={handleEmailPress}
+              activeOpacity={0.7}
+              style={[styles.copyBox, copied && styles.copyBoxActive]}
+              onPress={handleCopy}
             >
-              <MaterialCommunityIcons name="email-fast-outline" size={20} color={colors.white} />
-              <Text style={styles.emailText}>{email}</Text>
+              <Text style={styles.emailAddressText} selectable>{email}</Text>
+              <View style={styles.copyActionWrap}>
+                <MaterialCommunityIcons
+                  name={copied ? 'check' : 'content-copy'}
+                  size={16}
+                  color={copied ? '#1B8E4B' : colors.primaryMaroon}
+                />
+                <Text style={[styles.copyLabel, copied && styles.copyLabelActive]}>
+                  {copied ? 'Copied' : 'Copy'}
+                </Text>
+              </View>
             </TouchableOpacity>
-
-            <Text style={styles.emailHint}>Tap to compose email</Text>
           </View>
         </ScrollView>
       </ScreenBackground>
@@ -148,68 +163,69 @@ const styles = StyleSheet.create({
   },
   minimalContactCard: {
     backgroundColor: '#FFFDF9',
-    paddingVertical: 40,
-    paddingHorizontal: 24,
-    borderRadius: 24,
+    paddingVertical: 32,
+    paddingHorizontal: 20,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: '#E8D8C5',
     alignItems: 'center',
     shadowColor: colors.espresso,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 3,
-  },
-  contactIconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(142, 27, 27, 0.08)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+    width: '100%',
+    maxWidth: 380,
+    alignSelf: 'center',
   },
   contactTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
     color: colors.primaryMaroon,
-    marginBottom: spacing.xs,
-    letterSpacing: -0.3,
+    marginBottom: 6,
+    letterSpacing: -0.2,
   },
   contactSubtitle: {
     fontSize: 13,
     color: '#6E5D53',
     textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 24,
-    maxWidth: 280,
+    marginBottom: 20,
   },
-  emailPill: {
+  copyBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryMaroon,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    gap: 10,
+    justifyContent: 'space-between',
+    backgroundColor: '#F9F5EE',
+    borderWidth: 1,
+    borderColor: '#E2D5C3',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 14,
     width: '100%',
-    shadowColor: colors.primaryMaroon,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 2,
   },
-  emailText: {
-    color: colors.white,
-    fontWeight: '700',
-    fontSize: 15,
+  copyBoxActive: {
+    borderColor: '#1B8E4B',
+    backgroundColor: '#F0F9F3',
+  },
+  emailAddressText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2A1B14',
     letterSpacing: 0.2,
+    flexShrink: 1,
   },
-  emailHint: {
-    fontSize: 11,
-    color: '#9E9086',
-    marginTop: 12,
-    fontWeight: '500',
+  copyActionWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingLeft: 8,
+  },
+  copyLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.primaryMaroon,
+  },
+  copyLabelActive: {
+    color: '#1B8E4B',
   },
 });
