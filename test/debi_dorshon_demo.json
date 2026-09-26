@@ -4,8 +4,8 @@
     "region": "North",
     "cluster": "Shyambazar",
     "location": {
-      "latitude": 22.59667739881082,
-      "longitude": 88.37214624216598
+      "latitude": 22.596485,
+      "longitude": 88.37199
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -25,8 +25,8 @@
     "region": "North",
     "cluster": "Shyambazar",
     "location": {
-      "latitude": 22.590902428974868,
-      "longitude": 88.36891632675722
+      "latitude": 22.5908979,
+      "longitude": 88.3689174
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -46,8 +46,8 @@
     "region": "North",
     "cluster": "Shyambazar",
     "location": {
-      "latitude": 22.59268508250984,
-      "longitude": 88.36799783564507
+      "latitude": 22.5925365,
+      "longitude": 88.3680032
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -67,8 +67,8 @@
     "region": "North",
     "cluster": "Shyambazar",
     "location": {
-      "latitude": 22.59457450199019,
-      "longitude": 88.3720272221226
+      "latitude": 22.5943863,
+      "longitude": 88.3720004
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -88,8 +88,8 @@
     "region": "North",
     "cluster": "Shyambazar",
     "location": {
-      "latitude": 22.596041447310895,
-      "longitude": 88.37353532216427
+      "latitude": 22.5959523,
+      "longitude": 88.3735085
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -109,8 +109,8 @@
     "region": "North",
     "cluster": "Shyambazar",
     "location": {
-      "latitude": 22.59465315894043,
-      "longitude": 88.37438730866864
+      "latitude": 22.5945442,
+      "longitude": 88.3743283
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -130,8 +130,8 @@
     "region": "North",
     "cluster": "Shyambazar",
     "location": {
-      "latitude": 22.59596407897802,
-      "longitude": 88.37454070679662
+      "latitude": 22.5958155,
+      "longitude": 88.3745568
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -151,8 +151,8 @@
     "region": "North",
     "cluster": "Manicktala-Girish Park",
     "location": {
-      "latitude": 22.58543001448346,
-      "longitude": 88.37514120679357
+      "latitude": 22.5854272,
+      "longitude": 88.373303
     },
     "nearest_metro": {
       "name": "Girish Park",
@@ -170,8 +170,8 @@
     "region": "North",
     "cluster": "Manicktala-Girish Park",
     "location": {
-      "latitude": 22.58749533591599,
-      "longitude": 88.37686122530015
+      "latitude": 22.5873616,
+      "longitude": 88.3768746
     },
     "nearest_metro": {
       "name": "Girish Park",
@@ -189,8 +189,8 @@
     "region": "North",
     "cluster": "Manicktala-Girish Park",
     "location": {
-      "latitude": 22.588561396199093,
-      "longitude": 88.37664888785132
+      "latitude": 22.5873616,
+      "longitude": 88.3768746
     },
     "nearest_metro": {
       "name": "Girish Park",
@@ -208,8 +208,8 @@
     "region": "North",
     "cluster": "Manicktala-Girish Park",
     "location": {
-      "latitude": 22.584722139782762,
-      "longitude": 88.3721988760791
+      "latitude": 22.5844943,
+      "longitude": 88.3723008
     },
     "nearest_metro": {
       "name": "Girish Park",
@@ -227,8 +227,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.59502650135121,
-      "longitude": 88.35712152028586
+      "latitude": 22.5948383,
+      "longitude": 88.3571698
     },
     "nearest_metro": {
       "name": "Sovabazar-Sutanuti",
@@ -248,8 +248,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.594858110655,
-      "longitude": 88.36020069624139
+      "latitude": 22.5946791,
+      "longitude": 88.3602117
     },
     "nearest_metro": {
       "name": "Sovabazar-Sutanuti",
@@ -269,8 +269,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.59576650180183,
-      "longitude": 88.36113293506735
+      "latitude": 22.5958452,
+      "longitude": 88.3611126
     },
     "nearest_metro": {
       "name": "Sovabazar-Sutanuti",
@@ -290,8 +290,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.598996486694706,
-      "longitude": 88.36160717591707
+      "latitude": 22.5990285,
+      "longitude": 88.3614858
     },
     "nearest_metro": {
       "name": "Sovabazar-Sutanuti",
@@ -311,8 +311,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.60137922321889,
-      "longitude": 88.36263891873273
+      "latitude": 22.6011655,
+      "longitude": 88.362723
     },
     "nearest_metro": {
       "name": "Sovabazar-Sutanuti",
@@ -332,8 +332,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.599474491923733,
-      "longitude": 88.36602650830092
+      "latitude": 22.5994903,
+      "longitude": 88.3660388
     },
     "nearest_metro": {
       "name": "Sovabazar-Sutanuti",
@@ -353,8 +353,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.60496818777199,
-      "longitude": 88.36613914910124
+      "latitude": 22.60478,
+      "longitude": 88.3661767
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -374,8 +374,8 @@
     "region": "North",
     "cluster": "Ahiritola-Kumartuli-Bagbazar",
     "location": {
-      "latitude": 22.592000288817804,
-      "longitude": 88.35868923561077
+      "latitude": 22.5918418,
+      "longitude": 88.3586946
     },
     "nearest_metro": {
       "name": "Sovabazar-Sutanuti",
@@ -395,8 +395,8 @@
     "region": "North",
     "cluster": "Tala",
     "location": {
-      "latitude": 22.60730284446728,
-      "longitude": 88.37625819019414
+      "latitude": 22.6072038,
+      "longitude": 88.3760758
     },
     "nearest_metro": {
       "name": "Belgachhia",
@@ -416,8 +416,8 @@
     "region": "North",
     "cluster": "Tala",
     "location": {
-      "latitude": 22.608909951997248,
-      "longitude": 88.38249127114861
+      "latitude": 22.6087911,
+      "longitude": 88.382502
     },
     "nearest_metro": {
       "name": "Belgachhia",
@@ -437,8 +437,8 @@
     "region": "North",
     "cluster": "Tala",
     "location": {
-      "latitude": 22.60792998813994,
-      "longitude": 88.38270711346952
+      "latitude": 22.6077319,
+      "longitude": 88.3827393
     },
     "nearest_metro": {
       "name": "Belgachhia",
@@ -458,8 +458,8 @@
     "region": "North",
     "cluster": "Tala",
     "location": {
-      "latitude": 22.607063671471195,
-      "longitude": 88.37458602696904
+      "latitude": 22.6069052,
+      "longitude": 88.3746504
     },
     "nearest_metro": {
       "name": "Belgachhia",
@@ -479,8 +479,8 @@
     "region": "North",
     "cluster": "Ultadanga",
     "location": {
-      "latitude": 22.594636301893967,
-      "longitude": 88.37898914045661
+      "latitude": 22.5943737,
+      "longitude": 88.3790894
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -500,8 +500,8 @@
     "region": "North",
     "cluster": "Ultadanga",
     "location": {
-      "latitude": 22.594636301893967,
-      "longitude": 88.37898914045661
+      "latitude": 22.5962543,
+      "longitude": 88.3869653
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -521,8 +521,8 @@
     "region": "North",
     "cluster": "Ultadanga",
     "location": {
-      "latitude": 22.596057621031594,
-      "longitude": 88.38446704416002
+      "latitude": 22.5958298,
+      "longitude": 88.3844134
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -542,8 +542,8 @@
     "region": "North",
     "cluster": "Ultadanga",
     "location": {
-      "latitude": 22.595430680579305,
-      "longitude": 88.38428604467566
+      "latitude": 22.595241,
+      "longitude": 88.3842775
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -563,8 +563,29 @@
     "region": "North",
     "cluster": "Ultadanga",
     "location": {
-      "latitude": 22.59514597986382,
-      "longitude": 88.38760179997753
+      "latitude": 22.595241,
+      "longitude": 88.3842775
+    },
+    "nearest_metro": {
+      "name": "Shyambazar",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Bidhannagar Road"
+      }
+    ],
+    "nearest_ferry": {
+      "name": "Bagbazar Ferry"
+    }
+  },
+  {
+    "name": "Jagarani Sangha",
+    "region": "North",
+    "cluster": "Ultadanga",
+    "location": {
+      "latitude": 22.5932927,
+      "longitude": 88.3849094
     },
     "nearest_metro": {
       "name": "Shyambazar",
@@ -584,8 +605,8 @@
     "region": "North",
     "cluster": "Laketown-Dumdum-Noapara",
     "location": {
-      "latitude": 22.599047275649568,
-      "longitude": 88.40281478276545
+      "latitude": 22.5988987,
+      "longitude": 88.4029328
     },
     "nearest_metro": {
       "name": "Jessore Road",
@@ -603,8 +624,8 @@
     "region": "North",
     "cluster": "Laketown-Dumdum-Noapara",
     "location": {
-      "latitude": 22.60969381133441,
-      "longitude": 88.41636228463483
+      "latitude": 22.6094363,
+      "longitude": 88.4164052
     },
     "nearest_metro": {
       "name": "Jessore Road",
@@ -622,8 +643,8 @@
     "region": "North",
     "cluster": "Laketown-Dumdum-Noapara",
     "location": {
-      "latitude": 22.6109089599006,
-      "longitude": 88.41460394432569
+      "latitude": 22.6108213,
+      "longitude": 88.4146001
     },
     "nearest_metro": {
       "name": "Jessore Road",
@@ -641,8 +662,8 @@
     "region": "North",
     "cluster": "Laketown-Dumdum-Noapara",
     "location": {
-      "latitude": 22.61163503520288,
-      "longitude": 88.41864752669734
+      "latitude": 22.611486,
+      "longitude": 88.418626
     },
     "nearest_metro": {
       "name": "Jessore Road",
@@ -660,8 +681,8 @@
     "region": "North",
     "cluster": "Laketown-Dumdum-Noapara",
     "location": {
-      "latitude": 22.628309958776615,
-      "longitude": 88.42205126927806
+      "latitude": 22.6281119,
+      "longitude": 88.4221371
     },
     "nearest_metro": {
       "name": "Jessore Road",
@@ -679,8 +700,8 @@
     "region": "North",
     "cluster": "Laketown-Dumdum-Noapara",
     "location": {
-      "latitude": 22.642183326908594,
-      "longitude": 88.38873743066733
+      "latitude": 22.6416696,
+      "longitude": 88.3886567
     },
     "nearest_metro": {
       "name": "Noapara",
@@ -698,8 +719,8 @@
     "region": "South",
     "cluster": "Hajra-Kalighat",
     "location": {
-      "latitude": 22.52482155407174,
-      "longitude": 88.34575281656178
+      "latitude": 22.524434,
+      "longitude": 88.3460535
     },
     "nearest_metro": {
       "name": "Jatin Das Park",
@@ -713,8 +734,8 @@
     "region": "South",
     "cluster": "Hajra-Kalighat",
     "location": {
-      "latitude": 22.524562705367206,
-      "longitude": 88.34111205276358
+      "latitude": 22.5243173,
+      "longitude": 88.3410395
     },
     "nearest_metro": {
       "name": "Jatin Das Park",
@@ -728,8 +749,8 @@
     "region": "South",
     "cluster": "Hajra-Kalighat",
     "location": {
-      "latitude": 22.518234393059448,
-      "longitude": 88.34381033066538
+      "latitude": 22.5179668,
+      "longitude": 88.3437245
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -743,8 +764,8 @@
     "region": "South",
     "cluster": "Hajra-Kalighat",
     "location": {
-      "latitude": 22.518259516983818,
-      "longitude": 88.34273114230902
+      "latitude": 22.5180613,
+      "longitude": 88.3427526
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -758,8 +779,8 @@
     "region": "South",
     "cluster": "Hajra-Kalighat",
     "location": {
-      "latitude": 22.517964268908802,
-      "longitude": 88.34126582660431
+      "latitude": 22.5178934,
+      "longitude": 88.3412609
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -773,8 +794,8 @@
     "region": "South",
     "cluster": "Hajra-Kalighat",
     "location": {
-      "latitude": 22.51372554952594,
-      "longitude": 88.34466552197811
+      "latitude": 22.5134551,
+      "longitude": 88.3447357
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -788,8 +809,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.507155497942144,
-      "longitude": 88.32271445764964
+      "latitude": 22.5071397,
+      "longitude": 88.3228446
     },
     "nearest_metro": {
       "name": "Taratala",
@@ -810,8 +831,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.50215510799007,
-      "longitude": 88.32197152879529
+      "latitude": 22.5020659,
+      "longitude": 88.3219608
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -832,8 +853,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.500666978555035,
-      "longitude": 88.31990171346801
+      "latitude": 22.5002078,
+      "longitude": 88.320287
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -854,8 +875,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.501610813172753,
-      "longitude": 88.31977571345094
+      "latitude": 22.5013531,
+      "longitude": 88.3198079
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -876,8 +897,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.498678945061574,
-      "longitude": 88.32145114230143
+      "latitude": 22.4984807,
+      "longitude": 88.3214726
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -898,8 +919,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.507477974302738,
-      "longitude": 88.32486762880988
+      "latitude": 22.5073293,
+      "longitude": 88.3248569
     },
     "nearest_metro": {
       "name": "Taratala",
@@ -920,8 +941,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.50279866601401,
-      "longitude": 88.31753538306319
+      "latitude": 22.5024852,
+      "longitude": 88.3176641
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -942,8 +963,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.505378641227132,
-      "longitude": 88.31398414046458
+      "latitude": 22.5052597,
+      "longitude": 88.3140807
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -964,8 +985,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.50180808039816,
-      "longitude": 88.31944112881425
+      "latitude": 22.5016594,
+      "longitude": 88.3194304
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -986,8 +1007,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.500043757103796,
-      "longitude": 88.32772710174072
+      "latitude": 22.4857781,
+      "longitude": 88.3319271
     },
     "nearest_metro": {
       "name": "Behala Bazar",
@@ -1008,8 +1029,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.46798605955417,
-      "longitude": 88.30908558141923
+      "latitude": 22.4677772,
+      "longitude": 88.3090707
     },
     "nearest_metro": {
       "name": "Sakher Bazar",
@@ -1023,8 +1044,8 @@
     "region": "South",
     "cluster": "Behala",
     "location": {
-      "latitude": 22.48149408316306,
-      "longitude": 88.31314464043992
+      "latitude": 22.4812859,
+      "longitude": 88.3132412
     },
     "nearest_metro": {
       "name": "Sakher Bazar",
@@ -1038,8 +1059,8 @@
     "region": "South",
     "cluster": "Chetla-Alipore-NewAlipore",
     "location": {
-      "latitude": 22.516449254854912,
-      "longitude": 88.33676149812247
+      "latitude": 22.5163997,
+      "longitude": 88.3368366
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1057,8 +1078,8 @@
     "region": "South",
     "cluster": "Chetla-Alipore-NewAlipore",
     "location": {
-      "latitude": 22.51927651849294,
-      "longitude": 88.33339027111484
+      "latitude": 22.5191675,
+      "longitude": 88.333401
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1076,8 +1097,8 @@
     "region": "South",
     "cluster": "Chetla-Alipore-NewAlipore",
     "location": {
-      "latitude": 22.515672711679958,
-      "longitude": 88.33640912287372
+      "latitude": 22.5156046,
+      "longitude": 88.3364179
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1095,8 +1116,8 @@
     "region": "South",
     "cluster": "Chetla-Alipore-NewAlipore",
     "location": {
-      "latitude": 22.509193641486622,
-      "longitude": 88.33397365764829
+      "latitude": 22.5089855,
+      "longitude": 88.3339522
     },
     "nearest_metro": {
       "name": "Rabindra Sarobar",
@@ -1114,8 +1135,8 @@
     "region": "South",
     "cluster": "Chetla-Alipore-NewAlipore",
     "location": {
-      "latitude": 22.504254376060008,
-      "longitude": 88.33047306877879
+      "latitude": 22.5041504,
+      "longitude": 88.330462
     },
     "nearest_metro": {
       "name": "Taratala",
@@ -1133,8 +1154,8 @@
     "region": "South",
     "cluster": "Kasba",
     "location": {
-      "latitude": 22.51687723353434,
-      "longitude": 88.39008076046125
+      "latitude": 22.5166272,
+      "longitude": 88.3902285
     },
     "nearest_metro": {
       "name": "Hemanta Mukhopadhyay",
@@ -1152,8 +1173,8 @@
     "region": "South",
     "cluster": "Kasba",
     "location": {
-      "latitude": 22.51939649380356,
-      "longitude": 88.38478249812626
+      "latitude": 22.5192181,
+      "longitude": 88.3848576
     },
     "nearest_metro": {
       "name": "Hemanta Mukhopadhyay",
@@ -1171,8 +1192,8 @@
     "region": "South",
     "cluster": "Kasba",
     "location": {
-      "latitude": 22.51911685472536,
-      "longitude": 88.38256355174663
+      "latitude": 22.5183226,
+      "longitude": 88.3855348
     },
     "nearest_metro": {
       "name": "Hemanta Mukhopadhyay",
@@ -1190,8 +1211,8 @@
     "region": "South",
     "cluster": "Kasba",
     "location": {
-      "latitude": 22.519832742075042,
-      "longitude": 88.37614778650324
+      "latitude": 22.5197708,
+      "longitude": 88.3761156
     },
     "nearest_metro": {
       "name": "Hemanta Mukhopadhyay",
@@ -1209,8 +1230,8 @@
     "region": "South",
     "cluster": "Gariahat-Ballygaunge Phari",
     "location": {
-      "latitude": 22.52131116858799,
-      "longitude": 88.3664962158622
+      "latitude": 22.5212187,
+      "longitude": 88.3665629
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1228,8 +1249,8 @@
     "region": "South",
     "cluster": "Gariahat-Ballygaunge Phari",
     "location": {
-      "latitude": 22.521767720164704,
-      "longitude": 88.3658662254121
+      "latitude": 22.5220333,
+      "longitude": 88.3656673
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1247,8 +1268,8 @@
     "region": "South",
     "cluster": "Gariahat-Ballygaunge Phari",
     "location": {
-      "latitude": 22.52114711284242,
-      "longitude": 88.36273882880012
+      "latitude": 22.5209489,
+      "longitude": 88.3627281
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1266,8 +1287,8 @@
     "region": "South",
     "cluster": "Gariahat-Ballygaunge Phari",
     "location": {
-      "latitude": 22.520246296323975,
-      "longitude": 88.36082396929976
+      "latitude": 22.5201571,
+      "longitude": 88.3609098
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1285,8 +1306,8 @@
     "region": "South",
     "cluster": "Gariahat-Ballygaunge Phari",
     "location": {
-      "latitude": 22.517837774057163,
-      "longitude": 88.36202868463988
+      "latitude": 22.5176792,
+      "longitude": 88.3620716
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1304,8 +1325,8 @@
     "region": "South",
     "cluster": "Gariahat-Ballygaunge Phari",
     "location": {
-      "latitude": 22.529313740758504,
-      "longitude": 88.36884848646851
+      "latitude": 22.529175,
+      "longitude": 88.3688163
     },
     "nearest_metro": {
       "name": "Jatin Das Park",
@@ -1323,8 +1344,8 @@
     "region": "South",
     "cluster": "Rashbehari Avenue",
     "location": {
-      "latitude": 22.518197273629337,
-      "longitude": 88.3580549557932
+      "latitude": 22.5180387,
+      "longitude": 88.3581086
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1342,8 +1363,8 @@
     "region": "South",
     "cluster": "Rashbehari Avenue",
     "location": {
-      "latitude": 22.51880984864137,
-      "longitude": 88.3533748692815
+      "latitude": 22.5185819,
+      "longitude": 88.3534607
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1361,8 +1382,8 @@
     "region": "South",
     "cluster": "Rashbehari Avenue",
     "location": {
-      "latitude": 22.51629148789367,
-      "longitude": 88.35579517115099
+      "latitude": 22.5162122,
+      "longitude": 88.3558059
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1380,8 +1401,8 @@
     "region": "South",
     "cluster": "Rashbehari Avenue",
     "location": {
-      "latitude": 22.515756293720344,
-      "longitude": 88.3562565110939
+      "latitude": 22.5157187,
+      "longitude": 88.3562819
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1399,8 +1420,8 @@
     "region": "South",
     "cluster": "Rashbehari Avenue",
     "location": {
-      "latitude": 22.519726814876616,
-      "longitude": 88.3554827153147
+      "latitude": 22.5195286,
+      "longitude": 88.3554398
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1418,8 +1439,8 @@
     "region": "South",
     "cluster": "Tollygunge-Haridevpur-Patuli",
     "location": {
-      "latitude": 22.519726814876616,
-      "longitude": 88.3554827153147
+      "latitude": 22.510194,
+      "longitude": 88.3463122
     },
     "nearest_metro": {
       "name": "Rabindra Sarobar",
@@ -1437,8 +1458,8 @@
     "region": "South",
     "cluster": "Tollygunge-Haridevpur-Patuli",
     "location": {
-      "latitude": 22.511215549818246,
-      "longitude": 88.34986032881297
+      "latitude": 22.5109975,
+      "longitude": 88.3498496
     },
     "nearest_metro": {
       "name": "Rabindra Sarobar",
@@ -1456,8 +1477,8 @@
     "region": "South",
     "cluster": "Tollygunge-Haridevpur-Patuli",
     "location": {
-      "latitude": 22.474525956952245,
-      "longitude": 88.36657441965629
+      "latitude": 22.4742929,
+      "longitude": 88.3665898
     },
     "nearest_metro": {
       "name": "Gitanjali",
@@ -1471,8 +1492,8 @@
     "region": "South",
     "cluster": "Tollygunge-Haridevpur-Patuli",
     "location": {
-      "latitude": 22.480998489240214,
-      "longitude": 88.33773748649287
+      "latitude": 22.4808597,
+      "longitude": 88.3377053
     },
     "nearest_metro": {
       "name": "Netaji",
@@ -1486,8 +1507,8 @@
     "region": "South",
     "cluster": "Tollygunge-Haridevpur-Patuli",
     "location": {
-      "latitude": 22.482991880915087,
-      "longitude": 88.33871529997049
+      "latitude": 22.4827837,
+      "longitude": 88.3387153
     },
     "nearest_metro": {
       "name": "Netaji",
@@ -1501,8 +1522,8 @@
     "region": "South",
     "cluster": "Tollygunge-Haridevpur-Patuli",
     "location": {
-      "latitude": 22.481593596509512,
-      "longitude": 88.3373824018227
+      "latitude": 22.4806403,
+      "longitude": 88.3337157
     },
     "nearest_metro": {
       "name": "Netaji",
@@ -1516,8 +1537,8 @@
     "region": "South",
     "cluster": "Tollygunge-Haridevpur-Patuli",
     "location": {
-      "latitude": 22.47220211129039,
-      "longitude": 88.38151172879601
+      "latitude": 22.4720391,
+      "longitude": 88.3810371
     },
     "nearest_metro": {
       "name": "Kavi Nazrul",
@@ -1535,8 +1556,8 @@
     "region": "South",
     "cluster": "Jadavpur-Dhakuria",
     "location": {
-      "latitude": 22.503170702816472,
-      "longitude": 88.36458754045518
+      "latitude": 22.5030022,
+      "longitude": 88.3646841
     },
     "nearest_metro": {
       "name": "Rabindra Sarobar",
@@ -1557,8 +1578,8 @@
     "region": "South",
     "cluster": "Jadavpur-Dhakuria",
     "location": {
-      "latitude": 22.508284557775433,
-      "longitude": 88.36274947113723
+      "latitude": 22.508235,
+      "longitude": 88.3627602
     },
     "nearest_metro": {
       "name": "Rabindra Sarobar",
@@ -1579,8 +1600,8 @@
     "region": "South",
     "cluster": "Jadavpur-Dhakuria",
     "location": {
-      "latitude": 22.504419599680386,
-      "longitude": 88.3656175086998
+      "latitude": 22.5050586,
+      "longitude": 88.3623379
     },
     "nearest_metro": {
       "name": "Rabindra Sarobar",
@@ -1601,8 +1622,8 @@
     "region": "South",
     "cluster": "Jadavpur-Dhakuria",
     "location": {
-      "latitude": 22.505330906253057,
-      "longitude": 88.36861728648769
+      "latitude": 22.5050732,
+      "longitude": 88.3685851
     },
     "nearest_metro": {
       "name": "Rabindra Sarobar",
@@ -1620,8 +1641,8 @@
     "region": "South",
     "cluster": "Jadavpur-Dhakuria",
     "location": {
-      "latitude": 22.508106173968216,
-      "longitude": 88.36858509996405
+      "latitude": 22.5080076,
+      "longitude": 88.3685783
     },
     "nearest_metro": {
       "name": "Kalighat",
@@ -1639,8 +1660,8 @@
     "region": "South",
     "cluster": "Jadavpur-Dhakuria",
     "location": {
-      "latitude": 22.491974380145855,
-      "longitude": 88.38286232695924
+      "latitude": 22.4914713,
+      "longitude": 88.3827705
     },
     "nearest_metro": null,
     "nearest_stations": [
@@ -1655,8 +1676,8 @@
     "region": "South",
     "cluster": "Jadavpur-Dhakuria",
     "location": {
-      "latitude": 22.493304589541115,
-      "longitude": 88.37846447114296
+      "latitude": 22.4931559,
+      "longitude": 88.3784752
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1667,8 +1688,8 @@
     "region": "South",
     "cluster": "Bhowanipur",
     "location": {
-      "latitude": 22.533487465852165,
-      "longitude": 88.34564422696403
+      "latitude": 22.533319,
+      "longitude": 88.3457086
     },
     "nearest_metro": {
       "name": "Netaji Bhavan",
@@ -1686,8 +1707,8 @@
     "region": "South",
     "cluster": "Bhowanipur",
     "location": {
-      "latitude": 22.533745236315607,
-      "longitude": 88.35184629812018
+      "latitude": 22.5336065,
+      "longitude": 88.3519214
     },
     "nearest_metro": {
       "name": "Netaji Bhavan",
@@ -1705,8 +1726,8 @@
     "region": "South",
     "cluster": "Bhowanipur",
     "location": {
-      "latitude": 22.527939271051224,
-      "longitude": 88.34889051345746
+      "latitude": 22.5278699,
+      "longitude": 88.3489227
     },
     "nearest_metro": {
       "name": "Netaji Bhavan",
@@ -1724,8 +1745,27 @@
     "region": "South",
     "cluster": "Bhowanipur",
     "location": {
-      "latitude": 22.526676743410533,
-      "longitude": 88.35475949812992
+      "latitude": 22.5265634,
+      "longitude": 88.3546477
+    },
+    "nearest_metro": {
+      "name": "Netaji Bhavan",
+      "line": "Blue"
+    },
+    "nearest_stations": [
+      {
+        "name": "Tollygunj"
+      }
+    ],
+    "nearest_ferry": null
+  },
+  {
+    "name": "64 Pally",
+    "region": "South",
+    "cluster": "Bhowanipur",
+    "location": {
+      "latitude": 22.5205584,
+      "longitude": 88.3475801
     },
     "nearest_metro": {
       "name": "Netaji Bhavan",
@@ -1743,8 +1783,8 @@
     "region": "South",
     "cluster": "Bhowanipur",
     "location": {
-      "latitude": 22.526940484073233,
-      "longitude": 88.34825999998004
+      "latitude": 22.5267621,
+      "longitude": 88.34826
     },
     "nearest_metro": {
       "name": "Netaji Bhavan",
@@ -1762,8 +1802,8 @@
     "region": "South",
     "cluster": "Khidirpur",
     "location": {
-      "latitude": 22.54045777586437,
-      "longitude": 88.32050264229547
+      "latitude": 22.533319,
+      "longitude": 88.3457086
     },
     "nearest_metro": null,
     "nearest_stations": [
@@ -1778,8 +1818,24 @@
     "region": "South",
     "cluster": "Khidirpur",
     "location": {
-      "latitude": 22.53935255869908,
-      "longitude": 88.326509772984
+      "latitude": 22.5391961,
+      "longitude": 88.3264565
+    },
+    "nearest_metro": null,
+    "nearest_stations": [
+      {
+        "name": "Khidirpur"
+      }
+    ],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Nabarag",
+    "region": "South",
+    "cluster": "Khidirpur",
+    "location": {
+      "latitude": 22.5417107,
+      "longitude": 88.3212546
     },
     "nearest_metro": null,
     "nearest_stations": [
@@ -1794,8 +1850,8 @@
     "region": "South",
     "cluster": "Khidirpur",
     "location": {
-      "latitude": 22.543929744090654,
-      "longitude": 88.3241976288008
+      "latitude": 22.5417107,
+      "longitude": 88.3212546
     },
     "nearest_metro": null,
     "nearest_stations": [
@@ -1810,8 +1866,8 @@
     "region": "South",
     "cluster": "Khidirpur",
     "location": {
-      "latitude": 22.54135264705843,
-      "longitude": 88.31966610183893
+      "latitude": 22.5411941,
+      "longitude": 88.319591
     },
     "nearest_metro": null,
     "nearest_stations": [
@@ -1826,8 +1882,8 @@
     "region": "South",
     "cluster": "Khidirpur",
     "location": {
-      "latitude": 22.543540462121413,
-      "longitude": 88.32156817300414
+      "latitude": 22.5432531,
+      "longitude": 88.3215038
     },
     "nearest_metro": null,
     "nearest_stations": [
@@ -1842,8 +1898,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.578004611497107,
-      "longitude": 88.36022541161131
+      "latitude": 22.5771888,
+      "longitude": 88.3607369
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1854,8 +1910,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.570956007300907,
-      "longitude": 88.37185472694054
+      "latitude": 22.5705774,
+      "longitude": 88.37194
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1866,8 +1922,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.574618409064588,
-      "longitude": 88.3627370781737
+      "latitude": 22.550645,
+      "longitude": 88.3563662
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1878,8 +1934,20 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.566267785125703,
-      "longitude": 88.36565319997862
+      "latitude": 22.5660201,
+      "longitude": 88.3656532
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Lebutala",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5660201,
+      "longitude": 88.3656532
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1890,8 +1958,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.563802166785077,
-      "longitude": 88.35946458463314
+      "latitude": 22.5635842,
+      "longitude": 88.3595075
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1902,8 +1970,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.561873508908253,
-      "longitude": 88.3621755109368
+      "latitude": 22.5577962,
+      "longitude": 88.3573628
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1914,8 +1982,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.559053779152926,
-      "longitude": 88.36653020163739
+      "latitude": 22.5575857,
+      "longitude": 88.3669753
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1926,8 +1994,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.574963168941576,
-      "longitude": 88.36940951350935
+      "latitude": 22.5746858,
+      "longitude": 88.3693988
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1938,8 +2006,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.571735767477193,
-      "longitude": 88.3587890566916
+      "latitude": 22.5714699,
+      "longitude": 88.3587305
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1950,8 +2018,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.56401847938626,
-      "longitude": 88.36246124402359
+      "latitude": 22.563699,
+      "longitude": 88.3622861
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1962,8 +2030,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.558845838209702,
-      "longitude": 88.36744331531222
+      "latitude": 22.5596492,
+      "longitude": 88.3706205
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1974,8 +2042,20 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.556539622829778,
-      "longitude": 88.36892496687041
+      "latitude": 22.5529974,
+      "longitude": 88.3623564
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Chowringhee High School Sarbojanin Durgotsav",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5374566,
+      "longitude": 88.3561014
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1986,8 +2066,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.57244597651462,
-      "longitude": 88.36521135579716
+      "latitude": 22.572337,
+      "longitude": 88.365265
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -1998,8 +2078,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.581362694743316,
-      "longitude": 88.35728861531824
+      "latitude": 22.5690093,
+      "longitude": 88.3843911
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -2010,8 +2090,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.56067277955022,
-      "longitude": 88.35504368464048
+      "latitude": 22.5604449,
+      "longitude": 88.3550866
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -2022,8 +2102,20 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.576289126969744,
-      "longitude": 88.36704654416074
+      "latitude": 22.5860084,
+      "longitude": 88.3746541
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Shishu Palan Foundation",
+    "region": "Central",
+    "cluster": "Central Kolkata",
+    "location": {
+      "latitude": 22.5434416,
+      "longitude": 88.3628129
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -2034,8 +2126,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.564887226628702,
-      "longitude": 88.35842631797199
+      "latitude": 22.5645217,
+      "longitude": 88.3583834
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -2046,8 +2138,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.584528691345323,
-      "longitude": 88.36149567113435
+      "latitude": 22.5839891,
+      "longitude": 88.3613312
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -2058,8 +2150,8 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.586417007172255,
-      "longitude": 88.36050345579909
+      "latitude": 22.5862387,
+      "longitude": 88.3605571
     },
     "nearest_metro": null,
     "nearest_stations": [],
@@ -2070,8 +2162,140 @@
     "region": "Central",
     "cluster": "Central Kolkata",
     "location": {
-      "latitude": 22.58750970629858,
-      "longitude": 88.35432484411275
+      "latitude": 22.5918418,
+      "longitude": 88.3586946
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Sovabazar Rajbari - Boro Torof",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5961476,
+      "longitude": 88.3672651
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Sovabazar Rajbari - Chhoto Torof",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5958452,
+      "longitude": 88.3611126
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Lokmata Rani Rashmoni Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5625179,
+      "longitude": 88.3552648
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Hazra Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.6061219,
+      "longitude": 88.3486629
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Mathur Mohan Biswas Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5420747,
+      "longitude": 88.3487843
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Bowbazar Dutta Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5879383,
+      "longitude": 88.3764642
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Motilal Seal Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5846618,
+      "longitude": 88.3615814
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Badan Chandra Roy Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5382856,
+      "longitude": 88.3386423
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Shyamaldhan Dutta Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5600252,
+      "longitude": 88.3800649
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Kundu Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.5336883,
+      "longitude": 88.3664352
+    },
+    "nearest_metro": null,
+    "nearest_stations": [],
+    "nearest_ferry": null
+  },
+  {
+    "name": "Atta Bari",
+    "region": "Bonedi Bari",
+    "cluster": "Kolkata Bonedi Bari",
+    "location": {
+      "latitude": 22.6075307,
+      "longitude": 88.3491879
     },
     "nearest_metro": null,
     "nearest_stations": [],
