@@ -51,6 +51,11 @@ class Settings(BaseSettings):
     TRIP_COLLECTION_NAME: str = "user_trips"
     FAVORITE_COLLECTION_NAME: str = "user_favorites"
 
+    # Supabase Settings (for Auth & User Management)
+    SUPABASE_URL: Optional[str] = None
+    SUPABASE_ANON_KEY: Optional[str] = None
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
+
     # Redis & Caching Settings
     REDIS_URL: Optional[str] = "redis://localhost:6379/0"
     CACHE_TTL_TRANSIT: int = 3600        # 1 hour for station lists

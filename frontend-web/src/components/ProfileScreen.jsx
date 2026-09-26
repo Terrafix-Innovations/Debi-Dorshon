@@ -9,8 +9,7 @@ export default function ProfileScreen({
     user,
     isAuthenticated,
     logout,
-    googleClientId,
-    loginWithGoogleToken,
+    loginWithGoogle,
     loginWithEmail,
     registerWithEmail,
     favorites,
@@ -28,59 +27,16 @@ export default function ProfileScreen({
   const [password, setPassword] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('menu'); // 'menu' | 'favorites' | 'saved_trips'
 
-  // Initialize Google Button inside profile screen if guest
-  useEffect(() => {
-    if (isAuthenticated || !googleClientId) return;
-
-    let timer = null;
-    const initGsi = () => {
-      if (window.google?.accounts?.id) {
-        try {
-          window.google.accounts.id.initialize({
-            client_id: googleClientId,
-            auto_select: false,
-            callback: async (response) => {
-              if (response.credential) {
-                setAuthLoading(true);
-                setErrorMessage(null);
-                try {
-                  await loginWithGoogleToken(response.credential);
-                } catch (err) {
-                  console.error('[Google Sign-In Error]', err);
-                  setErrorMessage(err.message || 'Google sign-in failed. Please try again.');
-                } finally {
-                  setAuthLoading(false);
-                }
-              }
-            },
-          });
-
-          const btnElem = document.getElementById('profile-google-btn-slot');
-          if (btnElem) {
-            btnElem.innerHTML = '';
-            window.google.accounts.id.renderButton(btnElem, {
-              type: 'standard',
-              theme: 'outline',
-              size: 'large',
-              width: 250,
-              text: 'signin_with',
-              shape: 'rectangular',
-              logo_alignment: 'left',
-            });
-          }
-          if (timer) clearInterval(timer);
-        } catch (err) {
-          console.warn('GSI init error:', err);
-        }
-      }
-    };
-
-    initGsi();
-    timer = setInterval(initGsi, 300);
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [isAuthenticated, googleClientId, loginWithGoogleToken]);
+  const handleGoogleSignIn = async () => {
+    setAuthLoading(true);
+    setErrorMessage(null);
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setErrorMessage(err.message || 'Google sign-in failed. Please try again.');
+      setAuthLoading(false);
+    }
+  };
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -340,9 +296,34 @@ export default function ProfileScreen({
             </div>
           )}
 
-          {/* Google Sign-in Slot */}
-          <div className="flex justify-center my-3 min-h-[44px]">
-            <div id="profile-google-btn-slot" />
+          {/* Clean Standard Google Sign-In Button */}
+          <div className="flex justify-center my-3">
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={authLoading}
+              className="w-full max-w-xs h-12 rounded-2xl bg-white border border-[#dadce0] hover:bg-[#f8f9fa] active:bg-[#f1f3f4] text-[#3c4043] font-medium text-sm flex items-center justify-center gap-3 shadow-sm hover:shadow transition-all disabled:opacity-50"
+            >
+              <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                />
+              </svg>
+              <span>{authLoading ? 'Connecting to Google...' : 'Sign in with Google'}</span>
+            </button>
           </div>
 
           {/* Email Alternative Toggle */}

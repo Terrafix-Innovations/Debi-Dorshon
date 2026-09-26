@@ -18,7 +18,7 @@ export default function Header({
   overrideDay = null,
   onDayChange,
 }) {
-  const { user, googleClientId, loginWithGoogleToken, logout, isAuthenticated } = useAuth();
+  const { user, loginWithGoogle, logout, isAuthenticated } = useAuth();
   const [selectedDayKey, setSelectedDayKey] = useState(() => {
     return localStorage.getItem('debi_dorshon_tithi_override') || overrideDay || null;
   });
@@ -68,49 +68,7 @@ export default function Header({
     };
   }, [showAuthModal]);
 
-  // Render Google Identity Services button inside the Auth modal
-  useEffect(() => {
-    if (showAuthModal && !user && googleClientId) {
-      const initGsi = () => {
-        if (window.google?.accounts?.id) {
-          window.google.accounts.id.initialize({
-            client_id: googleClientId,
-            callback: async (response) => {
-              if (response.credential) {
-                try {
-                  await loginWithGoogleToken(response.credential);
-                  setShowAuthModal(false);
-                } catch (e) {
-                  console.error('Failed to sign in with Google credential:', e);
-                }
-              }
-            },
-          });
-          const btnElem = document.getElementById('web-google-btn-slot');
-          if (btnElem) {
-            btnElem.innerHTML = '';
-            window.google.accounts.id.renderButton(btnElem, {
-              theme: 'filled_black',
-              size: 'large',
-              width: 260,
-              text: 'continue_with',
-              shape: 'pill',
-            });
-          }
-        }
-      };
 
-      // Try immediately or wait for script load
-      initGsi();
-      const interval = setInterval(() => {
-        if (window.google?.accounts?.id) {
-          initGsi();
-          clearInterval(interval);
-        }
-      }, 200);
-      return () => clearInterval(interval);
-    }
-  }, [showAuthModal, user, googleClientId, loginWithGoogleToken]);
 
   const greeting = getFestivalGreeting(selectedDayKey);
 
@@ -502,8 +460,29 @@ export default function Header({
                 Sign in with your Google account to save custom pandal routes, track visited pandals, and earn Puja reward passes. Your data remains completely isolated and private to your account.
               </p>
 
-              {/* Google Button Container */}
-              <div id="web-google-btn-slot" className="flex justify-center my-2 min-h-[44px]" />
+              {/* Google Button */}
+              <div className="flex justify-center my-3">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await loginWithGoogle();
+                      setShowAuthModal(false);
+                    } catch (e) {
+                      console.error('Failed to sign in with Google:', e);
+                    }
+                  }}
+                  className="w-full h-11 rounded-xl bg-white border border-[#dadce0] hover:bg-[#f8f9fa] active:bg-[#f1f3f4] text-[#3c4043] font-medium text-xs flex items-center justify-center gap-2.5 shadow-sm transition-all"
+                >
+                  <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z" />
+                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z" />
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+                  </svg>
+                  <span>Continue with Google</span>
+                </button>
+              </div>
 
               <div className="text-[10px] text-center text-[#9c7e6b] mt-3 flex items-center justify-center gap-1">
                 <span>🛡️</span>

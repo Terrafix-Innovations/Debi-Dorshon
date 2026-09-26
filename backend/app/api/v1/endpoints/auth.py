@@ -163,15 +163,83 @@ async def login_with_email(
 @router.get("/config", summary="Get Public Auth Configuration")
 async def get_auth_config():
     """
-    Returns public OAuth configuration so frontend apps can initialize
-    Google Sign-In dynamically without exposing keys in frontend environment files.
+    Returns public OAuth and Supabase configuration so frontend apps can initialize
+    Auth dynamically without exposing keys in frontend environment files.
     """
     return {
+        "supabase_url": settings.SUPABASE_URL or "",
+        "supabase_anon_key": settings.SUPABASE_ANON_KEY or "",
         "google_client_id": settings.GOOGLE_CLIENT_ID or "",
         "google_android_client_id": settings.GOOGLE_ANDROID_CLIENT_ID or "",
         "google_ios_client_id": settings.GOOGLE_IOS_CLIENT_ID or "",
-        "auth_enabled": bool(settings.GOOGLE_CLIENT_ID),
+        "auth_enabled": bool(settings.SUPABASE_URL or settings.GOOGLE_CLIENT_ID),
     }
+
+
+@router.post("/supabase-sync", response_model=UserProfile, summary="Sync Supabase User with MongoDB")
+async def sync_supabase_user(
+    payload: dict,
+    db: AsyncIOMotorDatabase = Depends(get_database),
+):
+    """
+    Called when a user logs in via Supabase Auth (e.g. Google Sign-In).
+    Finds or creates the user in the MongoDB 'users' collection and returns their profile.
+    """
+    user_id = payload.get("id")
+    email = (payload.get("email") or "").strip().lower()
+    user_metadata = payload.get("user_metadata") or {}
+    name = user_metadata.get("full_name") or user_metadata.get("name") or (email.split("@")[0] if email else "Puja Pilgrim")
+    picture = user_metadata.get("avatar_url") or user_metadata.get("picture")
+
+    user_collection = db[settings.USER_COLLECTION_NAME]
+    user = await user_collection.find_one({"$or": [{"supabase_id": user_id}, {"email": email}]}) if email else None
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    if not user:
+        new_user_doc = {
+            "supabase_id": user_id,
+            "email": email,
+            "name": name,
+            "picture": picture,
+            "completed_trips": 0,
+            "redeem_points": 50,  # 50 welcome points
+            "favorite_pandals": [],
+            "created_at": now_iso,
+            "last_login": now_iso,
+        }
+        res = await user_collection.insert_one(new_user_doc)
+        mongo_id = str(res.inserted_id)
+        user = new_user_doc
+        user["_id"] = res.inserted_id
+    else:
+        mongo_id = str(user["_id"])
+        await user_collection.update_one(
+            {"_id": user["_id"]},
+            {
+                "$set": {
+                    "supabase_id": user_id,
+                    "name": name or user.get("name"),
+                    "picture": picture or user.get("picture"),
+                    "last_login": now_iso,
+                }
+            }
+        )
+
+    # Count trips and favorites
+    trip_count = await db[settings.TRIP_COLLECTION_NAME].count_documents({"user_id": mongo_id})
+    fav_docs = await db[settings.FAVORITE_COLLECTION_NAME].find({"user_id": mongo_id}).to_list(1000)
+    favorite_pandals = [doc["pandal_id"] for doc in fav_docs if "pandal_id" in doc]
+
+    return UserProfile(
+        id=mongo_id,
+        email=user.get("email", ""),
+        name=user.get("name", ""),
+        picture=user.get("picture"),
+        completed_trips=max(trip_count, user.get("completed_trips", 0)),
+        redeem_points=user.get("redeem_points", 50),
+        favorite_pandals=favorite_pandals,
+        created_at=user.get("created_at"),
+    )
 
 
 @router.post("/google", response_model=AuthResponse, summary="Sign in with Google OAuth")

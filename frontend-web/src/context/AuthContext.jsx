@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
 const AuthContext = createContext(null);
 
@@ -8,7 +9,30 @@ const USER_KEY = 'debi_dorshon_user';
 const FAVORITES_KEY = 'debi_dorshon_favorites';
 const SAVED_TRIPS_KEY = 'debi_dorshon_saved_trips';
 
+// Fallback Supabase credentials from backend configuration
+const DEFAULT_SUPABASE_URL = 'https://asqszzkmxhcdysigfoty.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_PW9a7ut7NxwIXxrJufTWew_GNMnVvnI';
+
+let supabaseInstance = null;
+
+function getSupabase(url, key) {
+  if (!supabaseInstance && url && key) {
+    supabaseInstance = createClient(url, key, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    });
+  }
+  return supabaseInstance;
+}
+
 export function AuthProvider({ children }) {
+  const [supabase, setSupabase] = useState(() =>
+    getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY)
+  );
+
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null);
   const [user, setUser] = useState(() => {
     try {
@@ -18,6 +42,7 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
   const [favorites, setFavorites] = useState(() => {
     try {
       const saved = localStorage.getItem(FAVORITES_KEY);
@@ -26,6 +51,7 @@ export function AuthProvider({ children }) {
       return [];
     }
   });
+
   const [savedTrips, setSavedTrips] = useState(() => {
     try {
       const saved = localStorage.getItem(SAVED_TRIPS_KEY);
@@ -36,172 +62,223 @@ export function AuthProvider({ children }) {
   });
 
   const [loading, setLoading] = useState(true);
-  const [googleClientId, setGoogleClientId] = useState(null);
+  const isSyncingRef = useRef(false);
 
-  // 1. Fetch public auth config dynamically from Render backend
+  // 1. Sync Supabase authenticated session with MongoDB Atlas
+  const syncWithMongo = useCallback(async (sbUser, sbToken) => {
+    if (!sbUser || isSyncingRef.current) return;
+    isSyncingRef.current = true;
+
+    try {
+      const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
+      const res = await fetch(`${cleanUrl}/api/v1/auth/supabase-sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sbToken || ''}`,
+        },
+        body: JSON.stringify({
+          id: sbUser.id,
+          email: sbUser.email,
+          user_metadata: sbUser.user_metadata || {},
+        }),
+      });
+
+      if (res.ok) {
+        const mongoProfile = await res.json();
+        setUser(mongoProfile);
+        localStorage.setItem(USER_KEY, JSON.stringify(mongoProfile));
+        if (mongoProfile.favorite_pandals?.length > 0) {
+          setFavorites((prev) => Array.from(new Set([...prev, ...mongoProfile.favorite_pandals])));
+        }
+      } else {
+        // Fallback to basic Supabase profile if backend is sleeping
+        const meta = sbUser.user_metadata || {};
+        const fallbackProfile = {
+          id: sbUser.id,
+          email: sbUser.email,
+          name: meta.full_name || meta.name || sbUser.email?.split('@')[0] || 'Puja Pilgrim',
+          picture: meta.avatar_url || meta.picture || null,
+          redeem_points: 50,
+          completed_trips: 0,
+          favorite_pandals: [],
+        };
+        setUser(fallbackProfile);
+        localStorage.setItem(USER_KEY, JSON.stringify(fallbackProfile));
+      }
+    } catch (err) {
+      console.warn('[AuthContext] Backend sync deferred:', err.message);
+      const meta = sbUser.user_metadata || {};
+      const fallbackProfile = {
+        id: sbUser.id,
+        email: sbUser.email,
+        name: meta.full_name || meta.name || sbUser.email?.split('@')[0] || 'Puja Pilgrim',
+        picture: meta.avatar_url || meta.picture || null,
+        redeem_points: 50,
+        completed_trips: 0,
+        favorite_pandals: [],
+      };
+      setUser(fallbackProfile);
+      localStorage.setItem(USER_KEY, JSON.stringify(fallbackProfile));
+    } finally {
+      isSyncingRef.current = false;
+    }
+  }, []);
+
+  // 2. Fetch runtime config from backend and initialize Supabase listener
   useEffect(() => {
     let isMounted = true;
-    async function loadAuthConfig() {
+
+    async function initAuth() {
+      let sbClient = supabase;
+
+      // Fetch dynamic backend auth config (if customized)
       try {
         const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
         const res = await fetch(`${cleanUrl}/api/v1/auth/config`);
         if (res.ok) {
-          const data = await res.json();
-          if (isMounted && data.google_client_id) {
-            setGoogleClientId(data.google_client_id);
+          const cfg = await res.json();
+          if (cfg.supabase_url && cfg.supabase_anon_key) {
+            sbClient = getSupabase(cfg.supabase_url, cfg.supabase_anon_key);
+            if (isMounted) setSupabase(sbClient);
           }
         }
       } catch (err) {
-        console.warn('[AuthContext] Failed to load auth config:', err.message);
+        console.warn('[AuthContext] Using default Supabase configuration:', err.message);
       }
-    }
-    loadAuthConfig();
-    return () => { isMounted = false; };
-  }, []);
 
-  // 2. Fetch authenticated user profile on app load if token exists
-  useEffect(() => {
-    let isMounted = true;
-    async function restoreSession() {
-      if (!token) {
-        setUser(null);
-        setLoading(false);
+      if (!sbClient) {
+        if (isMounted) setLoading(false);
         return;
       }
 
-      try {
-        const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
-        const res = await fetch(`${cleanUrl}/api/v1/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      // Check existing Supabase session
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (session?.user && isMounted) {
+        setToken(session.access_token);
+        localStorage.setItem(TOKEN_KEY, session.access_token);
+        await syncWithMongo(session.user, session.access_token);
+      }
 
-        if (res.ok) {
-          const profile = await res.json();
-          if (isMounted) {
-            setUser(profile);
-            localStorage.setItem(USER_KEY, JSON.stringify(profile));
-          }
-        } else {
-          // Token expired or invalid
-          localStorage.removeItem(TOKEN_KEY);
-          localStorage.removeItem(USER_KEY);
-          if (isMounted) {
+      if (isMounted) setLoading(false);
+
+      // Listen for auth state changes (OAuth redirects, logins, logouts)
+      const { data: { subscription } } = sbClient.auth.onAuthStateChange(
+        async (event, newSession) => {
+          if (!isMounted) return;
+
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            if (newSession?.user) {
+              setToken(newSession.access_token);
+              localStorage.setItem(TOKEN_KEY, newSession.access_token);
+              await syncWithMongo(newSession.user, newSession.access_token);
+            }
+          } else if (event === 'SIGNED_OUT') {
             setToken(null);
             setUser(null);
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
           }
         }
-      } catch (err) {
-        console.warn('[AuthContext] Failed to restore session:', err.message);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
+      );
+
+      return () => {
+        subscription?.unsubscribe();
+      };
     }
 
-    restoreSession();
-    return () => { isMounted = false; };
-  }, [token]);
+    initAuth();
+    return () => {
+      isMounted = false;
+    };
+  }, [syncWithMongo]);
 
-  // 3. Login with Google ID Token (with retry for sleeping cloud backend)
-  const loginWithGoogleToken = useCallback(async (idToken) => {
-    const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
-    let lastError = null;
+  // 3. Login with Google (Clean standard OAuth via Supabase)
+  const loginWithGoogle = useCallback(async () => {
+    const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+    if (!sb) throw new Error('Supabase client not initialized.');
 
-    for (let attempt = 1; attempt <= 2; attempt++) {
-      try {
-        const res = await fetch(`${cleanUrl}/api/v1/auth/google`, {
-          method: 'POST',
-          mode: 'cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_token: idToken }),
-        });
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
 
-        if (!res.ok) {
-          const errJson = await res.json().catch(() => ({ detail: `HTTP ${res.status}: ${res.statusText}` }));
-          throw new Error(errJson.detail || `Server returned status ${res.status}`);
-        }
-
-        const data = await res.json();
-        localStorage.setItem(TOKEN_KEY, data.access_token);
-        localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-        setToken(data.access_token);
-        setUser(data.user);
-        return data.user;
-      } catch (err) {
-        lastError = err;
-        // If network error (Failed to fetch) and first attempt, wait 1.5s and retry once
-        if (attempt < 2 && (err.name === 'TypeError' || String(err.message).includes('fetch'))) {
-          await new Promise((resolve) => setTimeout(resolve, 1500));
-          continue;
-        }
-        throw err;
-      }
+    if (error) {
+      console.error('[AuthContext] Supabase Google OAuth error:', error);
+      throw error;
     }
-    throw lastError;
-  }, []);
+  }, [supabase]);
 
-  // 4. Sign in with Email & Password
-  const loginWithEmail = useCallback(async (email, password) => {
-    try {
-      const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
-      const res = await fetch(`${cleanUrl}/api/v1/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+  // 4. Sign in with Email & Password via Supabase
+  const loginWithEmail = useCallback(
+    async (email, password) => {
+      const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+      if (!sb) throw new Error('Supabase client not initialized.');
+
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
       });
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({ detail: 'Invalid email or password' }));
-        throw new Error(errJson.detail || 'Sign in failed');
+      if (error) {
+        console.error('[AuthContext] Email login error:', error);
+        throw error;
       }
 
-      const data = await res.json();
-      localStorage.setItem(TOKEN_KEY, data.access_token);
-      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-      setToken(data.access_token);
-      setUser(data.user);
+      if (data.session) {
+        setToken(data.session.access_token);
+        localStorage.setItem(TOKEN_KEY, data.session.access_token);
+        await syncWithMongo(data.user, data.session.access_token);
+      }
       return data.user;
-    } catch (err) {
-      console.error('[AuthContext] Email login error:', err);
-      throw err;
-    }
-  }, []);
+    },
+    [supabase, syncWithMongo]
+  );
 
-  // 5. Sign up with Email & Password
-  const registerWithEmail = useCallback(async (email, password, name) => {
-    try {
-      const cleanUrl = API_BASE_URL.trim().replace(/\/+$/, '');
-      const res = await fetch(`${cleanUrl}/api/v1/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name: name || undefined }),
+  // 5. Sign up with Email & Password via Supabase
+  const registerWithEmail = useCallback(
+    async (email, password, name) => {
+      const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+      if (!sb) throw new Error('Supabase client not initialized.');
+
+      const { data, error } = await sb.auth.signUp({
+        email: email.trim(),
+        password: password.trim(),
+        options: {
+          data: {
+            full_name: name?.trim() || email.split('@')[0],
+          },
+        },
       });
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({ detail: 'Registration failed' }));
-        throw new Error(errJson.detail || 'Sign up failed');
+      if (error) {
+        console.error('[AuthContext] Email register error:', error);
+        throw error;
       }
 
-      const data = await res.json();
-      localStorage.setItem(TOKEN_KEY, data.access_token);
-      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-      setToken(data.access_token);
-      setUser(data.user);
+      if (data.session) {
+        setToken(data.session.access_token);
+        localStorage.setItem(TOKEN_KEY, data.session.access_token);
+        await syncWithMongo(data.user, data.session.access_token);
+      }
       return data.user;
-    } catch (err) {
-      console.error('[AuthContext] Email register error:', err);
-      throw err;
-    }
-  }, []);
+    },
+    [supabase, syncWithMongo]
+  );
 
   // 6. Logout
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const sb = supabase || getSupabase(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+    if (sb) {
+      await sb.auth.signOut().catch(() => {});
+    }
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setToken(null);
     setUser(null);
-  }, []);
+  }, [supabase]);
 
   // 7. Favorite pandals management
   const toggleFavoritePandal = useCallback((pandal) => {
@@ -220,11 +297,14 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
-  const isFavoritePandal = useCallback((pandal) => {
-    if (!pandal) return false;
-    const pandalId = pandal.id || pandal._id || pandal.name;
-    return favorites.some((p) => (p.id || p._id || p.name) === pandalId);
-  }, [favorites]);
+  const isFavoritePandal = useCallback(
+    (pandal) => {
+      if (!pandal) return false;
+      const pandalId = pandal.id || pandal._id || pandal.name;
+      return favorites.some((p) => (p.id || p._id || p.name) === pandalId);
+    },
+    [favorites]
+  );
 
   // 8. Saved routes management
   const saveTrip = useCallback((trip) => {
@@ -253,28 +333,14 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
-  // 9. Initialize Google Identity Services Script
-  useEffect(() => {
-    if (!googleClientId) return;
-    if (document.getElementById('google-client-script')) return;
-
-    const script = document.createElement('script');
-    script.id = 'google-client-script';
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-  }, [googleClientId]);
-
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
         loading,
-        isAuthenticated: Boolean(user && token),
-        googleClientId,
-        loginWithGoogleToken,
+        isAuthenticated: Boolean(user),
+        loginWithGoogle,
         loginWithEmail,
         registerWithEmail,
         logout,
