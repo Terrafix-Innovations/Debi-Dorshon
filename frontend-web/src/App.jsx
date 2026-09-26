@@ -226,38 +226,6 @@ export default function App() {
     }
   };
 
-  // Select Recommendation from Modal
-  const handleSelectRecommendation = async (rec) => {
-    const origQ = rec.originName || rec.origin?.name;
-    const destQ = rec.destinationName || rec.destination?.name;
-    if (origQ && destQ) {
-      const cleanUrl = (apiBaseUrl || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
-      try {
-        const [origRes, destRes] = await Promise.all([
-          fetch(`${cleanUrl}/api/v1/route/autocomplete?q=${encodeURIComponent(origQ)}&limit=1`),
-          fetch(`${cleanUrl}/api/v1/route/autocomplete?q=${encodeURIComponent(destQ)}&limit=1`),
-        ]);
-        const [origList, destList] = await Promise.all([origRes.json(), destRes.json()]);
-        if (origList?.[0] && destList?.[0]) {
-          setOrigin({
-            latitude: origList[0].latitude,
-            longitude: origList[0].longitude,
-            name: origList[0].title,
-          });
-          setDestination({
-            latitude: destList[0].latitude,
-            longitude: destList[0].longitude,
-            name: destList[0].title,
-            cluster: destList[0].subtitle,
-          });
-        }
-      } catch (err) {
-        console.warn('Failed to resolve recommendation live coordinates:', err);
-      }
-      resetRoute();
-      setActiveTab('trips');
-    }
-  };
 
   // Load Saved Trip from Profile
   const handleLoadSavedTrip = (trip) => {
@@ -433,7 +401,6 @@ export default function App() {
     <InfoModals
       activeModal={activeModal}
       onClose={() => setActiveModal(null)}
-      onSelectRecommendation={handleSelectRecommendation}
     />
   </>
   );

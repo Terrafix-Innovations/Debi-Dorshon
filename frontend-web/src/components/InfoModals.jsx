@@ -1,9 +1,8 @@
 import React from 'react';
 
 export default function InfoModals({
-  activeModal, // 'recommendations' | 'about' | 'contact' | 'privacy' | 'redeem' | null
+  activeModal, // 'about' | 'contact' | 'privacy' | null
   onClose,
-  onSelectRecommendation,
 }) {
   if (!activeModal) return null;
 
@@ -30,92 +29,6 @@ export default function InfoModals({
           </svg>
         </button>
 
-        {/* 1. RECOMMENDATIONS MODAL */}
-        {activeModal === 'recommendations' && (
-          <div>
-            <div className="mb-4">
-              <span className="text-2xl">🌟</span>
-              <h2 className="text-xl font-extrabold text-[#8E1B1B] font-serif mt-1">
-                Curated Puja Recommendations
-              </h2>
-              <p className="text-xs text-[#765C51] mt-0.5">
-                Handpicked itineraries & circuits for Kolkata Durga Puja 2026
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                {
-                  id: 'north_heritage',
-                  title: 'Must Visit North Kolkata Circuit',
-                  desc: 'Sovabazar Rajbari, Bagbazar Sarbojanin, Ahiritola, Kumartuli Park',
-                  tag: 'Heritage & Crowd Favorite',
-                  icon: '🔥',
-                  originName: 'Sovabazar Metro Station',
-                  destinationName: 'Bagbazar Sarbojanin',
-                },
-                {
-                  id: 'south_mega',
-                  title: 'South Kolkata Mega Pandals',
-                  desc: 'Sree Bhumi, Ekdalia Evergreen, Singhi Park, Suruchi Sangha',
-                  tag: 'Lighting & Theme Masterpieces',
-                  icon: '⭐',
-                  originName: 'Rabindra Sarobar Metro',
-                  destinationName: 'Ekdalia Evergreen',
-                },
-                {
-                  id: 'night_hopping',
-                  title: 'Best Night Time Hopping (12 AM - 4 AM)',
-                  desc: 'Chetla Agrani, Mudiali, Badamtala Ashar Sangha, Deshapriya Park',
-                  tag: 'Low Traffic & Cool Breeze',
-                  icon: '🌙',
-                  originName: 'Kalighat Metro Station',
-                  destinationName: 'Chetla Agrani',
-                },
-                {
-                  id: 'food_hubs',
-                  title: 'Puja Special Street Food Hubs',
-                  desc: 'Deckers Lane, Park Street, Hatibagan & College Street',
-                  tag: 'Kolkata Delicacies',
-                  icon: '🍢',
-                  originName: 'Park Street Metro Station',
-                  destinationName: 'College Square',
-                },
-              ].map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 rounded-2xl bg-[#FFFDF8] border border-[#E5D2A8] hover:border-[#8E1B1B]/40 shadow-sm transition-all"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-xl">{item.icon}</span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#D8A52B]/20 text-[#8E1B1B] text-[10.5px] font-extrabold">
-                      {item.tag}
-                    </span>
-                  </div>
-                  <h3 className="font-extrabold text-[14.5px] text-[#3D241B]">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-[#765C51] mt-1 leading-relaxed">
-                    {item.desc}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onSelectRecommendation?.(item);
-                    }}
-                    className="mt-3 w-full h-9 rounded-xl bg-[#8E1B1B] hover:bg-[#771313] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
-                  >
-                    <span>Explore Route</span>
-                    <span>→</span>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 2. ABOUT US MODAL */}
         {activeModal === 'about' && (
           <div className="text-center">
             <span className="text-4xl">🪷</span>
@@ -171,20 +84,15 @@ export default function InfoModals({
 
             <div className="mt-6 space-y-3">
               <a
-                href="mailto:support@debidorshon.com"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=debidorshonapp@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full h-12 rounded-2xl bg-[#8E1B1B] hover:bg-[#771313] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
               >
                 <span>✉️</span>
-                <span>support@debidorshon.com</span>
+                <span>debidorshonapp@gmail.com</span>
               </a>
 
-              <a
-                href="tel:+919876543210"
-                className="w-full h-12 rounded-2xl bg-[#3D241B] hover:bg-[#281812] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
-              >
-                <span>📞</span>
-                <span>+91 98765 43210 (Puja Helpline)</span>
-              </a>
             </div>
           </div>
         )}
@@ -233,30 +141,7 @@ export default function InfoModals({
           </div>
         )}
 
-        {/* 5. REDEEM POINTS MODAL */}
-        {activeModal === 'redeem' && (
-          <div className="text-center">
-            {/* Points Summary Badge */}
-            <div className="rounded-3xl bg-gradient-to-r from-[#8E1B1B] to-[#771313] p-6 text-white shadow-xl mb-4">
-              <span className="text-3xl">🎟️</span>
-              <div className="text-4xl font-black mt-2">164</div>
-              <div className="text-xs font-bold text-[#F4D388] mt-1 tracking-wider uppercase">
-                Available Redeem Points
-              </div>
-            </div>
 
-            {/* Wireframe Banner: COMING SOON... */}
-            <div className="p-6 rounded-3xl bg-[#FAF5ED] border-2 border-dashed border-[#D8A52B] text-center">
-              <span className="text-3xl">⏳</span>
-              <h3 className="text-lg font-black text-[#8E1B1B] tracking-widest mt-2">
-                COMING SOON...
-              </h3>
-              <p className="text-xs text-[#564338] leading-relaxed mt-2 max-w-sm mx-auto">
-                Earn points on every Pandal hopping trip & redeem exciting Durga Puja food passes, VIP fast-track tickets & travel vouchers!
-              </p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

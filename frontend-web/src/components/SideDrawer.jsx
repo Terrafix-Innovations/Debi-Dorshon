@@ -158,31 +158,7 @@ export default function SideDrawer({
         onNavigate('navigation');
       },
     },
-    {
-      label: 'Recommendations',
-      icon: (
-        <svg className="w-5 h-5 text-[#7A1614]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-      ),
-      action: () => {
-        onClose();
-        onOpenModal('recommendations');
-      },
-    },
-    {
-      label: 'Redeem Points',
-      icon: (
-        <svg className="w-5 h-5 text-[#7A1614]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="16" rx="2" />
-          <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-      ),
-      action: () => {
-        onClose();
-        onOpenModal('redeem');
-      },
-    },
+
     {
       label: 'Contact Us',
       icon: (
