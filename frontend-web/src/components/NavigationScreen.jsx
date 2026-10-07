@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
+import Supercluster from 'supercluster';
 import { useAuth } from '../context/AuthContext';
-import { getPandalPointerSvg } from '../utils/mapPointers';
+import { getPandalPointerSvg, getClusterPointerSvg } from '../utils/mapPointers';
 
 const KOLKATA_CENTER = [88.3639, 22.5726]; // [lng, lat] for MapLibre
 const OPENFREEMAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
+
+let globalPandalsCache = null;
+let globalPandalsPromise = null;
 
 export default function NavigationScreen({
   apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
@@ -20,7 +24,129 @@ export default function NavigationScreen({
 
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
-  const markersRef = useRef([]);
+  const markersRef = useRef({});
+
+  const superclusterRef = useRef(new Supercluster({ radius: 60, maxZoom: 14 }));
+  
+  const selectedPandalRef = useRef(selectedPandal);
+  useEffect(() => {
+    selectedPandalRef.current = selectedPandal;
+  }, [selectedPandal]);
+
+  const is3DModeRef = useRef(is3DMode);
+  useEffect(() => {
+    is3DModeRef.current = is3DMode;
+  }, [is3DMode]);
+
+  const updateMarkersRef = useRef(() => {});
+
+  updateMarkersRef.current = () => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    const bounds = map.getBounds();
+    // In case map bounds are not valid yet
+    if (!bounds) return;
+    
+    const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+    const zoom = Math.floor(map.getZoom());
+
+    const clusters = superclusterRef.current.getClusters(bbox, zoom);
+    const newMarkersMap = {};
+
+    clusters.forEach((cluster) => {
+      const [lng, lat] = cluster.geometry.coordinates;
+      const isCluster = cluster.properties.cluster;
+      const id = isCluster ? `cluster-${cluster.properties.cluster_id}` : `point-${cluster.properties.pandalId}`;
+      newMarkersMap[id] = cluster;
+    });
+
+    // Remove old markers that are not in the new list
+    Object.keys(markersRef.current).forEach((id) => {
+      if (!newMarkersMap[id]) {
+        markersRef.current[id].marker.remove();
+        delete markersRef.current[id];
+      }
+    });
+
+    // Add or update markers
+    Object.keys(newMarkersMap).forEach((id) => {
+      const cluster = newMarkersMap[id];
+      const [lng, lat] = cluster.geometry.coordinates;
+      const isCluster = cluster.properties.cluster;
+
+      if (!markersRef.current[id]) {
+        // Create new marker
+        const el = document.createElement('div');
+
+        if (isCluster) {
+          const count = cluster.properties.point_count;
+          el.className = 'cursor-pointer z-20 flex items-center justify-center transition-all hover:scale-110';
+          el.innerHTML = getClusterPointerSvg(count);
+
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const expansionZoom = superclusterRef.current.getClusterExpansionZoom(cluster.properties.cluster_id);
+            map.flyTo({
+              center: [lng, lat],
+              zoom: expansionZoom,
+              essential: true,
+            });
+          });
+        } else {
+          const pandal = cluster.properties.pandal;
+          const isSelected =
+            selectedPandalRef.current &&
+            (selectedPandalRef.current.id || selectedPandalRef.current._id) === (pandal.id || pandal._id);
+          
+          el.className = `vector-pin-container cursor-pointer ${isSelected ? 'active-pin z-30' : 'z-10'}`;
+          el.innerHTML = getPandalPointerSvg(isSelected);
+
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setSelectedPandal(pandal);
+            map.flyTo({
+              center: [lng, lat],
+              zoom: 15.5,
+              pitch: is3DModeRef.current ? 45 : 0,
+              duration: 800,
+              essential: true,
+            });
+          });
+        }
+
+        const marker = new maplibregl.Marker({ element: el, anchor: isCluster ? 'center' : 'bottom' })
+          .setLngLat([lng, lat])
+          .addTo(map);
+
+        const pandalId = isCluster ? null : (cluster.properties.pandal.id || cluster.properties.pandal._id);
+        const isSelected = !isCluster && (selectedPandalRef.current && (selectedPandalRef.current.id || selectedPandalRef.current._id) === pandalId);
+
+        markersRef.current[id] = { 
+          marker, 
+          el, 
+          isCluster, 
+          pandal: cluster.properties.pandal, 
+          isSelected 
+        };
+      } else {
+        // Marker exists, update state if it's a point
+        if (!isCluster) {
+          const pandal = cluster.properties.pandal;
+          const isSelected =
+            selectedPandalRef.current &&
+            (selectedPandalRef.current.id || selectedPandalRef.current._id) === (pandal.id || pandal._id);
+          
+          const item = markersRef.current[id];
+          if (item.isSelected !== isSelected) {
+            item.el.className = `vector-pin-container cursor-pointer ${isSelected ? 'active-pin z-30' : 'z-10'}`;
+            item.el.innerHTML = getPandalPointerSvg(isSelected);
+            item.isSelected = isSelected;
+          }
+        }
+      }
+    });
+  };
 
   // Auto-focus target pandal when redirected from Metro / Train or other screens
   useEffect(() => {
@@ -44,17 +170,25 @@ export default function NavigationScreen({
   useEffect(() => {
     let isSubscribed = true;
     async function loadPandals() {
+      if (globalPandalsCache) {
+        setPandals(globalPandalsCache);
+        if (isSubscribed) setLoading(false);
+        return;
+      }
       try {
-        const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
-        const res = await fetch(`${cleanBase}/api/v1/pandals/?limit=300`);
-        if (res.ok) {
-          const data = await res.json();
-          if (isSubscribed) {
-            setPandals(Array.isArray(data) ? data : data.pandals || []);
-          }
+        if (!globalPandalsPromise) {
+          const cleanBase = (apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'https://debi-dorshon-backend.vercel.app').trim().replace(/\/+$/, '');
+          globalPandalsPromise = fetch(`${cleanBase}/api/v1/pandals/?limit=300`).then(res => res.json());
+        }
+        const data = await globalPandalsPromise;
+        const result = Array.isArray(data) ? data : data.pandals || [];
+        globalPandalsCache = result;
+        if (isSubscribed) {
+          setPandals(result);
         }
       } catch (err) {
         console.warn('Failed to load pandals for navigation map:', err);
+        globalPandalsPromise = null; // Reset on error to allow retry
       } finally {
         if (isSubscribed) setLoading(false);
       }
@@ -160,10 +294,15 @@ export default function NavigationScreen({
 
     const resizeObserver = new ResizeObserver(() => {
       map.resize();
+      if (updateMarkersRef.current) updateMarkersRef.current();
     });
     if (mapContainerRef.current) {
       resizeObserver.observe(mapContainerRef.current);
     }
+    
+    map.on('move', () => {
+      if (updateMarkersRef.current) updateMarkersRef.current();
+    });
 
     return () => {
       resizeObserver.disconnect();
@@ -174,64 +313,37 @@ export default function NavigationScreen({
     };
   }, []);
 
-  // Render markers for all mappable pandals
+  // Load data into supercluster and trigger initial render
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!map) return;
-
-    markersRef.current.forEach((m) => m.remove());
-    markersRef.current = [];
-
-    mappablePandals.forEach((pandal, idx) => {
-      const lat = pandal.location?.latitude ?? pandal.lat;
-      const lng = pandal.location?.longitude ?? pandal.lng;
-      if (!lat || !lng) return;
-
-      const isSelected = selectedPandal && (selectedPandal.id || selectedPandal._id) === (pandal.id || pandal._id);
-      const number = idx + 1;
-
-      const el = document.createElement('div');
-      el.className = `vector-pin-container cursor-pointer ${isSelected ? 'active-pin z-30' : 'z-10'}`;
-      el.innerHTML = getPandalPointerSvg(isSelected);
-
-      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
-        .setLngLat([lng, lat])
-        .addTo(map);
-
-      marker.pandal = pandal;
-      marker.number = number;
-
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setSelectedPandal(pandal);
-        map.flyTo({
-          center: [lng, lat],
-          zoom: 15,
-          pitch: is3DMode ? 45 : 0,
-          duration: 800,
-          essential: true,
-        });
-      });
-
-      markersRef.current.push(marker);
+    const points = mappablePandals.map((p) => {
+      const lat = p.location?.latitude ?? p.lat;
+      const lng = p.location?.longitude ?? p.lng;
+      return {
+        type: 'Feature',
+        properties: {
+          cluster: false,
+          pandalId: p.id || p._id,
+          pandal: p,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [lng, lat],
+        },
+      };
     });
+    
+    superclusterRef.current.load(points);
+    if (mapInstanceRef.current) {
+      updateMarkersRef.current();
+    }
   }, [mappablePandals]);
 
-  // Update marker selection state dynamically without re-creating markers
+  // Update marker selection state dynamically when selectedPandal changes
   useEffect(() => {
-    markersRef.current.forEach((m) => {
-      const el = m.getElement();
-      if (!el) return;
-      const isSelected = selectedPandal && (selectedPandal.id || selectedPandal._id) === (m.pandal?.id || m.pandal?._id);
-      el.innerHTML = getPandalPointerSvg(isSelected);
-      if (isSelected) {
-        el.className = 'vector-pin-container cursor-pointer active-pin z-30';
-      } else {
-        el.className = 'vector-pin-container cursor-pointer z-10';
-      }
-    });
+    if (mapInstanceRef.current) {
+      updateMarkersRef.current();
+    }
   }, [selectedPandal]);
-
   // If user searches and there are results, fit map bounds
   useEffect(() => {
     const map = mapInstanceRef.current;

@@ -6,7 +6,7 @@ Acts like Express routes (e.g. `router.get('/', ...)`).
 """
 
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Response
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
@@ -27,6 +27,7 @@ def get_pandal_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> Pand
     summary="Get all pandals with optional search and filters"
 )
 async def list_pandals(
+    response: Response,
     region: Optional[str] = Query(None, description="Filter by region (e.g., North, South)"),
     cluster: Optional[str] = Query(None, description="Filter by cluster (e.g., Shyambazar)"),
     search: Optional[str] = Query(None, description="Search pandal by name"),
@@ -35,6 +36,8 @@ async def list_pandals(
     service: PandalService = Depends(get_pandal_service)
 ):
     """Retrieve list of Durga Puja pandals."""
+    # Cache publicly for 1 hour to reduce backend latency
+    response.headers["Cache-Control"] = "public, max-age=3600"
     return await service.get_all_pandals(
         region=region,
         cluster=cluster,

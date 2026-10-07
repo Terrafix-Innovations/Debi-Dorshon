@@ -76,3 +76,34 @@ export function getDestPointerSvg() {
     </div>
   `;
 }
+
+export function getClusterPointerSvg(count) {
+  const numStr = String(count);
+  const fontSize = numStr.length > 2 ? 26 : numStr.length > 1 ? 28 : 34;
+  const yPos = numStr.length > 2 ? 58 : 59;
+  
+  // Scale the entire SVG depending on how many points
+  const scale = count < 10 ? 0.7 : count < 50 ? 0.85 : 1;
+  const size = Math.round(96 * scale);
+
+  return `
+    <div class="vector-cluster-wrapper cursor-pointer transition-all duration-300 hover:scale-110 z-20 flex items-center justify-center filter drop-shadow-md" style="width: ${size}px; height: ${size}px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 96 96">
+        <defs>
+          <linearGradient id="cluster-bg-${count}" x1="18" y1="8" x2="78" y2="88" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFB52E"/>
+            <stop offset=".52" stop-color="#FF6B2C"/>
+            <stop offset="1" stop-color="#F33D4B"/>
+          </linearGradient>
+          <filter id="cluster-shadow-${count}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/>
+          </filter>
+        </defs>
+        <circle cx="48" cy="48" r="43" fill="#FF6B3D" opacity=".16"/>
+        <circle cx="48" cy="48" r="38" fill="url(#cluster-bg-${count})" filter="url(#cluster-shadow-${count})"/>
+        <circle cx="48" cy="48" r="34" fill="#18202B" stroke="#FFF4E8" stroke-width="3"/>
+        <text x="48" y="${yPos}" text-anchor="middle" font-family="'Plus Jakarta Sans',Inter,Arial,sans-serif" font-size="${fontSize}" font-weight="800" fill="#FFF4E8">${numStr}</text>
+      </svg>
+    </div>
+  `;
+}

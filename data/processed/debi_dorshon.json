@@ -1464,22 +1464,6 @@
       "line": "Blue"
     },
     "nearest_stations": [],
-    "nearest_ferry": null
-  },
-  {
-    "name": "Haridevpur Ajeya Sanghati",
-    "region": "South",
-    "cluster": "Tollygunge-Haridevpur-Patuli",
-    "location": {
-      "latitude": 22.480998489240214,
-      "longitude": 88.33773748649287
-    },
-    "nearest_metro": {
-      "name": "Netaji",
-      "line": "Blue"
-    },
-    "nearest_stations": [],
-    "nearest_ferry": null
   },
   {
     "name": "41 Pally",
