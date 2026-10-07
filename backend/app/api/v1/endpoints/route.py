@@ -1,5 +1,8 @@
 from typing import Any, Dict, List, Optional
 import re
+import uuid
+import json
+from pathlib import Path
 import httpx
 from fastapi import APIRouter, Depends, Query, Request, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -79,6 +82,10 @@ def classify_place(name: str, display_name: str, osm_value: str = "", osm_type: 
     return "place", "📍 Place"
 
 
+_METRO_DATASET_CACHE = None
+_PANDAL_DATASET_CACHE = None
+
+
 @router.get(
     "/autocomplete",
     summary="Search places and pandals live via OpenStreetMap and MongoDB",
@@ -91,10 +98,12 @@ async def autocomplete_places(
     db: AsyncIOMotorDatabase = Depends(get_database),
 ) -> List[Dict[str, Any]]:
     """
-    Live place & transit search proxy like Google Maps:
-    1. Pandals: Fetched from the MongoDB Durga Puja database.
-    2. All other locations (Metro stations, Train stations, Bus stands, Ferry ghats,
-       Landmarks, Streets, Addresses): Live fetched from OpenStreetMap (Photon & Nominatim).
+    High-precision Kolkata autocomplete search:
+    1. Kolkata Metro Stations & Transit Terminals (instant local match)
+    2. Durga Puja Pandals (MongoDB & local repository dataset)
+    3. Ola Maps Places Autocomplete (if key active)
+    4. Bounded OpenStreetMap Nominatim (strictly bounded to Kolkata metro region, deduplicated)
+    5. Photon (as fallback, strictly deduplicated without spam)
     """
     trimmed = q.strip()
     if not trimmed:
@@ -107,43 +116,83 @@ async def autocomplete_places(
 
     results: List[Dict[str, Any]] = []
     seen_coords = set()
+    seen_titles = set()
+    q_low = trimmed.lower()
 
-    # Determine if query is transit-oriented
-    transit_keywords = ["metro", "station", "railway", "train", "terminus", "terminal", "airport", "ghat", "bus"]
-    is_transit_search = any(w in trimmed.lower() for w in transit_keywords)
-
-    # 1. Search MongoDB for Durga Puja Pandals (unless explicitly a transit-only search)
-    if not is_transit_search and db is not None:
+    # 1. Kolkata Metro Stations
+    if db is not None:
         try:
-            cursor = db[settings.PANDAL_COLLECTION_NAME].find(
-                {"name": {"$regex": re.escape(trimmed), "$options": "i"}}
-            ).limit(limit)
+            cursor = db[settings.METRO_COLLECTION_NAME].find({
+                "$or": [
+                    {"name": {"$regex": re.escape(trimmed), "$options": "i"}},
+                    {"aliases": {"$regex": re.escape(trimmed), "$options": "i"}}
+                ]
+            }).limit(limit)
+            async for station in cursor:
+                s_name = station.get("name", "")
+                loc = station.get("location") or {}
+                lat = loc.get("latitude")
+                lng = loc.get("longitude")
+                if lat and lng:
+                    title = f"{s_name} Metro Station"
+                    title_key = title.lower()
+                    coord_key = (round(float(lat), 4), round(float(lng), 4))
+                    if title_key not in seen_titles and coord_key not in seen_coords:
+                        seen_titles.add(title_key)
+                        seen_coords.add(coord_key)
+                        line_name = station.get("line", "Blue")
+                        results.append({
+                            "id": f"metro_{s_name.replace(' ', '_')}",
+                            "title": title,
+                            "subtitle": f"{line_name} Line • Kolkata Metro",
+                            "latitude": float(lat),
+                            "longitude": float(lng),
+                            "category": "metro",
+                            "badge": "🚇 Metro",
+                        })
+                        if len(results) >= limit:
+                            break
+        except Exception as e:
+            print(f"Error querying metro stations from MongoDB: {e}")
+
+    # 2. Durga Puja Pandals
+    if len(results) < limit and db is not None:
+        try:
+            cursor = db[settings.PANDAL_COLLECTION_NAME].find({
+                "$or": [
+                    {"name": {"$regex": re.escape(trimmed), "$options": "i"}},
+                    {"cluster": {"$regex": re.escape(trimmed), "$options": "i"}},
+                ]
+            }).limit(limit - len(results) + 2)
             async for doc in cursor:
                 loc = doc.get("location") or {}
                 lat = loc.get("latitude")
                 lng = loc.get("longitude")
                 if lat and lng:
-                    key = (round(lat, 4), round(lng, 4))
-                    if key not in seen_coords:
-                        seen_coords.add(key)
+                    title = doc.get("name", "")
+                    title_key = title.lower()
+                    coord_key = (round(float(lat), 4), round(float(lng), 4))
+                    if title_key not in seen_titles and coord_key not in seen_coords:
+                        seen_titles.add(title_key)
+                        seen_coords.add(coord_key)
                         region = doc.get("region") or "Kolkata"
                         cluster = doc.get("cluster") or ""
-                        sub_parts = [region]
-                        if cluster:
-                            sub_parts.append(cluster)
+                        sub = f"{region} • {cluster}" if cluster else region
                         results.append({
                             "id": str(doc.get("_id")),
-                            "title": doc.get("name"),
-                            "subtitle": " • ".join(sub_parts),
+                            "title": title,
+                            "subtitle": sub,
                             "latitude": float(lat),
                             "longitude": float(lng),
                             "category": "pandal",
                             "badge": "🛕 Pandal",
                         })
-        except Exception:
-            pass
+                        if len(results) >= limit:
+                            break
+        except Exception as e:
+            print(f"Error querying pandals from MongoDB: {e}")
 
-    # 2. Live fetch ALL other locations from OpenStreetMap (Photon & Nominatim)
+    # 3. Live fetch locations from Ola Maps (if active) and Bounded OpenStreetMap
     if len(results) < limit:
         client = get_http_client()
         browser_headers = {
@@ -155,40 +204,159 @@ async def autocomplete_places(
             "Accept": "application/json",
         }
 
-        # A. OpenStreetMap Photon API (instant autocomplete biased to Kolkata coordinates)
-        try:
-            photon_url = "https://photon.komoot.io/api/"
-            photon_params = {
-                "q": trimmed,
-                "lat": "22.5726",
-                "lon": "88.3639",
-                "limit": str(min(10, limit - len(results) + 4)),
-            }
-            res_ph = await client.get(photon_url, params=photon_params, headers=browser_headers, timeout=3.0)
-            if res_ph.status_code == 200:
-                features = res_ph.json().get("features", [])
-                for f in features:
-                    coords = f.get("geometry", {}).get("coordinates", [])
-                    if len(coords) == 2:
-                        lng, lat = float(coords[0]), float(coords[1])
-                        key = (round(lat, 4), round(lng, 4))
-                        if key not in seen_coords:
+        # 3A. Ola Maps (if configured)
+        ola_key = settings.OLA_MAPS_API_KEY
+        if ola_key and len(results) < limit:
+            try:
+                ola_url = "https://api.olamaps.io/places/v1/autocomplete"
+                ola_params = {
+                    "input": trimmed,
+                    "api_key": ola_key,
+                    "location": "22.5726,88.3639",
+                    "radius": "50000",
+                }
+                ola_headers = {
+                    "X-Request-Id": str(uuid.uuid4()),
+                    "User-Agent": "DebiDorshon/1.0",
+                }
+                res_ola = await client.get(ola_url, params=ola_params, headers=ola_headers, timeout=2.5)
+                if res_ola.status_code == 200:
+                    ola_data = res_ola.json()
+                    preds = ola_data.get("predictions", [])
+                    for pred in preds:
+                        sf = pred.get("structured_formatting") or {}
+                        main_t = sf.get("main_text") or pred.get("description", "")
+                        sec_t = sf.get("secondary_text") or "Kolkata, West Bengal"
+                        place_id = pred.get("place_id")
+
+                        lat, lng = None, None
+                        geom = pred.get("geometry", {})
+                        if geom and "location" in geom:
+                            lat = geom["location"].get("lat")
+                            lng = geom["location"].get("lng")
+                        elif place_id:
+                            try:
+                                det_url = "https://api.olamaps.io/places/v1/details"
+                                det_res = await client.get(
+                                    det_url,
+                                    params={"place_id": place_id, "api_key": ola_key},
+                                    headers=ola_headers,
+                                    timeout=1.5,
+                                )
+                                if det_res.status_code == 200:
+                                    det_geom = det_res.json().get("result", {}).get("geometry", {}).get("location", {})
+                                    lat = det_geom.get("lat")
+                                    lng = det_geom.get("lng")
+                            except Exception:
+                                pass
+
+                        if lat is not None and lng is not None:
+                            key = (round(float(lat), 4), round(float(lng), 4))
+                            title_key = main_t.lower()
+                            if key not in seen_coords and title_key not in seen_titles:
+                                seen_coords.add(key)
+                                seen_titles.add(title_key)
+                                cat, badge = classify_place(main_t, sec_t)
+                                results.append({
+                                    "id": f"ola_{place_id or len(results)}",
+                                    "title": main_t,
+                                    "subtitle": sec_t,
+                                    "latitude": float(lat),
+                                    "longitude": float(lng),
+                                    "category": cat,
+                                    "badge": badge,
+                                })
+                                if len(results) >= limit:
+                                    break
+            except Exception:
+                pass
+
+        # 3B. Bounded OpenStreetMap Nominatim (Precise Kolkata locations, temples, areas, landmarks)
+        if len(results) < limit:
+            try:
+                nom_params = {
+                    "q": trimmed,
+                    "format": "jsonv2",
+                    "addressdetails": "1",
+                    "extratags": "1",
+                    "countrycodes": "in",
+                    "viewbox": "88.20,22.75,88.55,22.40",
+                    "bounded": "1",
+                    "limit": str(limit - len(results) + 3),
+                }
+                res_nom = await client.get(
+                    "https://nominatim.openstreetmap.org/search",
+                    params=nom_params,
+                    headers=nom_headers,
+                    timeout=3.0,
+                )
+                if res_nom.status_code == 200:
+                    for item in res_nom.json():
+                        lat_str = item.get("lat")
+                        lon_str = item.get("lon")
+                        if lat_str and lon_str:
+                            lat, lng = float(lat_str), float(lon_str)
+                            coord_key = (round(lat, 4), round(lng, 4))
+                            raw_display = item.get("display_name", "")
+                            parts = [p.strip() for p in raw_display.split(",") if p.strip()]
+                            name_val = parts[0] if parts else trimmed
+                            title_key = name_val.lower()
+
+                            if coord_key not in seen_coords and title_key not in seen_titles:
+                                seen_coords.add(coord_key)
+                                seen_titles.add(title_key)
+                                sub_parts = [p for p in parts[1:3] if p and not p.isdigit() and len(p) > 2]
+                                sub_clean = ", ".join(sub_parts) or "Kolkata, West Bengal"
+                                osm_type = item.get("type", "")
+                                category, badge = classify_place(name_val, sub_clean, osm_type, item.get("class", ""))
+                                results.append({
+                                    "id": f"nom_{item.get('place_id', len(results))}",
+                                    "title": name_val,
+                                    "subtitle": sub_clean,
+                                    "latitude": lat,
+                                    "longitude": lng,
+                                    "category": category,
+                                    "badge": badge,
+                                })
+                                if len(results) >= limit:
+                                    break
+            except Exception:
+                pass
+
+        # 3C. Photon API (Only as fallback, with strict deduplication to prevent repeated dummy items)
+        if len(results) < limit:
+            try:
+                photon_url = "https://photon.komoot.io/api/"
+                photon_params = {
+                    "q": trimmed,
+                    "lat": "22.5726",
+                    "lon": "88.3639",
+                    "limit": str(min(8, limit - len(results) + 4)),
+                }
+                res_ph = await client.get(photon_url, params=photon_params, headers=browser_headers, timeout=2.5)
+                if res_ph.status_code == 200:
+                    features = res_ph.json().get("features", [])
+                    for f in features:
+                        coords = f.get("geometry", {}).get("coordinates", [])
+                        if len(coords) == 2:
+                            lng, lat = float(coords[0]), float(coords[1])
+                            coord_key = (round(lat, 4), round(lng, 4))
                             props = f.get("properties", {})
-                            name_val = props.get("name") or props.get("street") or trimmed
-                            osm_val = str(props.get("osm_value") or "")
-                            osm_type = str(props.get("osm_type") or "")
+                            name_val = props.get("name") or props.get("street") or ""
+                            title_key = name_val.lower().strip()
 
-                            sub_parts = [
-                                props.get("district"),
-                                props.get("city"),
-                                props.get("state"),
-                            ]
-                            sub_clean = ", ".join([p for p in sub_parts if p]) or "Kolkata Region"
+                            # Discard untitled or duplicate features (like repeated 'Kali' dummy shrines)
+                            if not name_val or title_key in seen_titles or coord_key in seen_coords:
+                                continue
 
-                            category, badge = classify_place(name_val, sub_clean, osm_val, osm_type)
-                            seen_coords.add(key)
+                            sub_parts = [p for p in [props.get("district"), props.get("city"), props.get("state")] if p]
+                            sub_clean = ", ".join(sub_parts) or "Kolkata Region"
+
+                            category, badge = classify_place(name_val, sub_clean, str(props.get("osm_value") or ""), str(props.get("osm_type") or ""))
+                            seen_coords.add(coord_key)
+                            seen_titles.add(title_key)
                             results.append({
-                                "id": f"osm_ph_{props.get('osm_id', round(lat, 4))}",
+                                "id": f"osm_ph_{props.get('osm_id', len(results))}",
                                 "title": name_val,
                                 "subtitle": sub_clean,
                                 "latitude": lat,
@@ -198,54 +366,6 @@ async def autocomplete_places(
                             })
                             if len(results) >= limit:
                                 break
-        except Exception:
-            pass
-
-        # B. OpenStreetMap Nominatim API (precise named stations, landmarks, airports, roads)
-        if len(results) < limit:
-            try:
-                nom_params = {
-                    "q": trimmed,
-                    "format": "jsonv2",
-                    "addressdetails": "1",
-                    "extratags": "1",
-                    "countrycodes": "in",
-                    "viewbox": "88.0,22.85,88.6,22.25",
-                    "bounded": "0",
-                    "limit": str(limit - len(results)),
-                }
-                res_nom = await client.get(
-                    "https://nominatim.openstreetmap.org/search",
-                    params=nom_params,
-                    headers=nom_headers,
-                    timeout=3.5,
-                )
-                if res_nom.status_code == 200:
-                    for item in res_nom.json():
-                        lat_str = item.get("lat")
-                        lon_str = item.get("lon")
-                        if lat_str and lon_str:
-                            lat, lng = float(lat_str), float(lon_str)
-                            key = (round(lat, 4), round(lng, 4))
-                            if key not in seen_coords:
-                                name_val = item.get("name") or item.get("display_name", "").split(",")[0]
-                                full_addr = item.get("display_name", "")
-                                osm_type = str(item.get("type") or "")
-                                osm_class = str(item.get("class") or "")
-
-                                category, badge = classify_place(name_val, full_addr, osm_type, osm_class)
-                                seen_coords.add(key)
-                                results.append({
-                                    "id": f"osm_nom_{item.get('place_id')}",
-                                    "title": name_val,
-                                    "subtitle": full_addr,
-                                    "latitude": lat,
-                                    "longitude": lng,
-                                    "category": category,
-                                    "badge": badge,
-                                })
-                                if len(results) >= limit:
-                                    break
             except Exception:
                 pass
 

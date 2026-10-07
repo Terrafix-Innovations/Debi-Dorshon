@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="80" viewBox="0 0 64 80">
+<defs><linearGradient id="p" x1="18" y1="8" x2="50" y2="60" gradientUnits="userSpaceOnUse"><stop stop-color="#FFB52E"/><stop offset=".55" stop-color="#FF6B2C"/><stop offset="1" stop-color="#F33D4B"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-opacity=".28"/></filter></defs>
+<ellipse cx="32" cy="72" rx="17" ry="4" fill="#FF6B3D" opacity=".25"/><path d="M32 3C16.54 3 4 15.54 4 31c0 20.2 28 44 28 44s28-23.8 28-44C60 15.54 47.46 3 32 3Z" fill="url(#p)" filter="url(#s)"/><circle cx="32" cy="30" r="17" fill="#18202B" stroke="#FFF4E8" stroke-width="3"/><text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="19" font-weight="700" fill="#FFF4E8">1</text>
+</svg>

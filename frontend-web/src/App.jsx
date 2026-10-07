@@ -8,7 +8,6 @@ import MetroTransitView from './components/MetroTransitView';
 import InfoModals from './components/InfoModals';
 import MapBackground from './components/MapBackground';
 import RoutePanel from './components/RoutePanel';
-import RouteSummaryChip from './components/RouteSummaryChip';
 import PandalCarousel from './components/PandalCarousel';
 import { useAuth } from './context/AuthContext';
 
@@ -323,16 +322,12 @@ export default function App() {
             onSwap={handleSwap}
             loading={loading}
             apiBaseUrl={apiBaseUrl}
+            hasRoute={hasRoute}
           />
 
-          {/* Dedicated Aesthetic Save Button & Compact Summary Bar (Floats right above bottom carousel, leaving map 100% visible) */}
+          {/* Dedicated Aesthetic Save Button (Floats right above bottom carousel, leaving map 100% visible) */}
           {hasRoute && (
-            <div className="pointer-events-none absolute inset-x-3 sm:inset-x-6 bottom-[204px] z-30 flex items-center justify-between">
-              {/* Sleek, mini Route Summary Pill */}
-              <div className="pointer-events-auto animate-fade-in">
-                <RouteSummaryChip distanceKm={distanceKm} pandalCount={itinerary.length} />
-              </div>
-
+            <div className="pointer-events-none absolute inset-x-3 sm:inset-x-6 bottom-[204px] z-30 flex items-center justify-end">
               {/* Dedicated Aesthetic Save Route Action Pill */}
               <div className="pointer-events-auto animate-fade-in">
                 <button

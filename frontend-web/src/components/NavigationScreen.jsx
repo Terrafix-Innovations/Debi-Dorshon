@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import L from 'leaflet';
+import * as maplibregl from 'maplibre-gl';
 import { useAuth } from '../context/AuthContext';
+import { getPandalPointerSvg } from '../utils/mapPointers';
 
-const KOLKATA_CENTER = [22.5726, 88.3639]; // [lat, lng] for Leaflet
+const KOLKATA_CENTER = [88.3639, 22.5726]; // [lng, lat] for MapLibre
+const OPENFREEMAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
 
 export default function NavigationScreen({
   apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
@@ -14,6 +16,7 @@ export default function NavigationScreen({
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPandal, setSelectedPandal] = useState(null);
+  const [is3DMode, setIs3DMode] = useState(true);
 
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -26,7 +29,13 @@ export default function NavigationScreen({
       const lat = targetPandal.location?.latitude ?? targetPandal.lat;
       const lng = targetPandal.location?.longitude ?? targetPandal.lng;
       if (mapInstanceRef.current && typeof lat === 'number' && typeof lng === 'number') {
-        mapInstanceRef.current.flyTo([lat, lng], 15.5, { duration: 0.8 });
+        mapInstanceRef.current.flyTo({
+          center: [lng, lat],
+          zoom: 15.5,
+          pitch: 45,
+          duration: 1000,
+          essential: true,
+        });
       }
     }
   }, [targetPandal]);
@@ -77,42 +86,80 @@ export default function NavigationScreen({
     });
   }, [filteredPandals]);
 
-  // Initialize Leaflet OpenStreetMap map (100% full screen)
+  // Toggle 3D perspective
+  const toggle3D = () => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    const next3D = !is3DMode;
+    setIs3DMode(next3D);
+    map.easeTo({
+      pitch: next3D ? 45 : 0,
+      duration: 800,
+    });
+  };
+
+  // Initialize MapLibre GL JS Map (100% full screen)
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    const map = L.map(mapContainerRef.current, {
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: OPENFREEMAP_STYLE,
       center: KOLKATA_CENTER,
       zoom: 12.2,
-      zoomControl: false,
+      pitch: 35,
+      bearing: 0,
       attributionControl: true,
     });
 
-    // Canonical OpenStreetMap raster tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      subdomains: ['a', 'b', 'c'],
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    if (targetPandal) {
-      const lat = targetPandal.location?.latitude ?? targetPandal.lat;
-      const lng = targetPandal.location?.longitude ?? targetPandal.lng;
-      if (typeof lat === 'number' && typeof lng === 'number') {
-        map.flyTo([lat, lng], 15.5, { duration: 0.8 });
+    map.on('load', () => {
+      // Add 3D building extrusions if available in style
+      try {
+        const layers = map.getStyle().layers || [];
+        let labelLayerId;
+        for (let i = 0; i < layers.length; i++) {
+          if (layers[i].type === 'symbol' && layers[i].layout && layers[i].layout['text-field']) {
+            labelLayerId = layers[i].id;
+            break;
+          }
+        }
+        if (map.getSource('openmaptiles') && !map.getLayer('3d-buildings')) {
+          map.addLayer(
+            {
+              id: '3d-buildings',
+              source: 'openmaptiles',
+              'source-layer': 'building',
+              type: 'fill-extrusion',
+              minzoom: 14,
+              paint: {
+                'fill-extrusion-color': '#e6decb',
+                'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, ['get', 'render_height']],
+                'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, ['get', 'render_min_height']],
+                'fill-extrusion-opacity': 0.65,
+              },
+            },
+            labelLayerId
+          );
+        }
+      } catch (err) {
+        console.warn('3D building extrusion not available in this style:', err);
       }
-    }
+
+      if (targetPandal) {
+        const lat = targetPandal.location?.latitude ?? targetPandal.lat;
+        const lng = targetPandal.location?.longitude ?? targetPandal.lng;
+        if (typeof lat === 'number' && typeof lng === 'number') {
+          map.flyTo({ center: [lng, lat], zoom: 15.5, pitch: 45, duration: 900 });
+        }
+      }
+    });
 
     mapInstanceRef.current = map;
 
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-
     const resizeObserver = new ResizeObserver(() => {
-      map.invalidateSize();
+      map.resize();
     });
     if (mapContainerRef.current) {
       resizeObserver.observe(mapContainerRef.current);
@@ -135,37 +182,55 @@ export default function NavigationScreen({
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    mappablePandals.forEach((pandal) => {
+    mappablePandals.forEach((pandal, idx) => {
       const lat = pandal.location?.latitude ?? pandal.lat;
       const lng = pandal.location?.longitude ?? pandal.lng;
       if (!lat || !lng) return;
 
       const isSelected = selectedPandal && (selectedPandal.id || selectedPandal._id) === (pandal.id || pandal._id);
+      const number = idx + 1;
 
-      const icon = L.divIcon({
-        html: `
-          <div class="navigation-pandal-marker cursor-pointer ${isSelected ? 'active-pin z-30' : 'z-10'}">
-            <div class="pin-pandal ${isSelected ? 'active-pin' : ''}">
-              <img src="/pandal_marker.png" alt="${pandal.name}" class="pin-pandal-img" />
-            </div>
-          </div>
-        `,
-        className: 'custom-pin-icon',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-      });
+      const el = document.createElement('div');
+      el.className = `vector-pin-container cursor-pointer ${isSelected ? 'active-pin z-30' : 'z-10'}`;
+      el.innerHTML = getPandalPointerSvg(isSelected);
 
-      const marker = L.marker([lat, lng], { icon }).addTo(map);
+      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+        .setLngLat([lng, lat])
+        .addTo(map);
 
-      marker.on('click', (e) => {
-        L.DomEvent.stopPropagation(e);
+      marker.pandal = pandal;
+      marker.number = number;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
         setSelectedPandal(pandal);
-        map.flyTo([lat, lng], 14.5, { duration: 0.6 });
+        map.flyTo({
+          center: [lng, lat],
+          zoom: 15,
+          pitch: is3DMode ? 45 : 0,
+          duration: 800,
+          essential: true,
+        });
       });
 
       markersRef.current.push(marker);
     });
-  }, [mappablePandals, selectedPandal]);
+  }, [mappablePandals]);
+
+  // Update marker selection state dynamically without re-creating markers
+  useEffect(() => {
+    markersRef.current.forEach((m) => {
+      const el = m.getElement();
+      if (!el) return;
+      const isSelected = selectedPandal && (selectedPandal.id || selectedPandal._id) === (m.pandal?.id || m.pandal?._id);
+      el.innerHTML = getPandalPointerSvg(isSelected);
+      if (isSelected) {
+        el.className = 'vector-pin-container cursor-pointer active-pin z-30';
+      } else {
+        el.className = 'vector-pin-container cursor-pointer z-10';
+      }
+    });
+  }, [selectedPandal]);
 
   // If user searches and there are results, fit map bounds
   useEffect(() => {
@@ -177,21 +242,24 @@ export default function NavigationScreen({
       const lat = p.location?.latitude ?? p.lat;
       const lng = p.location?.longitude ?? p.lng;
       setSelectedPandal(p);
-      map.flyTo([lat, lng], 15, { duration: 0.8 });
+      map.flyTo({ center: [lng, lat], zoom: 15.5, pitch: is3DMode ? 40 : 0, duration: 800 });
     } else if (mappablePandals.length > 1) {
-      const bounds = L.latLngBounds(
-        mappablePandals
-          .map((p) => [p.location?.latitude ?? p.lat, p.location?.longitude ?? p.lng])
-          .filter(([lat, lng]) => typeof lat === 'number' && typeof lng === 'number')
-      );
-      map.fitBounds(bounds, { padding: [80, 80], maxZoom: 15 });
+      const bounds = new maplibregl.LngLatBounds();
+      mappablePandals.forEach((p) => {
+        const lat = p.location?.latitude ?? p.lat;
+        const lng = p.location?.longitude ?? p.lng;
+        if (typeof lat === 'number' && typeof lng === 'number') {
+          bounds.extend([lng, lat]);
+        }
+      });
+      map.fitBounds(bounds, { padding: 90, maxZoom: 15, pitch: is3DMode ? 35 : 0, duration: 1000 });
     }
-  }, [searchQuery, mappablePandals]);
+  }, [searchQuery, mappablePandals, is3DMode]);
 
   return (
     <div className="relative h-full w-full flex flex-col overflow-hidden">
-      {/* Sleek Floating Search Bar Only (No extra banners or clutter) */}
-      <div className="absolute top-[82px] inset-x-3 sm:inset-x-6 z-20 pointer-events-none max-w-lg mx-auto">
+      {/* Sleek Floating Search Bar with Autocomplete Dropdown */}
+      <div className="absolute top-[82px] inset-x-3 sm:inset-x-6 z-40 pointer-events-none max-w-lg mx-auto flex flex-col gap-2">
         <div className="pointer-events-auto relative flex items-center bg-white/95 backdrop-blur-md rounded-2xl border border-[#E5D2A8] shadow-lg">
           <span className="absolute left-3.5 text-[#8A7B6E] text-sm">🔍</span>
           <input
@@ -210,11 +278,71 @@ export default function NavigationScreen({
             </button>
           )}
         </div>
+
+        {/* Autocomplete Dropdown */}
+        {searchQuery && (
+          <div className="pointer-events-auto bg-[#fffdf9] border border-[#ebdcc9] rounded-2xl shadow-xl max-h-64 overflow-y-auto divide-y divide-[#ebdcc9]/40 animate-fade-in">
+            {filteredPandals.length === 0 ? (
+              <div className="p-4 text-xs text-stone-500 font-medium text-center">No pandals found</div>
+            ) : (
+              filteredPandals.slice(0, 8).map((pandal, idx) => (
+                <div
+                  key={pandal.id || pandal._id || idx}
+                  onClick={() => {
+                    setSelectedPandal(pandal);
+                    setSearchQuery(''); // Clear search to show all pins, but keep focus on selected
+                    const map = mapInstanceRef.current;
+                    const lat = pandal.location?.latitude ?? pandal.lat;
+                    const lng = pandal.location?.longitude ?? pandal.lng;
+                    if (map && typeof lat === 'number' && typeof lng === 'number') {
+                      map.flyTo({ center: [lng, lat], zoom: 15.5, pitch: is3DMode ? 45 : 0, duration: 800 });
+                    }
+                  }}
+                  className="p-3 px-4 cursor-pointer transition-colors hover:bg-[#f5ede0] flex items-center justify-between gap-3 group"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#8E1B1B]/10 text-[#8E1B1B]">
+                        🛕 Pandal
+                      </span>
+                      <span className="font-bold text-[13px] text-[#2d1b18] truncate group-hover:text-[#8E1B1B] transition-colors">{pandal.name}</span>
+                    </div>
+                    <div className="text-[11px] text-[#765C51] truncate mt-1.5 font-medium flex items-center gap-1.5">
+                      <span>{pandal.cluster || pandal.region || 'Kolkata'}</span>
+                      {pandal.nearest_metro?.name && (
+                        <>
+                          <span className="text-stone-300">•</span>
+                          <span className="text-indigo-700">🚇 {pandal.nearest_metro.name}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       {/* The Whole Map (100% Full Screen View) */}
       <div className="relative flex-1 w-full h-full">
         <div ref={mapContainerRef} className="absolute inset-0 h-full w-full" />
+
+        {/* Floating 3D / 2D Perspective Toggle Button */}
+        <div className="absolute bottom-6 left-6 z-20 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggle3D}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-md backdrop-blur-md border ${
+              is3DMode
+                ? 'bg-[#903f00] text-white border-[#743300] shadow-amber-900/20'
+                : 'bg-white/90 text-stone-700 border-stone-200 hover:bg-stone-50'
+            }`}
+            title="Toggle 3D Buildings & Tilt"
+          >
+            <span>{is3DMode ? '🏙️ 3D View On' : '🗺️ 2D View'}</span>
+          </button>
+        </div>
 
         {/* 4. Selected Pandal Floating Card (Bottom above Tab Bar) */}
         {selectedPandal && (

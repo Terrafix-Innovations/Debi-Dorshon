@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     # Map Provider (defaults to OpenStreetMap)
     MAP_PROVIDER: str = "openstreetmap"
     MAPBOX_ACCESS_TOKEN: Optional[str] = None
+    OLA_MAPS_API_KEY: Optional[str] = None
 
     # Google OAuth 2.0 Credentials
     GOOGLE_CLIENT_ID: Optional[str] = None

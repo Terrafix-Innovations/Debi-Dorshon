@@ -59,25 +59,32 @@ export default function SearchInput({
 
       if (results.length === 0) {
         try {
-          const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(trimmed)}&lat=22.5726&lon=88.3639&limit=5`;
-          const phRes = await fetch(photonUrl);
-          if (phRes.ok) {
-            const phData = await phRes.json();
-            (phData.features || []).forEach((f, idx) => {
-              const p = f.properties || {};
-              const title = p.name || p.street || trimmed;
-              const sub = [p.district, p.city, p.state].filter(Boolean).join(', ');
-              results.push({
-                id: `photon_${idx}`,
-                title,
-                subtitle: sub || 'Kolkata Region',
-                latitude: f.geometry.coordinates[1],
-                longitude: f.geometry.coordinates[0],
-              });
+          const nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(trimmed)}&format=jsonv2&countrycodes=in&viewbox=88.20,22.75,88.55,22.40&bounded=1&limit=5`;
+          const nomRes = await fetch(nomUrl);
+          if (nomRes.ok) {
+            const nomData = await nomRes.json();
+            const seen = new Set();
+            (nomData || []).forEach((item, idx) => {
+              const raw = item.display_name || '';
+              const parts = raw.split(',').map((s) => s.trim()).filter(Boolean);
+              const title = parts[0] || trimmed;
+              const sub = parts.slice(1, 3).filter((s) => !/^\d+$/.test(s)).join(', ') || 'Kolkata, West Bengal';
+              const key = title.toLowerCase();
+              if (!seen.has(key) && item.lat && item.lon) {
+                seen.add(key);
+                results.push({
+                  id: `nom_client_${item.place_id || idx}`,
+                  title,
+                  subtitle: sub,
+                  latitude: parseFloat(item.lat),
+                  longitude: parseFloat(item.lon),
+                  badge: '📍 Area',
+                });
+              }
             });
           }
         } catch {
-          // both offline
+          // offline
         }
       }
 
