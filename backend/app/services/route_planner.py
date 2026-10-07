@@ -183,11 +183,9 @@ class RoutePlannerService:
             destination=(request.destination.latitude, request.destination.longitude),
         )
 
-        # 4. Limit to max_pandals if provided, otherwise return all pandals along route
-        if request.max_pandals is not None:
-            selected_candidates = ordered_candidates[: request.max_pandals]
-        else:
-            selected_candidates = ordered_candidates
+        # 4. Enforce a strict cap of 25 pandals maximum to avoid OSRM limits and Vercel timeouts
+        max_limit = min(request.max_pandals, 25) if request.max_pandals is not None else 25
+        selected_candidates = ordered_candidates[:max_limit]
 
         # 5. Generate Curated Google Maps-style Road Route from S -> 1 -> 2 -> ... -> E
         final_coordinates = coordinates
