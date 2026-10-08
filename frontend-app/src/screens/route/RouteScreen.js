@@ -229,7 +229,7 @@ export default function RouteScreen({ navigation }) {
             )}
           </View>
 
-          {/* Fullscreen Interactive Leaflet Map */}
+          {/* Fullscreen Interactive Vector Map (MapLibre GL / Ola Maps) */}
           <View style={styles.mapWrap}>
             <InteractiveMapView
               ref={mapRef}
