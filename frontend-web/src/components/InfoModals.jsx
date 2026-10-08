@@ -1,8 +1,52 @@
 import React from 'react';
 
+function ModalFooter({ activeModal, onSwitchModal }) {
+  const links = [
+    { key: 'about', label: 'About Us' },
+    { key: 'contact', label: 'Contact Us' },
+    { key: 'privacy', label: 'Privacy Policy' },
+    { key: 'terms', label: 'Terms & Conditions' },
+  ];
+
+  return (
+    <div className="mt-6 pt-5 border-t border-[#EBDCC9] text-center">
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] font-semibold">
+        {links.map((link, idx) => {
+          const isActive = activeModal === link.key;
+          return (
+            <React.Fragment key={link.key}>
+              <button
+                type="button"
+                onClick={() => onSwitchModal?.(link.key)}
+                className={`transition-colors py-0.5 px-1 rounded ${
+                  isActive
+                    ? 'text-[#8E1B1B] font-bold underline underline-offset-4 decoration-[#8E1B1B]'
+                    : 'text-[#7A6B5E] hover:text-[#8E1B1B]'
+                }`}
+              >
+                {link.label}
+              </button>
+              {idx < links.length - 1 && (
+                <span className="text-[#C4B3A3] select-none">•</span>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <p className="text-[10px] text-[#A08F80] mt-2 font-medium">
+        দেবী দর্শন • Kolkata Durga Puja Parikrama Guide
+      </p>
+      <p className="text-[10px] text-[#A08F80] mt-0.5 font-medium">
+        © 2026 Terrafix Innovations. All rights reserved.
+      </p>
+    </div>
+  );
+}
+
 export default function InfoModals({
-  activeModal, // 'about' | 'contact' | 'privacy' | null
+  activeModal, // 'about' | 'contact' | 'privacy' | 'terms' | null
   onClose,
+  onSwitchModal,
 }) {
   if (!activeModal) return null;
 
@@ -29,6 +73,7 @@ export default function InfoModals({
           </svg>
         </button>
 
+        {/* 1. ABOUT US MODAL */}
         {activeModal === 'about' && (
           <div className="text-center">
             <span className="text-4xl">🪷</span>
@@ -71,7 +116,7 @@ export default function InfoModals({
           </div>
         )}
 
-        {/* 3. CONTACT US MODAL */}
+        {/* 2. CONTACT US MODAL */}
         {activeModal === 'contact' && (
           <div className="text-center">
             <span className="text-4xl">🎧</span>
@@ -92,12 +137,11 @@ export default function InfoModals({
                 <span>✉️</span>
                 <span>debidorshonapp@gmail.com</span>
               </a>
-
             </div>
           </div>
         )}
 
-        {/* 4. PRIVACY POLICY MODAL */}
+        {/* 3. PRIVACY POLICY MODAL */}
         {activeModal === 'privacy' && (
           <div>
             <div className="flex items-center gap-2 mb-2 text-[#8E1B1B]">
@@ -141,7 +185,58 @@ export default function InfoModals({
           </div>
         )}
 
+        {/* 4. TERMS & CONDITIONS MODAL */}
+        {activeModal === 'terms' && (
+          <div>
+            <div className="flex items-center gap-2 mb-2 text-[#8E1B1B]">
+              <span className="text-2xl">📜</span>
+              <h2 className="text-xl font-extrabold font-serif">
+                Terms & Conditions
+              </h2>
+            </div>
+            <p className="text-[11px] font-bold text-[#8A7B6E] mb-3">
+              Last Updated: September 2026
+            </p>
 
+            <p className="text-xs text-[#564338] leading-relaxed mb-4">
+              Welcome to <strong>দেবী দর্শন (Debi Dorshon)</strong>. By using our website and mobile applications, you agree to comply with and be bound by the following terms of use.
+            </p>
+
+            <div className="space-y-3 p-4 rounded-2xl bg-[#FAF5ED] border border-[#E5D2A8] text-xs text-[#3D241B]">
+              <div>
+                <h4 className="font-extrabold text-[#8E1B1B]">1. Informational & Navigation Guidance</h4>
+                <p className="text-[#564338] mt-0.5">
+                  Route suggestions, metro frequencies, and pandal coordinates are provided for guidance during Durga Puja. Local police diversions, barricades, and crowd controls take precedence at all times.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-extrabold text-[#8E1B1B]">2. User Conduct</h4>
+                <p className="text-[#564338] mt-0.5">
+                  Users agree to use the service lawfully, respect pedestrian safety rules, and avoid any unauthorized scraping or abuse of backend routing APIs.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-extrabold text-[#8E1B1B]">3. Intellectual Property</h4>
+                <p className="text-[#564338] mt-0.5">
+                  Application branding, curated databases, and interface designs are proprietary assets of Terrafix Innovations.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="/terms.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 w-full h-10 rounded-xl bg-[#8E1B1B] hover:bg-[#771313] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+            >
+              <span>View Full Legal Terms & Conditions</span>
+              <span>↗</span>
+            </a>
+          </div>
+        )}
+
+        {/* Modal Footer with Cross-Links and Copyright */}
+        <ModalFooter activeModal={activeModal} onSwitchModal={onSwitchModal} />
       </div>
     </div>
   );

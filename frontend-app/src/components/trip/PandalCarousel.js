@@ -93,11 +93,8 @@ export default function PandalCarousel({
     return (
       <View style={styles.carouselWrap}>
         <View style={styles.emptyCard}>
-          <Text style={{ fontSize: 22 }}>🛕</Text>
-          <Text style={styles.emptyTitle}>Enter Start & Destination</Text>
-          <Text style={styles.emptySub}>
-            Pick your start and destination points above or tap on the map to calculate your custom Puja Parikrama route.
-          </Text>
+          <Text style={styles.emptyIcon}>🛕</Text>
+          <Text style={styles.emptyText}>Enter start & destination to plan route</Text>
         </View>
       </View>
     );
@@ -404,27 +401,30 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
   },
 
-  /* Empty Card */
+  /* Empty Card - Compact Pill */
   emptyCard: {
-    width: SCREEN_WIDTH - spacing.md * 2,
-    backgroundColor: '#FDFBF7',
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(235, 220, 201, 0.8)',
-    padding: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'center',
-    gap: 4,
+    backgroundColor: '#FFFDF9',
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: '#EBDCC9',
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    gap: 8,
+    shadowColor: '#2B1608',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  emptyTitle: {
+  emptyIcon: {
     fontSize: 14,
-    fontWeight: '800',
-    color: colors.espresso,
-    marginTop: 4,
   },
-  emptySub: {
-    fontSize: 11,
-    color: `${colors.espresso}AA`,
-    textAlign: 'center',
+  emptyText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#2C1B18',
   },
 });

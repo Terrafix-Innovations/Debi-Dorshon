@@ -250,7 +250,18 @@ export default function MetroScreen({ navigation, route }) {
                     : (pandal.nearest_stations?.[0]?.distance || 'Nearby');
 
                   return (
-                    <View key={pandal.id || pandal._id || idx} style={styles.pandalCard}>
+                    <TouchableOpacity
+                      key={pandal.id || pandal._id || idx}
+                      style={styles.pandalCard}
+                      activeOpacity={0.75}
+                      onPress={() => {
+                        navigation.navigate('Navigation', {
+                          targetPandal: pandal,
+                          sourceStation: selectedStation,
+                          timestamp: Date.now(),
+                        });
+                      }}
+                    >
                       <View style={styles.pandalNumberCircle}>
                         <Text style={styles.pandalNumberText}>{idx + 1}</Text>
                       </View>
@@ -269,20 +280,11 @@ export default function MetroScreen({ navigation, route }) {
                         </View>
                       </View>
 
-                      {/* Clean Route Button: ">" that redirects to navigation */}
-                      <TouchableOpacity
-                        style={styles.routeBtn}
-                        activeOpacity={0.8}
-                        onPress={() => {
-                          navigation.navigate('Navigation', {
-                            targetPandal: pandal,
-                            sourceStation: selectedStation,
-                          });
-                        }}
-                      >
-                        <Text style={styles.routeBtnText}>&gt;</Text>
-                      </TouchableOpacity>
-                    </View>
+                      {/* Clean Route Button: right arrow that redirects to navigation */}
+                      <View style={styles.routeBtn}>
+                        <Ionicons name="arrow-forward" size={15} color="#FFFFFF" />
+                      </View>
+                    </TouchableOpacity>
                   );
                 })
               ) : (

@@ -6,6 +6,7 @@ import { TiroBangla_400Regular } from '@expo-google-fonts/tiro-bangla';
 import { AnekBangla_800ExtraBold, AnekBangla_700Bold } from '@expo-google-fonts/anek-bangla';
 import { Galada_400Regular } from '@expo-google-fonts/galada';
 import { Atma_700Bold } from '@expo-google-fonts/atma';
+import { NotoSerifBengali_700Bold, NotoSerifBengali_600SemiBold } from '@expo-google-fonts/noto-serif-bengali';
 import RootNavigator from './src/navigation/RootNavigator';
 import { TripProvider } from './src/context/TripContext';
 import { AuthProvider } from './src/context/AuthContext';
@@ -22,6 +23,8 @@ export default function App() {
     AnekBangla_700Bold,
     Galada_400Regular,
     Atma_700Bold,
+    NotoSerifBengali_700Bold,
+    NotoSerifBengali_600SemiBold,
   });
 
   return (

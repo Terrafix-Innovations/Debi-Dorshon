@@ -396,6 +396,7 @@ export default function App() {
     <InfoModals
       activeModal={activeModal}
       onClose={() => setActiveModal(null)}
+      onSwitchModal={(modal) => setActiveModal(modal)}
     />
   </>
   );

@@ -11,7 +11,7 @@ import {
   ScrollView,
   Keyboard,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
 import ScreenBackground from '../../components/common/ScreenBackground';
@@ -21,7 +21,7 @@ import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
 import InteractiveMapView from '../../components/map/InteractiveMapView';
 
-export default function RouteScreen({ navigation }) {
+export default function RouteScreen({ navigation, route }) {
   const [pandals, setPandals] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,6 +35,7 @@ export default function RouteScreen({ navigation }) {
   const debounceTimerRef = useRef(null);
   const mapRef = useRef(null);
   const searchInputRef = useRef(null);
+  const lastParamTsRef = useRef(null);
 
   // Fetch pandals from the database
   useEffect(() => {
@@ -109,8 +110,16 @@ export default function RouteScreen({ navigation }) {
   const handleSelectPlace = useCallback((place) => {
     if (!place) return;
     const title = place.title || place.name || 'Selected Place';
-    const lat = place.latitude ?? place.lat ?? place.location?.latitude;
-    const lng = place.longitude ?? place.lng ?? place.location?.longitude;
+    const lat =
+      place.latitude ??
+      place.lat ??
+      place.location?.latitude ??
+      (Array.isArray(place.location?.coordinates) ? place.location.coordinates[1] : undefined);
+    const lng =
+      place.longitude ??
+      place.lng ??
+      place.location?.longitude ??
+      (Array.isArray(place.location?.coordinates) ? place.location.coordinates[0] : undefined);
 
     const normalized = {
       ...place,
@@ -118,7 +127,7 @@ export default function RouteScreen({ navigation }) {
       title,
       latitude: lat,
       longitude: lng,
-      badge: place.badge || '📍 Place',
+      badge: place.badge || '🛕 Durga Puja Pandal',
       subtitle: place.subtitle || place.address || place.cluster || place.region || '',
       nearest_metro: place.nearest_metro?.name || place.nearest_metro || '',
     };
@@ -129,14 +138,48 @@ export default function RouteScreen({ navigation }) {
     setSuggestions([]);
     Keyboard.dismiss();
 
-    if (mapRef.current?.flyToLocation && typeof lat === 'number' && typeof lng === 'number') {
-      mapRef.current.flyToLocation(lat, lng, 16);
+    if (typeof lat === 'number' && typeof lng === 'number') {
+      mapRef.current?.flyToLocation?.(lat, lng, 16);
+      setTimeout(() => {
+        mapRef.current?.flyToLocation?.(lat, lng, 16);
+      }, 350);
     }
   }, []);
 
+  // Handle incoming pandal navigation parameter (e.g. from MetroScreen or other screens)
+  useEffect(() => {
+    const target =
+      route?.params?.targetPandal ||
+      route?.params?.pandal ||
+      route?.params?.selectedPlace;
+    const ts = route?.params?.timestamp;
+
+    if (target) {
+      if (ts && ts === lastParamTsRef.current) return;
+      if (ts) lastParamTsRef.current = ts;
+
+      let fullPandal = target;
+      const targetId = target.id || target._id;
+      const targetName = (target.name || target.title || '').trim().toLowerCase();
+
+      if (pandals && pandals.length > 0) {
+        const found = pandals.find((p) => {
+          if (targetId && (p.id === targetId || p._id === targetId)) return true;
+          if (targetName && (p.name || '').trim().toLowerCase() === targetName) return true;
+          return false;
+        });
+        if (found) {
+          fullPandal = { ...found, ...target };
+        }
+      }
+
+      handleSelectPlace(fullPandal);
+    }
+  }, [route?.params, pandals, handleSelectPlace]);
+
   const handlePlanRouteToHere = () => {
     if (!selectedPlace) return;
-    navigation.navigate('Trips', {
+    navigation.navigate('Trip', {
       endPlace: selectedPlace,
       focusStart: true,
     });
@@ -216,17 +259,7 @@ export default function RouteScreen({ navigation }) {
               </View>
             )}
 
-            {/* Subtle Pandal Count Pill */}
-            {!isSearchActive && (
-              <View style={styles.pandalCountPill}>
-                <MaterialCommunityIcons name="map-marker-multiple" size={14} color="#D4AF37" />
-                <Text style={styles.pandalCountText}>
-                  {loading
-                    ? 'Loading pandals across Kolkata...'
-                    : `${mappablePandals.length} Durga Puja Pandals Live on Map`}
-                </Text>
-              </View>
-            )}
+
           </View>
 
           {/* Fullscreen Interactive Vector Map (MapLibre GL / Ola Maps) */}
@@ -392,28 +425,6 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // Pandal Count Pill
-  pandalCountPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: 'rgba(142, 27, 27, 0.92)',
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 20,
-    marginTop: 8,
-    gap: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  pandalCountText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#FAF2E4',
-  },
 
   // Map Wrap
   mapWrap: {

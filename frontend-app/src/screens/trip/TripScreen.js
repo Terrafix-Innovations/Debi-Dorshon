@@ -323,6 +323,7 @@ export default function TripScreen({ navigation, route }) {
             onUseCurrentLocation={handleUseCurrentLocation}
             onSearchActiveChange={setIsSearchActive}
             loading={loadingRoute || locating}
+            hasRoute={!!routePlan}
           />
 
           {/* Floating Route Summary Chip under top card */}

@@ -82,12 +82,13 @@ export default function HeaderNavbar({ navigation, showBack = false, title = 'рж
             <Pressable
               style={({ pressed }) => [
                 styles.iconBtn,
-                pressed && { opacity: 0.6, transform: [{ scale: 0.92 }] },
+                pressed && styles.iconBtnPressed,
               ]}
               onPress={toggleDrawer}
-              hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+              accessibilityLabel="Open Navigation Menu"
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#381E18" strokeWidth="2.5" strokeLinecap="round">
+              <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#381E18" strokeWidth="2.5" strokeLinecap="round">
                 <Line x1="4" y1="7" x2="20" y2="7" />
                 <Line x1="4" y1="12" x2="20" y2="12" />
                 <Line x1="4" y1="17" x2="20" y2="17" />
@@ -143,8 +144,8 @@ export default function HeaderNavbar({ navigation, showBack = false, title = 'рж
 
               {/* Bengali Greeting Typography */}
               <View style={styles.textWrap}>
-                <Text style={styles.prefixText}>{prefix}</Text>
-                <Text style={styles.suffixText}>{suffix}</Text>
+                <Text style={styles.prefixText} numberOfLines={1}>{prefix}</Text>
+                <Text style={styles.suffixText} numberOfLines={1}>{suffix}</Text>
               </View>
 
               {/* Right Vector Motif: Symmetrical Kasful Plumes + Dhak Drum + Alpona Swirl + Diamond */}
@@ -259,7 +260,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(243, 235, 217, 0.5)',
+    backgroundColor: 'transparent',
+  },
+  iconBtnPressed: {
+    backgroundColor: '#F3EBD9',
+    transform: [{ scale: 0.95 }],
   },
   centerBanner: {
     flex: 1,
@@ -287,11 +292,13 @@ const styles = StyleSheet.create({
   textWrap: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    justifyContent: 'center',
+    flexWrap: 'nowrap',
     gap: 4,
   },
   prefixText: {
     color: '#2C1B18',
-    fontSize: 22,
+    fontSize: Platform.OS === 'web' ? 22 : 20,
     fontWeight: 'bold',
     fontFamily: Platform.OS === 'web'
       ? "'Galada', 'Atma', 'Tiro Bangla', cursive, serif"
@@ -299,7 +306,7 @@ const styles = StyleSheet.create({
   },
   suffixText: {
     color: '#831917',
-    fontSize: 22,
+    fontSize: Platform.OS === 'web' ? 22 : 20,
     fontWeight: 'bold',
     fontFamily: Platform.OS === 'web'
       ? "'Galada', 'Atma', 'Tiro Bangla', cursive, serif"

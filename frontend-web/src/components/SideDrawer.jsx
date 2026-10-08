@@ -210,16 +210,16 @@ export default function SideDrawer({
       ),
       action: () => {
         onClose();
-        window.open('/terms.html', '_blank', 'noopener,noreferrer');
+        onOpenModal('terms');
       },
     },
   ];
 
   return (
     <div className="fixed inset-0 z-[100] flex animate-fade-in">
-      {/* Dark frosted overlay backdrop */}
+      {/* Semi-transparent backdrop overlay without blurring the background */}
       <div
-        className="fixed inset-0 bg-[#140a08]/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/20 transition-opacity cursor-pointer"
         onClick={onClose}
       />
 
@@ -227,7 +227,7 @@ export default function SideDrawer({
       <aside className="relative z-10 w-full max-w-[320px] h-full backdrop-blur-md shadow-2xl flex flex-col justify-between overflow-hidden animate-slide-right border-r border-[#EBDCC9]" style={{ backgroundColor: 'rgba(250, 245, 237, 0.75)' }}>
         {/* Background Watermark */}
         <div
-          className="absolute inset-0 opacity-[0.12] bg-cover bg-center pointer-events-none"
+          className="absolute inset-0 opacity-[0.58] bg-cover bg-center pointer-events-none blur-[2px] scale-[1.01]"
           style={{ backgroundImage: `url('/kolkata_vintage_map.jpg')` }}
         />
 

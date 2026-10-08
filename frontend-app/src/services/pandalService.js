@@ -10,6 +10,7 @@ export async function fetchPandals(params = {}) {
     if (res.data && Array.isArray(res.data) && res.data.length > 0) {
       return res.data.map((p) => ({
         ...p,
+        id: p.id || p._id,
         lat: p.location?.latitude ?? p.lat,
         lng: p.location?.longitude ?? p.lng,
       }));

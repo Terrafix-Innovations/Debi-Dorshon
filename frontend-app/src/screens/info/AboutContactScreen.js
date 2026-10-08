@@ -5,6 +5,7 @@ import * as Clipboard from 'expo-clipboard';
 import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
 import ScreenBackground from '../../components/common/ScreenBackground';
+import AppBottomNavBar from '../../components/common/AppBottomNavBar';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/spacing';
 
@@ -34,8 +35,11 @@ export function AboutScreen({ navigation }) {
             <Text style={styles.bullet}>• Interactive Kolkata map with pinned pandals</Text>
             <Text style={styles.bullet}>• Integrated Durga Puja rewards & points</Text>
           </View>
+
+          <ScreenFooter navigation={navigation} currentScreen="About" />
         </ScrollView>
       </ScreenBackground>
+      <AppBottomNavBar navigation={navigation} />
     </SafeAreaView>
   );
 }
@@ -92,8 +96,10 @@ export function ContactScreen({ navigation }) {
               </View>
             </TouchableOpacity>
           </View>
+          <ScreenFooter navigation={navigation} currentScreen="Contact" />
         </ScrollView>
       </ScreenBackground>
+      <AppBottomNavBar navigation={navigation} />
     </SafeAreaView>
   );
 }
@@ -121,8 +127,43 @@ export function PrivacyPolicyScreen({ navigation }) {
             <Text style={styles.bullet}>• Local Cache: Used to store your route preferences and saved pandals.</Text>
             <Text style={styles.bullet}>• Security: All communications are encrypted over secure HTTPS/WSS protocols.</Text>
           </View>
+
+          <ScreenFooter navigation={navigation} currentScreen="PrivacyPolicy" />
         </ScrollView>
       </ScreenBackground>
+      <AppBottomNavBar navigation={navigation} />
+    </SafeAreaView>
+  );
+}
+
+export function TermsScreen({ navigation }) {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <HeaderNavbar navigation={navigation} title="Terms & Conditions • দেবী দর্শন" />
+      <SideDrawer navigation={navigation} />
+
+      <ScreenBackground>
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.card}>
+            <MaterialCommunityIcons name="file-document-outline" size={48} color={colors.primaryMaroon} />
+            <Text style={styles.title}>Terms & Conditions</Text>
+            <Text style={styles.version}>Effective: September 2026</Text>
+            <Text style={styles.desc}>
+              Welcome to দেবী দর্শন (Debi Dorshon). By accessing our services, you agree to comply with our community and navigational guidelines.
+            </Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Service Terms</Text>
+            <Text style={styles.bullet}>• Navigation & Crowd Info: Real-time routes and estimates are provided for festival guidance and parikrama assistance.</Text>
+            <Text style={styles.bullet}>• User Conduct: Please respect local civic rules, Kolkata Police advisories, and queue management at pandals.</Text>
+            <Text style={styles.bullet}>• Free & Open: Debi Dorshon remains free for devotees during Durga Puja.</Text>
+          </View>
+
+          <ScreenFooter navigation={navigation} currentScreen="Terms" />
+        </ScrollView>
+      </ScreenBackground>
+      <AppBottomNavBar navigation={navigation} />
     </SafeAreaView>
   );
 }
@@ -159,7 +200,7 @@ const styles = StyleSheet.create({
   contactScrollContainer: {
     padding: spacing.lg,
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   minimalContactCard: {
     backgroundColor: '#FFFDF9',
@@ -228,4 +269,94 @@ const styles = StyleSheet.create({
   copyLabelActive: {
     color: '#1B8E4B',
   },
+
+  /* Shared Screen Footer */
+  footerContainer: {
+    paddingVertical: 24,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  footerDivider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#EADBC8',
+    marginBottom: 14,
+  },
+  footerLinksRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  footerLinkText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#7A6B60',
+  },
+  footerLinkActive: {
+    color: colors.primaryMaroon,
+    fontWeight: '800',
+    textDecorationLine: 'underline',
+  },
+  footerBullet: {
+    fontSize: 12,
+    color: '#D4AF37',
+    marginHorizontal: 2,
+  },
+  footerTagline: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#8A7B6E',
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  footerCopyright: {
+    fontSize: 10.5,
+    color: '#9C8E82',
+    marginTop: 2,
+    textAlign: 'center',
+  },
 });
+
+function ScreenFooter({ navigation, currentScreen }) {
+  const links = [
+    { label: 'About Us', route: 'About' },
+    { label: 'Contact', route: 'Contact' },
+    { label: 'Privacy Policy', route: 'PrivacyPolicy' },
+    { label: 'Terms & Conditions', route: 'Terms' },
+  ];
+
+  return (
+    <View style={styles.footerContainer}>
+      <View style={styles.footerDivider} />
+      <View style={styles.footerLinksRow}>
+        {links.map((link, idx) => {
+          const isActive = currentScreen === link.route;
+          return (
+            <React.Fragment key={link.route}>
+              {idx > 0 && <Text style={styles.footerBullet}>•</Text>}
+              <TouchableOpacity
+                onPress={() => {
+                  if (!isActive) {
+                    navigation?.navigate(link.route);
+                  }
+                }}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              >
+                <Text style={[styles.footerLinkText, isActive && styles.footerLinkActive]}>
+                  {link.label}
+                </Text>
+              </TouchableOpacity>
+            </React.Fragment>
+          );
+        })}
+      </View>
+      <Text style={styles.footerTagline}>দেবী দর্শন • Kolkata Durga Puja Parikrama Guide</Text>
+      <Text style={styles.footerCopyright}>© 2026 Terrafix Innovations. All rights reserved.</Text>
+    </View>
+  );
+}

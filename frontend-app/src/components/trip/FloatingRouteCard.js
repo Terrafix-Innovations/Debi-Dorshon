@@ -38,7 +38,9 @@ export default function FloatingRouteCard({
   onUseCurrentLocation,
   onSearchActiveChange,
   loading = false,
+  hasRoute = false,
 }) {
+  const [isMinimized, setIsMinimized] = useState(false);
   const [activeField, setActiveField] = useState(null); // 'start' | 'end' | null
   const [startVal, setStartVal] = useState(startText || '');
   const [endVal, setEndVal] = useState(endText || '');
@@ -48,6 +50,20 @@ export default function FloatingRouteCard({
   const startInputRef = useRef(null);
   const endInputRef = useRef(null);
   const debounceTimer = useRef(null);
+
+  // Automatically minimize when a route is computed/shown
+  useEffect(() => {
+    if (hasRoute && startVal && endVal) {
+      setIsMinimized(true);
+    }
+  }, [hasRoute]);
+
+  // Auto-expand if user clears either start or destination
+  useEffect(() => {
+    if (!startVal || !endVal) {
+      setIsMinimized(false);
+    }
+  }, [startVal, endVal]);
 
   // Sync external prop changes
   useEffect(() => {
@@ -177,8 +193,63 @@ export default function FloatingRouteCard({
     Keyboard.dismiss();
   };
 
+  if (isMinimized) {
+    return (
+      <TouchableOpacity
+        style={styles.minimizedCard}
+        onPress={() => {
+          triggerHaptic(15);
+          setIsMinimized(false);
+        }}
+        activeOpacity={0.85}
+      >
+        <View style={styles.minimizedContent}>
+          {/* Start indicator & text */}
+          <View style={styles.minimizedStartDot} />
+          <Text style={styles.minimizedText} numberOfLines={1}>
+            {startVal || 'Start Point'}
+          </Text>
+
+          {/* Arrow separator */}
+          <Text style={styles.minimizedArrow}>→</Text>
+
+          {/* Destination indicator & text */}
+          <View style={styles.minimizedDestDot} />
+          <Text style={styles.minimizedText} numberOfLines={1}>
+            {endVal || 'Destination'}
+          </Text>
+        </View>
+
+        {/* Edit / Expand button */}
+        <View style={styles.minimizedEditBadge}>
+          <Text style={styles.minimizedEditText}>Edit</Text>
+          <Ionicons name="chevron-down" size={13} color="#903F00" />
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <View style={styles.cardShell}>
+      {/* Header row with minimize button if route exists or endpoints set */}
+      {(hasRoute || (startVal && endVal)) && (
+        <View style={styles.cardHeaderRow}>
+          <Text style={styles.cardHeaderTitle}>ROUTE PLANNER</Text>
+          <TouchableOpacity
+            style={styles.minimizeBtn}
+            onPress={() => {
+              triggerHaptic(15);
+              setIsMinimized(true);
+            }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.minimizeBtnText}>Minimize</Text>
+            <Ionicons name="chevron-up" size={14} color="#903F00" />
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Decorative Corner Art Layer */}
       <View style={styles.cornerArtLayer} pointerEvents="none">
         {/* Top-Right Golden Floral Vine SVG Motif */}
@@ -636,5 +707,105 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#8A7B6E',
     fontStyle: 'italic',
+  },
+
+  /* Minimized Compact Bar (Matches Web RoutePanel) */
+  minimizedCard: {
+    backgroundColor: '#FEFCF8',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(235, 220, 201, 0.85)',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#2D1A16',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  minimizedContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 8,
+  },
+  minimizedStartDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2.5,
+    borderColor: GOLD,
+    backgroundColor: '#FDFAF4',
+    marginRight: 6,
+  },
+  minimizedDestDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: MAROON,
+    marginRight: 6,
+  },
+  minimizedText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#2D1B18',
+    flexShrink: 1,
+    maxWidth: 110,
+  },
+  minimizedArrow: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#A89F91',
+    marginHorizontal: 5,
+  },
+  minimizedEditBadge: {
+    backgroundColor: '#FAEEE4',
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  minimizedEditText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#903F00',
+  },
+
+  /* Card Header Row with Minimize Button */
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 8,
+    marginBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(235, 220, 201, 0.55)',
+    zIndex: 10,
+  },
+  cardHeaderTitle: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: '#8A7B6E',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  minimizeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: '#FAEEE4',
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
+    borderRadius: 12,
+  },
+  minimizeBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#903F00',
   },
 });

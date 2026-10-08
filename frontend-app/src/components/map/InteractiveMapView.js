@@ -1,17 +1,51 @@
 import React, { forwardRef, useImperativeHandle, useRef, useMemo, useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { DURGA_MAP_POINTER_DATA_URI } from './durgaPointerData';
+import { SUPERCLUSTER_MIN_JS } from './superclusterMin';
 
-// Direct MapLibre GL import for web platform (like frontend-web's MapBackground.jsx)
+// Direct MapLibre GL and Supercluster import for web platform
 let maplibregl = null;
+let Supercluster = null;
 if (Platform.OS === 'web') {
   try {
     maplibregl = require('maplibre-gl');
+    Supercluster = require('supercluster');
+    if (Supercluster && Supercluster.default) Supercluster = Supercluster.default;
     // Import CSS for maplibre-gl
     require('maplibre-gl/dist/maplibre-gl.css');
   } catch (e) {
-    console.warn('[InteractiveMapView] Failed to load maplibre-gl:', e);
+    console.warn('[InteractiveMapView] Failed to load maplibre-gl / supercluster:', e);
   }
+}
+
+function createClusterHtml(count) {
+  const numStr = String(count);
+  const fontSize = numStr.length > 2 ? 26 : numStr.length > 1 ? 28 : 34;
+  const yPos = numStr.length > 2 ? 58 : 59;
+  const scale = count < 10 ? 0.7 : count < 50 ? 0.85 : 1;
+  const size = Math.round(96 * scale);
+
+  return `
+    <div class="vector-cluster-wrapper cursor-pointer transition-all hover:scale-110" style="width: ${size}px; height: ${size}px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 96 96" style="filter: drop-shadow(0 4px 10px rgba(243, 61, 75, 0.45));">
+        <defs>
+          <linearGradient id="cluster-bg-${count}" x1="18" y1="8" x2="78" y2="88" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFB52E"/>
+            <stop offset=".52" stop-color="#FF6B2C"/>
+            <stop offset="1" stop-color="#F33D4B"/>
+          </linearGradient>
+          <filter id="cluster-shadow-${count}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/>
+          </filter>
+        </defs>
+        <circle cx="48" cy="48" r="43" fill="#FF6B3D" opacity=".16"/>
+        <circle cx="48" cy="48" r="38" fill="url(#cluster-bg-${count})" filter="url(#cluster-shadow-${count})"/>
+        <circle cx="48" cy="48" r="34" fill="#18202B" stroke="#FFF4E8" stroke-width="3"/>
+        <text x="48" y="${yPos}" text-anchor="middle" font-family="'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="${fontSize}" font-weight="800" fill="#FFF4E8">${numStr}</text>
+      </svg>
+    </div>
+  `;
 }
 
 const KOLKATA_CENTER = [88.3639, 22.5726]; // [lng, lat]
@@ -137,7 +171,18 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           sub: escapeText(p.cluster || p.zone || p.region || 'Kolkata'),
           metro: escapeText(p.nearest_metro?.name || ''),
           step: item.step,
-          raw: p,
+          raw: {
+            id: p.id || p._id,
+            name: p.name,
+            cluster: p.cluster,
+            zone: p.zone,
+            region: p.region,
+            location: p.location,
+            lat,
+            lng,
+            nearest_metro: p.nearest_metro,
+            images: p.images,
+          },
         });
       });
     } else if (showPandals && pandals && pandals.length > 0) {
@@ -156,7 +201,18 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           name: escapeText(p.name || 'Pandal'),
           sub: escapeText(p.cluster || p.zone || p.region || 'Kolkata'),
           metro: escapeText(p.nearest_metro?.name || ''),
-          raw: p,
+          raw: {
+            id: p.id || p._id,
+            name: p.name,
+            cluster: p.cluster,
+            zone: p.zone,
+            region: p.region,
+            location: p.location,
+            lat,
+            lng,
+            nearest_metro: p.nearest_metro,
+            images: p.images,
+          },
         });
       });
     }
@@ -296,12 +352,48 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     webRef.current.injectJavaScript(`if (window.highlightStep) window.highlightStep(${step == null ? 'null' : step}); true;`);
   }, [selectedPlace, itinerary]);
 
+  // Push latest markers and route data into WebView
+  const isWebViewReadyRef = useRef(false);
+
+  const pushDataToWebView = useCallback(() => {
+    if (Platform.OS === 'web' || !webRef.current) return;
+    try {
+      const pathJson = JSON.stringify(pathCoords || []);
+      const markersJson = JSON.stringify(allMarkers || []);
+      const userJson = userCoords ? JSON.stringify([userCoords.longitude, userCoords.latitude]) : 'null';
+      const searchedJson = searchedPlace && typeof (searchedPlace.latitude ?? searchedPlace.lat) === 'number'
+        ? JSON.stringify({
+            lat: searchedPlace.latitude ?? searchedPlace.lat,
+            lng: searchedPlace.longitude ?? searchedPlace.lng,
+            title: searchedPlace.title || searchedPlace.name || '',
+          })
+        : 'null';
+
+      const script = `
+        if (typeof window.updateData === 'function') {
+          window.updateData(${pathJson}, ${markersJson}, ${userJson}, ${searchedJson});
+        }
+        true;
+      `;
+      webRef.current.injectJavaScript(script);
+    } catch (e) {
+      console.warn('[InteractiveMapView] pushDataToWebView error:', e);
+    }
+  }, [pathCoords, allMarkers, userCoords, searchedPlace]);
+
+  useEffect(() => {
+    pushDataToWebView();
+  }, [pushDataToWebView]);
+
   // Handle messages from MapLibre webview / iframe
   const handleMessageData = useCallback((rawPayload) => {
     try {
       const data = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload;
       if (data.type === 'marker_click' && onSelectPlace) {
         onSelectPlace(data.place?.raw || data.place);
+      } else if (data.type === 'map_ready') {
+        isWebViewReadyRef.current = true;
+        pushDataToWebView();
       } else if (data.type === 'map_click') {
         if (onMapClick) {
           onMapClick(data.lat, data.lng);
@@ -316,7 +408,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         console.warn('[Map Warning]:', data.error);
       }
     } catch (e) {}
-  }, [onSelectPlace, onMapClick, onUpdateOrigin, onUpdateDestination]);
+  }, [onSelectPlace, onMapClick, onUpdateOrigin, onUpdateDestination, pushDataToWebView]);
 
   const handleMessage = useCallback((event) => {
     if (event?.nativeEvent?.data) {
@@ -355,6 +447,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
         <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
         <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+        <script>${SUPERCLUSTER_MIN_JS}</script>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body {
@@ -523,6 +616,8 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           let isDragging = false;
           let markersList = [];
           let userLocationMarker = null;
+          let superclusterInstance = null;
+          let clusterMarkersMap = {};
 
           function sendToHost(obj) {
             const str = JSON.stringify(obj);
@@ -537,7 +632,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
             sendToHost({ type: 'map_error', error: msg + ' (' + line + ':' + col + ')' });
           };
 
-          const PANDAL_MARKER_BASE64 = 'data:image/png;base64,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';
+          const DURGA_PIN_SRC = '${DURGA_MAP_POINTER_DATA_URI}';
 
           function createPinHtml(type, label = '', isActive = false) {
             if (type === 'origin') {
@@ -580,13 +675,154 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
               return '<div class="pin-transit-train"><span>🚆</span></div>';
             }
 
-            // Pandal / Search Pin
-            var isSearch = (type === 'search');
+            if (type === 'search') {
+              return \`
+                <div class="vector-pointer-wrapper \${isActive ? 'active-pin' : ''}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 64 80" style="filter: drop-shadow(0 4px 10px rgba(217, 119, 6, 0.45));">
+                    <defs>
+                      <linearGradient id="p-search-m" x1="18" y1="8" x2="50" y2="60" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#FDE68A"/>
+                        <stop offset=".55" stop-color="#D97706"/>
+                        <stop offset="1" stop-color="#B45309"/>
+                      </linearGradient>
+                    </defs>
+                    <ellipse cx="32" cy="72" rx="17" ry="4" fill="#D97706" opacity=".25"/>
+                    <path d="M32 3C16.54 3 4 15.54 4 31c0 20.2 28 44 28 44s28-23.8 28-44C60 15.54 47.46 3 32 3Z" fill="url(#p-search-m)"/>
+                    <circle cx="32" cy="30" r="17" fill="#18202B" stroke="#FFFBEB" stroke-width="3"/>
+                    <text x="32" y="37" text-anchor="middle" font-size="16">📍</text>
+                  </svg>
+                </div>\`;
+            }
+
+            // Trips Section (Numbered stops): Use map-numbered-pointer.svg
+            if (label) {
+              var numStr = String(label);
+              var fontSize = numStr.length > 2 ? 14 : (numStr.length > 1 ? 16 : 19);
+              return \`
+                <div class="vector-pointer-wrapper \${isActive ? 'active-pin' : ''}" style="\${isActive ? 'transform: scale(1.25) translateY(-4px); z-index: 999;' : ''}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 64 80" style="filter: drop-shadow(0 4px 10px rgba(243, 61, 75, 0.45));">
+                    <defs>
+                      <linearGradient id="p-stop-m-\${numStr}" x1="18" y1="8" x2="50" y2="60" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#FFB52E"/>
+                        <stop offset=".55" stop-color="#FF6B2C"/>
+                        <stop offset="1" stop-color="#F33D4B"/>
+                      </linearGradient>
+                      <filter id="s-stop-m-\${numStr}">
+                        <feDropShadow dx="0" dy="4" stdDeviation="3" flood-opacity=".28"/>
+                      </filter>
+                    </defs>
+                    <ellipse cx="32" cy="72" rx="17" ry="4" fill="#FF6B3D" opacity=".25"/>
+                    <path d="M32 3C16.54 3 4 15.54 4 31c0 20.2 28 44 28 44s28-23.8 28-44C60 15.54 47.46 3 32 3Z" fill="url(#p-stop-m-\${numStr})" filter="url(#s-stop-m-\${numStr})"/>
+                    <circle cx="32" cy="30" r="17" fill="#18202B" stroke="#FFF4E8" stroke-width="3"/>
+                    <text x="32" y="36.5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="\${fontSize}" font-weight="700" fill="#FFF4E8">\${numStr}</text>
+                  </svg>
+                </div>\`;
+            }
+
+            // Navigation Page: Durga Map Pointer Transparent SVG
             return \`
-              <div class="pin-pandal-wrapper \${isActive || isSearch ? 'active-pin' : ''}">
-                <img src="\${PANDAL_MARKER_BASE64}" style="width:38px;height:38px;object-fit:contain;pointer-events:none;" alt="Pin" />
-                \${label ? '<span class="pin-pandal-badge">' + label + '</span>' : (isSearch ? '<span class="pin-pandal-badge" style="background:#D97706;">📍</span>' : '')}
+              <div class="vector-pointer-wrapper pin-pandal-wrapper \${isActive ? 'active-pin' : ''}" style="width: 52px; height: 52px;">
+                <img src="\${DURGA_PIN_SRC}" style="width: 48px; height: 48px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.28));" alt="Durga Pandal" />
               </div>\`;
+          }
+
+          function createClusterHtml(count) {
+            var numStr = String(count);
+            var fontSize = numStr.length > 2 ? 26 : (numStr.length > 1 ? 28 : 34);
+            var yPos = numStr.length > 2 ? 58 : 59;
+            var scale = count < 10 ? 0.7 : (count < 50 ? 0.85 : 1);
+            var size = Math.round(96 * scale);
+
+            return \`
+              <div class="vector-cluster-wrapper" style="width: \${size}px; height: \${size}px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 96 96" style="filter: drop-shadow(0 4px 10px rgba(243, 61, 75, 0.45));">
+                  <defs>
+                    <linearGradient id="cluster-bg-\${count}" x1="18" y1="8" x2="78" y2="88" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#FFB52E"/>
+                      <stop offset=".52" stop-color="#FF6B2C"/>
+                      <stop offset="1" stop-color="#F33D4B"/>
+                    </linearGradient>
+                    <filter id="cluster-shadow-\${count}" x="-30%" y="-30%" width="160%" height="160%">
+                      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/>
+                    </filter>
+                  </defs>
+                  <circle cx="48" cy="48" r="43" fill="#FF6B3D" opacity=".16"/>
+                  <circle cx="48" cy="48" r="38" fill="url(#cluster-bg-\${count})" filter="url(#cluster-shadow-\${count})"/>
+                  <circle cx="48" cy="48" r="34" fill="#18202B" stroke="#FFF4E8" stroke-width="3"/>
+                  <text x="48" y="\${yPos}" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="\${fontSize}" font-weight="800" fill="#FFF4E8">\${numStr}</text>
+                </svg>
+              </div>\`;
+          }
+
+          function updateClusterMarkers() {
+            if (!map || !superclusterInstance) return;
+            var bounds = map.getBounds();
+            if (!bounds) return;
+            var bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+            var zoom = Math.floor(map.getZoom());
+
+            var clusters = superclusterInstance.getClusters(bbox, zoom);
+            var newMap = {};
+
+            clusters.forEach(function (c) {
+              var isCluster = c.properties.cluster;
+              var id = isCluster ? ('c_' + c.properties.cluster_id) : ('p_' + c.properties.pandalId);
+              newMap[id] = c;
+            });
+
+            // Remove markers not in newMap
+            Object.keys(clusterMarkersMap).forEach(function (id) {
+              if (!newMap[id]) {
+                clusterMarkersMap[id].marker.remove();
+                delete clusterMarkersMap[id];
+              }
+            });
+
+            // Add new markers
+            Object.keys(newMap).forEach(function (id) {
+              if (!clusterMarkersMap[id]) {
+                var c = newMap[id];
+                var lng = c.geometry.coordinates[0];
+                var lat = c.geometry.coordinates[1];
+                var isCluster = c.properties.cluster;
+                var el = document.createElement('div');
+
+                if (isCluster) {
+                  var count = c.properties.point_count;
+                  el.className = 'vector-pin-container cursor-pointer';
+                  el.innerHTML = createClusterHtml(count);
+
+                  el.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    try {
+                      var expZoom = superclusterInstance.getClusterExpansionZoom(c.properties.cluster_id);
+                      map.flyTo({ center: [lng, lat], zoom: expZoom, essential: true });
+                    } catch (err) {}
+                  });
+
+                  var marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+
+                  clusterMarkersMap[id] = { marker: marker, isCluster: true };
+                } else {
+                  var place = c.properties.place;
+                  el.className = 'vector-pin-container cursor-pointer';
+                  el.innerHTML = createPinHtml(place.type, place.label);
+
+                  el.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    sendToHost({ type: 'marker_click', place: place });
+                  });
+
+                  var marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+
+                  clusterMarkersMap[id] = { marker: marker, isCluster: false, place: place };
+                }
+              }
+            });
           }
 
           function initRouteLayers() {
@@ -665,6 +901,14 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
             markersList.forEach(m => m.remove());
             markersList = [];
 
+            // Clear previous cluster markers
+            Object.keys(clusterMarkersMap).forEach(function (id) {
+              if (clusterMarkersMap[id] && clusterMarkersMap[id].marker) {
+                clusterMarkersMap[id].marker.remove();
+              }
+            });
+            clusterMarkersMap = {};
+
             if (userLocationMarker) {
               userLocationMarker.remove();
               userLocationMarker = null;
@@ -683,8 +927,36 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
                 .addTo(map);
             }
 
-            // 4. Add Markers
-            markers.forEach(m => {
+            // 4. Separate general navigation pandals from other markers
+            const generalPandals = markers.filter(m => m.type === 'pandal' && !m.label);
+            const otherMarkers = markers.filter(m => !(m.type === 'pandal' && !m.label));
+
+            // Cluster general navigation pandals
+            if (generalPandals.length > 0 && window.Supercluster) {
+              if (!superclusterInstance) {
+                superclusterInstance = new window.Supercluster({ radius: 60, maxZoom: 14 });
+              }
+              const points = generalPandals.map(p => ({
+                type: 'Feature',
+                properties: {
+                  cluster: false,
+                  pandalId: (p.raw && (p.raw.id || p.raw._id)) || (p.lng + '_' + p.lat),
+                  place: p,
+                },
+                geometry: {
+                  type: 'Point',
+                  coordinates: [p.lng, p.lat],
+                },
+              }));
+              superclusterInstance.load(points);
+              generalPandals.forEach(m => { bounds.extend([m.lng, m.lat]); hasPoints = true; });
+              updateClusterMarkers();
+            } else {
+              superclusterInstance = null;
+            }
+
+            // 5. Add other markers (itinerary numbered stops, origin, destination, transit, searchedPlace)
+            otherMarkers.forEach(m => {
               const pinHtml = createPinHtml(m.type, m.label);
               const badge = m.badge || m.type;
               const popupHtml = '<div class="popup">' +
@@ -699,16 +971,21 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
               el.innerHTML = pinHtml;
 
               const isOriginOrDest = (m.type === 'origin' || m.type === 'destination');
-              const popup = new maplibregl.Popup({ offset: [0, -36], closeButton: false }).setHTML(popupHtml);
+              const isPandal = (m.type === 'pandal');
 
               const marker = new maplibregl.Marker({
                 element: el,
                 draggable: isOriginOrDest,
                 anchor: isOriginOrDest ? 'bottom' : (m.type === 'metro' || m.type === 'train' ? 'center' : 'bottom')
               })
-                .setLngLat([m.lng, m.lat])
-                .setPopup(popup)
-                .addTo(map);
+                .setLngLat([m.lng, m.lat]);
+
+              if (!isPandal) {
+                const popup = new maplibregl.Popup({ offset: [0, -36], closeButton: false }).setHTML(popupHtml);
+                marker.setPopup(popup);
+              }
+
+              marker.addTo(map);
 
               marker._step = m.step;
               marker._placeData = m;
@@ -744,7 +1021,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
                 markersList.forEach(m => {
                   const pos = m.getLngLat();
                   if (Math.abs(pos.lat - searchedPlace.lat) < 0.0002 && Math.abs(pos.lng - searchedPlace.lng) < 0.0002) {
-                    m.togglePopup();
+                    if (m.getPopup()) m.togglePopup();
                   }
                 });
               }, 450);
@@ -849,7 +1126,16 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
               }
 
               initRouteLayers();
+              window.updateData = updateData;
               updateData(${pathJson}, ${markersJson}, ${userJson}, ${searchedJson});
+              sendToHost({ type: 'map_ready' });
+
+              map.on('move', function () {
+                updateClusterMarkers();
+              });
+              map.on('moveend', function () {
+                updateClusterMarkers();
+              });
 
               // Ensure map sizes accurately
               map.resize();
@@ -878,8 +1164,6 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
               if (step != null && mk._step === step) {
                 inner.classList.add('active-pin');
                 if (map) map.flyTo({ center: mk.getLngLat(), zoom: 15.5, pitch: 35, duration: 800 });
-                const popup = mk.getPopup();
-                if (popup && !popup.isOpen()) mk.togglePopup();
               } else {
                 inner.classList.remove('active-pin');
               }
@@ -897,10 +1181,13 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
   if (Platform.OS === 'web' && maplibregl) {
     const mapContainerRef = useRef(null);
     const mapInstanceRef = useRef(null);
-    const isMapLoadedRef = useRef(false);
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
     const markersListRef = useRef([]);
     const userLocationMarkerRef = useRef(null);
     const isDraggingRef = useRef(false);
+    const superclusterRef = useRef(null);
+    const clusterMarkersMapRef = useRef({});
+    const updateWebClustersRef = useRef(() => {});
 
     // Keep latest callbacks in refs so effects stay stable
     const cbRef = useRef({ onSelectPlace, onMapClick, onUpdateOrigin, onUpdateDestination });
@@ -968,7 +1255,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
 
       map.on('load', () => {
-        isMapLoadedRef.current = true;
+        setIsMapLoaded(true);
 
         // Add 3D building extrusion layer
         try {
@@ -1005,6 +1292,15 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
 
         initRouteLayers(map);
         map.resize();
+        if (updateWebClustersRef.current) updateWebClustersRef.current();
+      });
+
+      map.on('move', () => {
+        if (updateWebClustersRef.current) updateWebClustersRef.current();
+      });
+
+      map.on('moveend', () => {
+        if (updateWebClustersRef.current) updateWebClustersRef.current();
       });
 
       map.on('click', (e) => {
@@ -1029,7 +1325,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         if (mapInstanceRef.current) {
           mapInstanceRef.current.remove();
           mapInstanceRef.current = null;
-          isMapLoadedRef.current = false;
+          setIsMapLoaded(false);
         }
       };
     }, [initRouteLayers]);
@@ -1062,14 +1358,55 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         return '<div style="width:34px;height:34px;border-radius:50%;background:#eff6ff;border:2px solid #2563eb;box-shadow:0 4px 10px rgba(37,99,235,0.35);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;"><span>🚆</span></div>';
       }
 
-      // Pandal / Search Pin
-      const isSearch = (type === 'search');
-      const activeClass = (isActive || isSearch) ? 'transform: scale(1.28) translateY(-4px); filter: drop-shadow(0 8px 18px rgba(142, 27, 27, 0.6)); z-index: 999;' : '';
-      const PANDAL_MARKER_BASE64 = 'data:image/png;base64,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';
-      return `<div style="position:relative;width:46px;height:46px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);${activeClass}">
-        <img src="${PANDAL_MARKER_BASE64}" style="width:38px;height:38px;object-fit:contain;pointer-events:none;" alt="Pin" />
-        ${label ? `<span style="position:absolute;top:-2px;right:-4px;background:#8E1B1B;color:#fff;font-weight:800;font-size:11px;line-height:1;padding:3px 6px;border-radius:9999px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);pointer-events:none;">${label}</span>` : (isSearch ? `<span style="position:absolute;top:-2px;right:-4px;background:#D97706;color:#fff;font-weight:800;font-size:11px;line-height:1;padding:3px 6px;border-radius:9999px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);pointer-events:none;">📍</span>` : '')}
-      </div>`;
+      if (type === 'search') {
+        const activeStyle = isActive ? 'transform: scale(1.25) translateY(-4px); filter: drop-shadow(0 8px 18px rgba(217, 119, 6, 0.6)); z-index: 999;' : '';
+        return `
+          <div class="vector-pointer-wrapper" style="position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);${activeStyle}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 64 80" style="filter: drop-shadow(0 4px 10px rgba(217, 119, 6, 0.45));">
+              <defs><linearGradient id="p-search-web" x1="18" y1="8" x2="50" y2="60" gradientUnits="userSpaceOnUse"><stop stop-color="#FDE68A"/><stop offset=".55" stop-color="#D97706"/><stop offset="1" stop-color="#B45309"/></linearGradient></defs>
+              <ellipse cx="32" cy="72" rx="17" ry="4" fill="#D97706" opacity=".25"/>
+              <path d="M32 3C16.54 3 4 15.54 4 31c0 20.2 28 44 28 44s28-23.8 28-44C60 15.54 47.46 3 32 3Z" fill="url(#p-search-web)"/>
+              <circle cx="32" cy="30" r="17" fill="#18202B" stroke="#FFFBEB" stroke-width="3"/>
+              <text x="32" y="37" text-anchor="middle" font-size="16">📍</text>
+            </svg>
+          </div>
+        `;
+      }
+
+      // Trips section: Map Numbered Pointer SVG from assets folder
+      if (label) {
+        const numStr = String(label);
+        const fontSize = numStr.length > 2 ? 14 : numStr.length > 1 ? 16 : 19;
+        const activeStyle = isActive ? 'transform: scale(1.25) translateY(-4px); filter: drop-shadow(0 8px 18px rgba(243, 61, 75, 0.6)); z-index: 999;' : '';
+        return `
+          <div class="vector-pointer-wrapper" style="position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);${activeStyle}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 64 80" style="filter: drop-shadow(0 4px 10px rgba(243, 61, 75, 0.4));">
+              <defs>
+                <linearGradient id="p-stop-web-${numStr}" x1="18" y1="8" x2="50" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#FFB52E"/>
+                  <stop offset=".55" stop-color="#FF6B2C"/>
+                  <stop offset="1" stop-color="#F33D4B"/>
+                </linearGradient>
+                <filter id="s-stop-web-${numStr}">
+                  <feDropShadow dx="0" dy="4" stdDeviation="3" flood-opacity=".28"/>
+                </filter>
+              </defs>
+              <ellipse cx="32" cy="72" rx="17" ry="4" fill="#FF6B3D" opacity=".25"/>
+              <path d="M32 3C16.54 3 4 15.54 4 31c0 20.2 28 44 28 44s28-23.8 28-44C60 15.54 47.46 3 32 3Z" fill="url(#p-stop-web-${numStr})" filter="url(#s-stop-web-${numStr})"/>
+              <circle cx="32" cy="30" r="17" fill="#18202B" stroke="#FFF4E8" stroke-width="3"/>
+              <text x="32" y="36.5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="${fontSize}" font-weight="700" fill="#FFF4E8">${numStr}</text>
+            </svg>
+          </div>
+        `;
+      }
+
+      // Navigation page: Durga Map Pointer Transparent SVG
+      const activeStyle = isActive ? 'transform: scale(1.28) translateY(-4px); filter: drop-shadow(0 8px 18px rgba(142, 27, 27, 0.6)); z-index: 999;' : '';
+      return `
+        <div class="vector-pointer-wrapper" style="position:relative;width:52px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);${activeStyle}">
+          <img src="${DURGA_MAP_POINTER_DATA_URI}" style="width:48px;height:48px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.28));" alt="Durga Pandal" />
+        </div>
+      `;
     }, []);
 
     // Create popup HTML
@@ -1086,7 +1423,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     // Update markers and route data when they change
     useEffect(() => {
       const map = mapInstanceRef.current;
-      if (!map || !isMapLoadedRef.current) return;
+      if (!map || !isMapLoaded) return;
 
       // 1. Update Route Geometry
       initRouteLayers(map);
@@ -1127,8 +1464,113 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           .addTo(map);
       }
 
-      // 4. Add Markers
-      allMarkers.forEach(m => {
+      // 4. Update Cluster Markers Logic
+      const generalPandals = allMarkers.filter((m) => m.type === 'pandal' && !m.label);
+      const otherMarkers = allMarkers.filter((m) => !(m.type === 'pandal' && !m.label));
+
+      // Clear previous cluster markers
+      Object.keys(clusterMarkersMapRef.current).forEach((id) => {
+        if (clusterMarkersMapRef.current[id]?.marker) {
+          clusterMarkersMapRef.current[id].marker.remove();
+        }
+      });
+      clusterMarkersMapRef.current = {};
+
+      updateWebClustersRef.current = () => {
+        if (!map || !superclusterRef.current) return;
+        const bounds = map.getBounds();
+        if (!bounds) return;
+        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        const zoom = Math.floor(map.getZoom());
+
+        const clusters = superclusterRef.current.getClusters(bbox, zoom);
+        const newMap = {};
+
+        clusters.forEach((c) => {
+          const isCluster = c.properties.cluster;
+          const id = isCluster ? `c_${c.properties.cluster_id}` : `p_${c.properties.pandalId}`;
+          newMap[id] = c;
+        });
+
+        // Remove old markers
+        Object.keys(clusterMarkersMapRef.current).forEach((id) => {
+          if (!newMap[id]) {
+            clusterMarkersMapRef.current[id].marker.remove();
+            delete clusterMarkersMapRef.current[id];
+          }
+        });
+
+        // Add or keep markers
+        Object.keys(newMap).forEach((id) => {
+          if (!clusterMarkersMapRef.current[id]) {
+            const c = newMap[id];
+            const [lng, lat] = c.geometry.coordinates;
+            const isCluster = c.properties.cluster;
+            const el = document.createElement('div');
+
+            if (isCluster) {
+              const count = c.properties.point_count;
+              el.className = 'vector-pin-container cursor-pointer';
+              el.innerHTML = createClusterHtml(count);
+
+              el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                try {
+                  const expZoom = superclusterRef.current.getClusterExpansionZoom(c.properties.cluster_id);
+                  map.flyTo({ center: [lng, lat], zoom: expZoom, essential: true });
+                } catch (err) {}
+              });
+
+              const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+                .setLngLat([lng, lat])
+                .addTo(map);
+
+              clusterMarkersMapRef.current[id] = { marker, isCluster: true };
+            } else {
+              const place = c.properties.place;
+              el.className = 'vector-pin-container cursor-pointer';
+              el.innerHTML = createPinHtml(place.type, place.label);
+
+              el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cbRef.current.onSelectPlace?.(place.raw || place);
+              });
+
+              const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+                .setLngLat([lng, lat])
+                .addTo(map);
+
+              clusterMarkersMapRef.current[id] = { marker, isCluster: false, place };
+            }
+          }
+        });
+      };
+
+      if (generalPandals.length > 0 && Supercluster) {
+        if (!superclusterRef.current) {
+          superclusterRef.current = new Supercluster({ radius: 60, maxZoom: 14 });
+        }
+        const points = generalPandals.map((p) => ({
+          type: 'Feature',
+          properties: {
+            cluster: false,
+            pandalId: (p.raw && (p.raw.id || p.raw._id)) || `${p.lng}_${p.lat}`,
+            place: p,
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [p.lng, p.lat],
+          },
+        }));
+        superclusterRef.current.load(points);
+        generalPandals.forEach((m) => { bounds.extend([m.lng, m.lat]); hasPoints = true; });
+        updateWebClustersRef.current();
+      } else {
+        superclusterRef.current = null;
+      }
+
+      // 5. Add Other Markers (itinerary stops, origin, destination, transit, searchedPlace)
+      otherMarkers.forEach(m => {
         const pinHtml = createPinHtml(m.type, m.label);
         const popupHtml = createPopupHtml(m);
 
@@ -1137,16 +1579,21 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         el.innerHTML = pinHtml;
 
         const isOriginOrDest = (m.type === 'origin' || m.type === 'destination');
-        const popup = new maplibregl.Popup({ offset: [0, -36], closeButton: false }).setHTML(popupHtml);
+        const isPandal = (m.type === 'pandal');
 
         const marker = new maplibregl.Marker({
           element: el,
           draggable: isOriginOrDest,
           anchor: isOriginOrDest ? 'bottom' : (m.type === 'metro' || m.type === 'train' ? 'center' : 'bottom'),
         })
-          .setLngLat([m.lng, m.lat])
-          .setPopup(popup)
-          .addTo(map);
+          .setLngLat([m.lng, m.lat]);
+
+        if (!isPandal) {
+          const popup = new maplibregl.Popup({ offset: [0, -36], closeButton: false }).setHTML(popupHtml);
+          marker.setPopup(popup);
+        }
+
+        marker.addTo(map);
 
         marker._step = m.step;
         marker._placeData = m;
@@ -1184,7 +1631,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           markersListRef.current.forEach(mk => {
             const pos = mk.getLngLat();
             if (Math.abs(pos.lat - sLat) < 0.0002 && Math.abs(pos.lng - sLng) < 0.0002) {
-              mk.togglePopup();
+              if (mk.getPopup()) mk.togglePopup();
             }
           });
         }, 450);
@@ -1195,12 +1642,12 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       } else if (hasPoints) {
         map.fitBounds(bounds, { padding: 50, maxZoom: 15, duration: 800 });
       }
-    }, [pathCoords, allMarkers, userCoords, searchedPlace, initRouteLayers, createPinHtml, createPopupHtml]);
+    }, [isMapLoaded, pathCoords, allMarkers, userCoords, searchedPlace, initRouteLayers, createPinHtml, createPopupHtml]);
 
     // Highlight step when selectedPlace changes
     useEffect(() => {
       const map = mapInstanceRef.current;
-      if (!map || !isMapLoadedRef.current) return;
+      if (!map || !isMapLoaded) return;
 
       let step = null;
       if (selectedPlace) {
@@ -1226,15 +1673,13 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           inner.style.filter = 'drop-shadow(0 8px 18px rgba(142, 27, 27, 0.6))';
           inner.style.zIndex = '999';
           map.flyTo({ center: mk.getLngLat(), zoom: 15.5, pitch: 35, duration: 800 });
-          const popup = mk.getPopup();
-          if (popup && !popup.isOpen()) mk.togglePopup();
         } else {
           inner.style.transform = '';
           inner.style.filter = '';
           inner.style.zIndex = '';
         }
       });
-    }, [selectedPlace, itinerary]);
+    }, [isMapLoaded, selectedPlace, itinerary]);
 
     // Inject global CSS for pulse animation and popup styling
     useEffect(() => {
@@ -1364,6 +1809,9 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         allowFileAccessFromFileURLs={true}
         androidHardwareAccelerationDisabled={false}
         onMessage={handleMessage}
+        onLoadEnd={() => {
+          setTimeout(pushDataToWebView, 150);
+        }}
       />
     </View>
   );

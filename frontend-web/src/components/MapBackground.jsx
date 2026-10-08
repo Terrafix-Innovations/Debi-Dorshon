@@ -369,25 +369,14 @@ export default function MapBackground({
         bounds.extend(lngLat);
 
         const isSelected = activePandal?.step === step;
-        const popupHtml = `
-          <div class="p-1 min-w-[180px]">
-            <div class="text-[10px] uppercase font-bold text-[#FF6B2C] flex items-center gap-1">
-              <span>Stop #${step}</span> &bull; <span>+${detour_distance_km.toFixed(2)} km</span>
-            </div>
-            <h4 class="font-bold text-sm text-stone-900 mt-0.5">${pandal.name}</h4>
-            <p class="text-xs text-stone-500 mt-0.5">${pandal.region || 'Kolkata'}${pandal.cluster ? ` &bull; ${pandal.cluster}` : ''}</p>
-            ${pandal.nearest_metro?.name ? `<div class="mt-1 text-xs text-indigo-700 font-medium">🚇 ${pandal.nearest_metro.name}</div>` : ''}
-          </div>`;
 
         const el = document.createElement('div');
         el.className = 'vector-pin-container cursor-pointer';
         el.setAttribute('data-step', step);
         el.innerHTML = getNumberedPointerSvg(step, isSelected);
 
-        const popup = new maplibregl.Popup({ offset: [0, -42], closeButton: false }).setHTML(popupHtml);
         const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
           .setLngLat(lngLat)
-          .setPopup(popup)
           .addTo(map);
 
         marker.step = step;
@@ -444,11 +433,6 @@ export default function MapBackground({
         duration: 1000,
         essential: true,
       });
-
-      const target = pandalMarkersRef.current.find((m) => m.step === activePandal.step);
-      if (target && !target.getPopup().isOpen()) {
-        target.togglePopup();
-      }
     }
   }, [activePandal, is3DMode]);
 
