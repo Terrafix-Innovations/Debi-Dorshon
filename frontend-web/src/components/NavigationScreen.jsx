@@ -81,7 +81,7 @@ export default function NavigationScreen({
 
         if (isCluster) {
           const count = cluster.properties.point_count;
-          el.className = 'cursor-pointer z-20 flex items-center justify-center transition-all hover:scale-110';
+          el.className = 'cursor-pointer z-20 flex items-center justify-center';
           el.innerHTML = getClusterPointerSvg(count);
 
           el.addEventListener('click', (e) => {
