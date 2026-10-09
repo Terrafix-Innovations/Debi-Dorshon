@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 from app.core.cache import cache
 from app.core.http_client import init_http_client, close_http_client
+from fastapi.middleware.gzip import GZipMiddleware
 from app.core.rate_limit import limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -61,6 +62,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add GZip compression for faster payload transfer
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include API v1 router
 app.include_router(api_router, prefix=settings.API_V1_STR)
