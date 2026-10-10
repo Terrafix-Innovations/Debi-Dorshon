@@ -56,16 +56,43 @@ export default function App() {
     resetRoute();
   };
 
+  const [mapSelectionMode, setMapSelectionMode] = useState(null);
+
   const handleMapClick = useCallback((lat, lng) => {
+    if (!mapSelectionMode) return;
     const label = `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-    setOrigin((prevOrigin) => {
-      if (!prevOrigin) return { latitude: lat, longitude: lng, name: label };
+    if (mapSelectionMode === 'origin' || mapSelectionMode === 'start') {
+      setOrigin({ latitude: lat, longitude: lng, name: label });
+      setMapSelectionMode(null);
+    } else {
       setDestination({ latitude: lat, longitude: lng, name: label });
-      return prevOrigin;
-    });
+      setMapSelectionMode(null);
+    }
     setRouteData(null);
     setActivePandal(null);
     setError(null);
+  }, [mapSelectionMode]);
+
+  const handleUseCurrentLocation = useCallback((field = 'origin') => {
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const curr = {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          name: "My Current Location"
+        };
+        if (field === 'origin' || field === 'start') {
+          setOrigin(curr);
+        } else {
+          setDestination(curr);
+        }
+      },
+      (err) => setError("Unable to retrieve location: " + err.message)
+    );
   }, []);
 
   const handleUpdateOrigin = useCallback((lat, lng) => {
@@ -320,10 +347,30 @@ export default function App() {
             onClearOrigin={() => { setOrigin(null); resetRoute(); }}
             onClearDestination={() => { setDestination(null); resetRoute(); }}
             onSwap={handleSwap}
+            onChooseFromMap={setMapSelectionMode}
+            onUseCurrentLocation={handleUseCurrentLocation}
             loading={loading}
             apiBaseUrl={apiBaseUrl}
             hasRoute={hasRoute}
           />
+
+          {/* Map Selection Banner */}
+          {mapSelectionMode && (
+            <div className="absolute top-[32px] left-1/2 -translate-x-1/2 z-40 bg-[#6E1412]/95 text-white px-5 py-2.5 rounded-full shadow-lg flex items-center gap-3 backdrop-blur-md animate-slide-up whitespace-nowrap">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="font-bold text-sm tracking-wide">
+                Tap on map to select {mapSelectionMode === 'origin' || mapSelectionMode === 'start' ? 'Start Point' : 'Destination'}
+              </span>
+              <button onClick={() => setMapSelectionMode(null)} className="ml-2 bg-[#FAF0E6]/20 hover:bg-[#FAF0E6]/40 p-1 rounded-full transition-colors">
+                <svg className="w-4 h-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* Dedicated Aesthetic Save Button (Floats right above bottom carousel, leaving map 100% visible) */}
           {hasRoute && (

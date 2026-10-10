@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import Svg, { Path, Rect, Circle, Line } from 'react-native-svg';
-import { colors } from '../../theme/colors';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { radius, spacing } from '../../theme/spacing';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -17,22 +16,56 @@ const CARD_WIDTH = Math.min(270, SCREEN_WIDTH * 0.78);
 const CARD_MARGIN = 10;
 const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN;
 
-function MetroIcon({ color = '#831917', size = 13 }) {
+function PandalIcon({ color = '#831917', size = 20 }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <Rect x="4" y="3" width="16" height="15" rx="3" />
-      <Line x1="4" y1="11" x2="20" y2="11" />
-      <Circle cx="8" cy="15" r="1" fill={color} />
-      <Circle cx="16" cy="15" r="1" fill={color} />
-      <Path d="M8 18l-2 4M16 18l2 4M9 22h6" />
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <Path d="M12 2c-1.1 0-2 .9-2 2v1H7C5.3 5 4 6.3 4 8v2h2v10H4v2h16v-2h-2V10h2V8c0-1.7-1.3-3-3-3h-3V4c0-1.1-.9-2-2-2zm-4 8v10h2v-6h4v6h2V10H8zm4-3c1.1 0 2 .9 2 2H10c0-1.1.9-2 2-2z"/>
     </Svg>
   );
 }
 
-function ArrowRightIcon({ color = '#FFFFFF', size = 14 }) {
+function PinIcon({ color = '#9E9E9E', size = 14 }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <Path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+    </Svg>
+  );
+}
+
+function WalkIcon({ color = '#2E7D32', size = 14 }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <Path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
+    </Svg>
+  );
+}
+
+function ArrowRightIcon({ color = '#FFFFFF', size = 12 }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <Path d="M5 12h14M13 6l6 6-6 6" />
+      <Path d="M5 12h14M12 5l7 7-7 7" />
+    </Svg>
+  );
+}
+
+function ChevronIcon({ expanded, color = '#9E9E9E', size = 16 }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: [{ rotate: expanded ? '0deg' : '180deg' }] }}>
+      <Path d="M6 9l6 6 6-6" />
+    </Svg>
+  );
+}
+
+function MandalaIcon() {
+  return (
+    <Svg width="80" height="80" viewBox="0 0 100 100" fill="none" stroke="#831917" strokeWidth="1" strokeOpacity="0.15">
+      <Path d="M100 50 C 70 30, 50 50, 50 50 C 50 50, 70 70, 100 50 Z" />
+      <Path d="M90 20 C 60 20, 50 50, 50 50 C 50 50, 80 40, 90 20 Z" />
+      <Path d="M90 80 C 80 60, 50 50, 50 50 C 50 50, 60 80, 90 80 Z" />
+      <Path d="M50 0 C 40 30, 50 50, 50 50 C 50 50, 60 30, 50 0 Z" />
+      <Path d="M50 100 C 40 70, 50 50, 50 50 C 50 50, 60 70, 50 100 Z" />
+      <Circle cx="50" cy="50" r="10" />
+      <Circle cx="50" cy="50" r="30" />
     </Svg>
   );
 }
@@ -45,6 +78,7 @@ export default function PandalCarousel({
   navigation,
 }) {
   const flatListRef = useRef(null);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Auto-scroll FlatList when activeIndex changes from map pin selection
   useEffect(() => {
@@ -79,7 +113,6 @@ export default function PandalCarousel({
           contentContainerStyle={{ paddingHorizontal: spacing.md }}
           renderItem={() => (
             <View style={[styles.card, styles.skeletonCard]}>
-              <View style={styles.skelHeader} />
               <View style={styles.skelLine} />
               <View style={styles.skelLineSub} />
             </View>
@@ -102,22 +135,24 @@ export default function PandalCarousel({
 
   return (
     <View style={styles.carouselWrap}>
-      {/* Header Row above the sliding track */}
-      <View style={styles.headerRow}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerIcon}>🛕</Text>
-          <Text style={styles.headerTitle}>Pandals on route</Text>
-          <View style={styles.countBadge}>
-            <Text style={styles.countBadgeText}>{itinerary.length}</Text>
+      {/* Floating Pill: Pandals on route */}
+      <View style={styles.chipWrapper}>
+        <TouchableOpacity style={styles.pillChip} onPress={() => setIsExpanded(!isExpanded)} activeOpacity={0.8}>
+          <PandalIcon color="#831917" size={20} />
+          <Text style={styles.pillText} numberOfLines={1}>
+            {!isExpanded && activeIndex >= 0 && itinerary[activeIndex]
+              ? (itinerary[activeIndex].pandal?.name || itinerary[activeIndex].name || 'Durga Puja Pandal')
+              : 'Pandals on route'}
+          </Text>
+          <View style={styles.pillBadge}>
+            <Text style={styles.pillBadgeText}>{itinerary.length}</Text>
           </View>
-        </View>
-        <View style={styles.headerRight}>
-          <Text style={styles.swipeText}>swipe</Text>
-          <ArrowRightIcon color="#8A7B6E" size={13} />
-        </View>
+          <ChevronIcon expanded={isExpanded} color="#9E9E9E" size={16} />
+        </TouchableOpacity>
       </View>
 
       {/* Horizontal Sliding Track */}
+      {isExpanded && (
       <FlatList
         ref={flatListRef}
         horizontal
@@ -127,6 +162,12 @@ export default function PandalCarousel({
         snapToInterval={SNAP_INTERVAL}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: spacing.md }}
+        getItemLayout={(data, index) => ({
+          length: SNAP_INTERVAL,
+          offset: SNAP_INTERVAL * index,
+          index,
+        })}
+        initialScrollIndex={activeIndex >= 0 && activeIndex < itinerary.length ? activeIndex : 0}
         onMomentumScrollEnd={(e) => {
           const offsetX = e.nativeEvent.contentOffset.x;
           const idx = Math.round(offsetX / SNAP_INTERVAL);
@@ -138,14 +179,19 @@ export default function PandalCarousel({
           const p = item.pandal || item;
           const stepNum = item.step || index + 1;
           const isSelected = index === activeIndex;
-          const detourKm = item.detour_distance_km;
+          const detourKm = item.detour_distance_km !== undefined ? item.detour_distance_km : 0;
 
           return (
             <TouchableOpacity
               style={[styles.card, isSelected ? styles.activeCard : styles.inactiveCard]}
-              activeOpacity={0.9}
+              activeOpacity={1}
               onPress={() => onSelectCard(index, item)}
             >
+              {isSelected && (
+                <View style={styles.watermarkContainer}>
+                  <MandalaIcon />
+                </View>
+              )}
               <View style={styles.cardContentRow}>
                 {/* Numbered Step Circle Badge */}
                 <View style={[styles.stepCircle, isSelected ? styles.stepCircleActive : styles.stepCircleInactive]}>
@@ -156,51 +202,42 @@ export default function PandalCarousel({
 
                 {/* Info Column */}
                 <View style={styles.infoCol}>
-                  <Text style={[styles.pandalName, isSelected && styles.activeText]} numberOfLines={1}>
+                  <Text style={styles.pandalName} numberOfLines={1}>
                     {p.name || 'Durga Puja Pandal'}
                   </Text>
 
-                  <Text style={[styles.pandalSub, isSelected && styles.activeSubText]} numberOfLines={1}>
-                    {p.region || 'Kolkata'} {p.cluster ? `• ${p.cluster}` : ''}
-                  </Text>
-
-                  <View style={styles.metricsRow}>
-                    {detourKm !== undefined ? (
-                      <Text style={[styles.detourText, isSelected ? styles.activeDetourText : styles.inactiveDetourText]}>
-                        +{detourKm.toFixed(2)} km
-                      </Text>
-                    ) : null}
-
-                    {p.nearest_metro?.name ? (
-                      <>
-                        <Text style={[styles.dotSep, isSelected && { color: '#FFF' }]}>•</Text>
-                        <View style={styles.metroBadge}>
-                          <MetroIcon color={isSelected ? '#FFFFFF' : '#831917'} size={12} />
-                          <Text style={[styles.metroText, isSelected && { color: '#FFFFFF' }]} numberOfLines={1}>
-                            {p.nearest_metro.name}
-                          </Text>
-                        </View>
-                      </>
-                    ) : null}
+                  <View style={styles.subtitleRow}>
+                    <PinIcon color="#9E9E9E" size={12} />
+                    <Text style={styles.pandalSub} numberOfLines={1}>
+                      {p.region || 'Kolkata'} {p.cluster ? `• ${p.cluster}` : ''}
+                    </Text>
                   </View>
 
-                  {navigation ? (
-                    <TouchableOpacity
-                      style={[styles.detailBtn, isSelected ? styles.detailBtnActive : styles.detailBtnInactive]}
-                      onPress={() => navigation.navigate('PandalDetail', { pandalId: p.id || p._id })}
-                    >
-                      <Text style={[styles.detailBtnText, isSelected ? { color: '#831917' } : { color: '#FFFFFF' }]}>
-                        View Details
+                  <View style={styles.bottomRow}>
+                    <View style={styles.distancePill}>
+                      <WalkIcon color="#2E7D32" size={13} />
+                      <Text style={styles.distanceText}>
+                        +{detourKm.toFixed(2)} km
                       </Text>
-                      <ArrowRightIcon color={isSelected ? '#831917' : '#FFFFFF'} size={12} />
-                    </TouchableOpacity>
-                  ) : null}
+                    </View>
+
+                    {navigation ? (
+                      <TouchableOpacity
+                        style={styles.viewBtn}
+                        onPress={() => navigation.navigate('PandalDetail', { pandalId: p.id || p._id })}
+                      >
+                        <Text style={styles.viewBtnText}>View</Text>
+                        <ArrowRightIcon color="#FFFFFF" size={14} />
+                      </TouchableOpacity>
+                    ) : null}
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
           );
         }}
       />
+      )}
     </View>
   );
 }
@@ -208,200 +245,193 @@ export default function PandalCarousel({
 const styles = StyleSheet.create({
   carouselWrap: {
     paddingVertical: 4,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
     marginBottom: 8,
   },
-  headerLeft: {
+  
+  /* Top Floating Pill */
+  chipWrapper: {
+    paddingHorizontal: spacing.md,
+    marginBottom: 8,
+    alignItems: 'flex-start',
+  },
+  pillChip: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 6,
+    paddingLeft: 10,
+    paddingRight: 8,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
     gap: 6,
   },
-  headerIcon: {
-    fontSize: 15,
+  pillText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#333333',
+    maxWidth: SCREEN_WIDTH * 0.45,
   },
-  headerTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#2C1B18',
-  },
-  countBadge: {
+  pillBadge: {
     backgroundColor: '#831917',
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: radius.pill,
-  },
-  countBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  headerRight: {
-    flexDirection: 'row',
+    borderRadius: 12,
+    minWidth: 22,
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'center',
+    marginLeft: 2,
+    marginRight: 4,
   },
-  swipeText: {
-    fontSize: 11,
-    color: '#8A7B6E',
-    fontWeight: '600',
+  pillBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
   },
 
   /* Card Container */
   card: {
     width: CARD_WIDTH,
-    borderRadius: 22,
-    borderWidth: 1,
+    borderRadius: 16,
     padding: 12,
     marginRight: CARD_MARGIN,
-    shadowColor: '#2D1A16',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+    overflow: 'hidden',
+    position: 'relative',
   },
   inactiveCard: {
-    backgroundColor: '#FDFBF7',
-    borderColor: 'rgba(235, 220, 201, 0.8)',
+    backgroundColor: '#FFFFFF',
   },
   activeCard: {
-    backgroundColor: '#831917',
+    backgroundColor: '#FFF7F5',
+    borderWidth: 1.5,
     borderColor: '#831917',
-    transform: [{ scale: 1.02 }],
+  },
+  watermarkContainer: {
+    position: 'absolute',
+    right: -25,
+    top: '50%',
+    marginTop: -40,
+    justifyContent: 'center',
+    zIndex: 0,
   },
   cardContentRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
+    alignItems: 'center',
+    gap: 12,
+    zIndex: 1,
   },
+  
+  /* Step Circle */
   stepCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 2,
   },
   stepCircleActive: {
-    backgroundColor: '#FFFFFF',
-  },
-  stepCircleInactive: {
     backgroundColor: '#831917',
   },
+  stepCircleInactive: {
+    backgroundColor: '#FDECEB',
+  },
   stepNumberText: {
-    fontSize: 12,
-    fontWeight: '900',
+    fontSize: 15,
+    fontWeight: '800',
   },
   stepNumberActive: {
-    color: '#831917',
-  },
-  stepNumberInactive: {
     color: '#FFFFFF',
   },
+  stepNumberInactive: {
+    color: '#831917',
+  },
+
+  /* Info Column */
   infoCol: {
     flex: 1,
     minWidth: 0,
   },
   pandalName: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontWeight: '800',
-    color: '#2C1B18',
+    color: '#212121',
+    marginBottom: 2,
   },
-  activeText: {
-    color: '#FFFFFF',
+  subtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 8,
   },
   pandalSub: {
-    fontSize: 11.5,
-    color: '#7A6B5D',
-    marginTop: 1,
-  },
-  activeSubText: {
-    color: 'rgba(255, 255, 255, 0.85)',
-  },
-  metricsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 6,
-  },
-  detourText: {
     fontSize: 11,
-    fontWeight: '800',
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  inactiveDetourText: {
-    color: '#831917',
-  },
-  activeDetourText: {
-    color: '#F4C430',
-  },
-  dotSep: {
-    color: '#CAA774',
-    fontSize: 10,
-  },
-  metroBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    flex: 1,
-  },
-  metroText: {
-    fontSize: 11,
-    color: '#381E18',
+    color: '#9E9E9E',
     fontWeight: '600',
   },
-  detailBtn: {
+  
+  /* Bottom Row */
+  bottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: 14,
-    marginTop: 8,
+    justifyContent: 'space-between',
+  },
+  distancePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderRadius: 12,
     gap: 4,
   },
-  detailBtnInactive: {
-    backgroundColor: '#831917',
-  },
-  detailBtnActive: {
-    backgroundColor: '#FFFFFF',
-  },
-  detailBtnText: {
+  distanceText: {
+    color: '#2E7D32',
     fontSize: 11,
     fontWeight: '800',
+  },
+  viewBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#831917',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    gap: 6,
+  },
+  viewBtnText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
   },
 
   /* Skeleton Loaders */
   skeletonCard: {
-    opacity: 0.6,
     backgroundColor: '#FDFBF7',
-  },
-  skelHeader: {
-    width: 60,
-    height: 16,
-    backgroundColor: '#F2ECE1',
-    borderRadius: radius.pill,
-    marginBottom: 10,
+    opacity: 0.6,
   },
   skelLine: {
     width: '80%',
-    height: 18,
+    height: 20,
     backgroundColor: '#F2ECE1',
     borderRadius: radius.sm,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   skelLineSub: {
     width: '50%',
-    height: 12,
+    height: 14,
     backgroundColor: '#F2ECE1',
     borderRadius: radius.sm,
   },
 
-  /* Empty Card - Compact Pill */
+  /* Empty Card */
   emptyCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -410,20 +440,15 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1,
     borderColor: '#EBDCC9',
-    paddingVertical: 7,
-    paddingHorizontal: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     gap: 8,
-    shadowColor: '#2B1608',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
   },
   emptyIcon: {
-    fontSize: 14,
+    fontSize: 16,
   },
   emptyText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     color: '#2C1B18',
   },

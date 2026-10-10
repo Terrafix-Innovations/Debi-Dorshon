@@ -18,7 +18,7 @@ import HeaderNavbar from '../../components/common/HeaderNavbar';
 import SideDrawer from '../../components/common/SideDrawer';
 import ScreenBackground from '../../components/common/ScreenBackground';
 import FloatingRouteCard from '../../components/trip/FloatingRouteCard';
-import RouteSummaryChip from '../../components/trip/RouteSummaryChip';
+
 import PandalCarousel from '../../components/trip/PandalCarousel';
 import { fetchRoutePlan } from '../../services/routeService';
 import { colors } from '../../theme/colors';
@@ -130,14 +130,14 @@ export default function TripScreen({ navigation, route }) {
   };
 
   const [locating, setLocating] = useState(false);
-  const handleUseCurrentLocation = async () => {
+  const handleUseCurrentLocation = async (field = 'start') => {
     try {
       setLocating(true);
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
           'Location Permission Needed',
-          'Enable location access to use your current position as the start point.'
+          'Enable location access to use your current position.'
         );
         return;
       }
@@ -152,8 +152,14 @@ export default function TripScreen({ navigation, route }) {
         latitude: pos.coords.latitude,
         longitude: pos.coords.longitude,
       };
-      setStartPlace(curr);
-      setStartText(curr.title);
+      
+      if (field === 'start') {
+        setStartPlace(curr);
+        setStartText(curr.title);
+      } else {
+        setEndPlace(curr);
+        setEndText(curr.title);
+      }
     } catch (err) {
       console.warn('[TripScreen] Location fetch failed:', err);
       // Fallback for Web/failure
@@ -163,8 +169,13 @@ export default function TripScreen({ navigation, route }) {
         latitude: 22.5726,
         longitude: 88.3639,
       };
-      setStartPlace(fallback);
-      setStartText(fallback.title);
+      if (field === 'start') {
+        setStartPlace(fallback);
+        setStartText(fallback.title);
+      } else {
+        setEndPlace(fallback);
+        setEndText(fallback.title);
+      }
     } finally {
       setLocating(false);
     }
@@ -192,6 +203,7 @@ export default function TripScreen({ navigation, route }) {
   }, [routePlan]);
 
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [mapSelectionMode, setMapSelectionMode] = useState(null); // 'start' | 'end' | null
 
   // Tap an empty point on the map to auto-assign Start (if empty) then Destination.
   const handleMapPress = (lat, lng) => {
@@ -201,7 +213,7 @@ export default function TripScreen({ navigation, route }) {
       return;
     }
 
-    if (!startPlace?.latitude) {
+    if (mapSelectionMode === 'start') {
       const picked = {
         id: `map_${Date.now()}`,
         title: `Dropped Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
@@ -210,11 +222,9 @@ export default function TripScreen({ navigation, route }) {
       };
       setStartPlace(picked);
       setStartText(picked.title);
+      setMapSelectionMode(null);
       try { Vibration.vibrate(15); } catch (err) { }
-      return;
-    }
-
-    if (!endPlace?.latitude) {
+    } else if (mapSelectionMode === 'end') {
       const picked = {
         id: `map_${Date.now()}`,
         title: `Dropped Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
@@ -223,6 +233,7 @@ export default function TripScreen({ navigation, route }) {
       };
       setEndPlace(picked);
       setEndText(picked.title);
+      setMapSelectionMode(null);
       try { Vibration.vibrate(15); } catch (err) { }
     }
   };
@@ -322,20 +333,24 @@ export default function TripScreen({ navigation, route }) {
             onSwap={handleSwap}
             onUseCurrentLocation={handleUseCurrentLocation}
             onSearchActiveChange={setIsSearchActive}
+            onChooseFromMap={(field) => setMapSelectionMode(field)}
             loading={loadingRoute || locating}
             hasRoute={!!routePlan}
           />
-
-          {/* Floating Route Summary Chip under top card */}
-          {routePlan ? (
-            <View style={{ marginTop: spacing.xs }}>
-              <RouteSummaryChip
-                distanceKm={routePlan.distanceKm}
-                pandalsCount={routePlan.totalPandals || itinerary.length}
-              />
-            </View>
-          ) : null}
         </View>
+
+        {/* Map Selection Tooltip Banner */}
+        {mapSelectionMode && (
+          <View style={styles.mapSelectionBanner}>
+            <Ionicons name="map" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
+            <Text style={styles.mapSelectionBannerText}>
+              Tap on map to select {mapSelectionMode === 'start' ? 'Start Point' : 'Destination'}
+            </Text>
+            <TouchableOpacity onPress={() => setMapSelectionMode(null)} style={{ marginLeft: 'auto' }}>
+              <Ionicons name="close-circle" size={22} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Bottom Horizontal Snapping Carousel */}
         <View style={styles.bottomCarouselWrap}>
@@ -383,5 +398,30 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
+  },
+
+  /* Map Selection Banner */
+  mapSelectionBanner: {
+    position: 'absolute',
+    top: 190,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(110, 20, 18, 0.95)', // Maroon
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  mapSelectionBannerText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+    marginRight: 12,
   },
 });

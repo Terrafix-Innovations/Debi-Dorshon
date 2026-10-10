@@ -352,26 +352,33 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     webRef.current.injectJavaScript(`if (window.highlightStep) window.highlightStep(${step == null ? 'null' : step}); true;`);
   }, [selectedPlace, itinerary]);
 
+  // Focus place when searchedPlace or selectedPlace changes
+  useEffect(() => {
+    const place = searchedPlace || selectedPlace;
+    if (!place) return;
+    const lat = place.latitude ?? place.lat;
+    const lng = place.longitude ?? place.lng;
+    if (typeof lat === 'number' && typeof lng === 'number') {
+      if (Platform.OS !== 'web' && webRef.current) {
+        webRef.current.injectJavaScript(`if (window.focusPlace) window.focusPlace(${lat}, ${lng}); true;`);
+      }
+    }
+  }, [searchedPlace, selectedPlace]);
+
   // Push latest markers and route data into WebView
   const isWebViewReadyRef = useRef(false);
+
+  const allMarkersJson = useMemo(() => JSON.stringify(allMarkers || []), [allMarkers]);
+  const pathCoordsJson = useMemo(() => JSON.stringify(pathCoords || []), [pathCoords]);
 
   const pushDataToWebView = useCallback(() => {
     if (Platform.OS === 'web' || !webRef.current) return;
     try {
-      const pathJson = JSON.stringify(pathCoords || []);
-      const markersJson = JSON.stringify(allMarkers || []);
       const userJson = userCoords ? JSON.stringify([userCoords.longitude, userCoords.latitude]) : 'null';
-      const searchedJson = searchedPlace && typeof (searchedPlace.latitude ?? searchedPlace.lat) === 'number'
-        ? JSON.stringify({
-            lat: searchedPlace.latitude ?? searchedPlace.lat,
-            lng: searchedPlace.longitude ?? searchedPlace.lng,
-            title: searchedPlace.title || searchedPlace.name || '',
-          })
-        : 'null';
 
       const script = `
         if (typeof window.updateData === 'function') {
-          window.updateData(${pathJson}, ${markersJson}, ${userJson}, ${searchedJson});
+          window.updateData(${pathCoordsJson}, ${allMarkersJson}, ${userJson});
         }
         true;
       `;
@@ -379,7 +386,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     } catch (e) {
       console.warn('[InteractiveMapView] pushDataToWebView error:', e);
     }
-  }, [pathCoords, allMarkers, userCoords, searchedPlace]);
+  }, [pathCoordsJson, allMarkersJson, userCoords]);
 
   useEffect(() => {
     pushDataToWebView();
@@ -428,16 +435,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
 
   // Build MapLibre GL Vector Map HTML
   const mapHtml = useMemo(() => {
-    const pathJson = JSON.stringify(pathCoords); // [[lng, lat], ...]
-    const markersJson = JSON.stringify(allMarkers);
     const userJson = userCoords ? JSON.stringify([userCoords.longitude, userCoords.latitude]) : 'null';
-    const searchedJson = searchedPlace && typeof (searchedPlace.latitude ?? searchedPlace.lat) === 'number'
-      ? JSON.stringify({
-          lat: searchedPlace.latitude ?? searchedPlace.lat,
-          lng: searchedPlace.longitude ?? searchedPlace.lng,
-          title: searchedPlace.title || searchedPlace.name || '',
-        })
-      : 'null';
 
     return `
       <!DOCTYPE html>
@@ -880,7 +878,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
             });
           }
 
-          function updateData(pathCoordsList, markers, userCoords, searchedPlace) {
+          function updateData(pathCoordsList, markers, userCoords) {
             if (!map) return;
 
             // 1. Update Route Geometry
@@ -1014,18 +1012,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
               hasPoints = true;
             });
 
-            // Fit bounds or fly to searched place
-            if (searchedPlace && typeof searchedPlace.lat === 'number' && typeof searchedPlace.lng === 'number') {
-              map.flyTo({ center: [searchedPlace.lng, searchedPlace.lat], zoom: 16, pitch: 35, duration: 900 });
-              setTimeout(() => {
-                markersList.forEach(m => {
-                  const pos = m.getLngLat();
-                  if (Math.abs(pos.lat - searchedPlace.lat) < 0.0002 && Math.abs(pos.lng - searchedPlace.lng) < 0.0002) {
-                    if (m.getPopup()) m.togglePopup();
-                  }
-                });
-              }, 450);
-            } else if (pathCoordsList && pathCoordsList.length > 0) {
+            if (pathCoordsList && pathCoordsList.length > 0) {
               const routeBounds = new maplibregl.LngLatBounds();
               pathCoordsList.forEach(coord => routeBounds.extend(coord));
               map.fitBounds(routeBounds, { padding: 50, maxZoom: 15, duration: 800 });
@@ -1127,7 +1114,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
 
               initRouteLayers();
               window.updateData = updateData;
-              updateData(${pathJson}, ${markersJson}, ${userJson}, ${searchedJson});
+              updateData(${pathCoordsJson}, ${allMarkersJson}, ${userJson});
               sendToHost({ type: 'map_ready' });
 
               map.on('move', function () {
@@ -1168,6 +1155,49 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
                 inner.classList.remove('active-pin');
               }
             });
+          };
+
+          window.focusPlace = function(lat, lng) {
+            if (!map) return;
+            map.flyTo({ center: [lng, lat], zoom: 16, pitch: 35, duration: 900 });
+            setTimeout(() => {
+              markersList.forEach(m => {
+                const pos = m.getLngLat();
+                if (Math.abs(pos.lat - lat) < 0.0002 && Math.abs(pos.lng - lng) < 0.0002) {
+                  if (m.getPopup() && !m.getPopup().isOpen()) m.togglePopup();
+                  const el = m.getElement();
+                  if (el) {
+                    const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                    if (inner) inner.classList.add('active-pin');
+                  }
+                } else {
+                  const el = m.getElement();
+                  if (el) {
+                    const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                    if (inner) inner.classList.remove('active-pin');
+                  }
+                }
+              });
+
+              Object.values(clusterMarkersMap).forEach(obj => {
+                if (!obj.isCluster && obj.marker) {
+                  const m = obj.marker;
+                  const pos = m.getLngLat();
+                  const el = m.getElement();
+                  if (Math.abs(pos.lat - lat) < 0.0002 && Math.abs(pos.lng - lng) < 0.0002) {
+                    if (el) {
+                      const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                      if (inner) inner.classList.add('active-pin');
+                    }
+                  } else {
+                    if (el) {
+                      const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                      if (inner) inner.classList.remove('active-pin');
+                    }
+                  }
+                }
+              });
+            }, 450);
           };
 
           init();
@@ -1424,6 +1454,9 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
     useEffect(() => {
       const map = mapInstanceRef.current;
       if (!map || !isMapLoaded) return;
+      
+      const currentMarkers = JSON.parse(allMarkersJson);
+      const currentPathCoords = JSON.parse(pathCoordsJson);
 
       // 1. Update Route Geometry
       initRouteLayers(map);
@@ -1434,7 +1467,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: (pathCoords && pathCoords.length > 0) ? pathCoords : [],
+            coordinates: (currentPathCoords && currentPathCoords.length > 0) ? currentPathCoords : [],
           },
         });
       }
@@ -1465,8 +1498,8 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       }
 
       // 4. Update Cluster Markers Logic
-      const generalPandals = allMarkers.filter((m) => m.type === 'pandal' && !m.label);
-      const otherMarkers = allMarkers.filter((m) => !(m.type === 'pandal' && !m.label));
+      const generalPandals = currentMarkers.filter((m) => m.type === 'pandal' && !m.label);
+      const otherMarkers = currentMarkers.filter((m) => !(m.type === 'pandal' && !m.label));
 
       // Clear previous cluster markers
       Object.keys(clusterMarkersMapRef.current).forEach((id) => {
@@ -1629,6 +1662,7 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
         map.flyTo({ center: [sLng, sLat], zoom: 16, pitch: 35, duration: 900 });
         setTimeout(() => {
           markersListRef.current.forEach(mk => {
+            // Keep popup logic, styling is handled by the new useEffect
             const pos = mk.getLngLat();
             if (Math.abs(pos.lat - sLat) < 0.0002 && Math.abs(pos.lng - sLng) < 0.0002) {
               if (mk.getPopup()) mk.togglePopup();
@@ -1642,7 +1676,57 @@ const InteractiveMapView = forwardRef(function InteractiveMapView(
       } else if (hasPoints) {
         map.fitBounds(bounds, { padding: 50, maxZoom: 15, duration: 800 });
       }
-    }, [isMapLoaded, pathCoords, allMarkers, userCoords, searchedPlace, initRouteLayers, createPinHtml, createPopupHtml]);
+    }, [isMapLoaded, pathCoordsJson, allMarkersJson, userCoords, initRouteLayers, createPinHtml, createPopupHtml]);
+
+    // Handle focusPlace for Web platform
+    useEffect(() => {
+      const place = searchedPlace || selectedPlace;
+      if (!place || !mapInstanceRef.current || !isMapLoaded) return;
+      const lat = place.latitude ?? place.lat;
+      const lng = place.longitude ?? place.lng;
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        const map = mapInstanceRef.current;
+        map.flyTo({ center: [lng, lat], zoom: 16, pitch: 35, duration: 900 });
+        setTimeout(() => {
+          markersListRef.current.forEach(m => {
+            const pos = m.getLngLat();
+            if (Math.abs(pos.lat - lat) < 0.0002 && Math.abs(pos.lng - lng) < 0.0002) {
+              if (m.getPopup() && !m.getPopup().isOpen()) m.togglePopup();
+              const el = m.getElement();
+              if (el) {
+                const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                if (inner) inner.classList.add('active-pin');
+              }
+            } else {
+              const el = m.getElement();
+              if (el) {
+                const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                if (inner) inner.classList.remove('active-pin');
+              }
+            }
+          });
+
+          Object.values(clusterMarkersMapRef.current).forEach(obj => {
+            if (!obj.isCluster && obj.marker) {
+              const m = obj.marker;
+              const pos = m.getLngLat();
+              const el = m.getElement();
+              if (Math.abs(pos.lat - lat) < 0.0002 && Math.abs(pos.lng - lng) < 0.0002) {
+                if (el) {
+                  const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                  if (inner) inner.classList.add('active-pin');
+                }
+              } else {
+                if (el) {
+                  const inner = el.querySelector('.pin-pandal-wrapper') || el.querySelector('.vector-pointer-wrapper');
+                  if (inner) inner.classList.remove('active-pin');
+                }
+              }
+            }
+          });
+        }, 450);
+      }
+    }, [searchedPlace, selectedPlace, isMapLoaded]);
 
     // Highlight step when selectedPlace changes
     useEffect(() => {

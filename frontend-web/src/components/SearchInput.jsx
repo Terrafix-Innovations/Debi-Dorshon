@@ -10,6 +10,8 @@ export default function SearchInput({
   point,
   onSelectPoint,
   onClear,
+  onFocus,
+  onBlur,
   apiBaseUrl = 'https://debi-dorshon-backend.vercel.app',
 }) {
   const [query, setQuery] = useState(point?.name || '');
@@ -151,7 +153,8 @@ export default function SearchInput({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => { if (suggestions.length > 0) setIsOpen(true); }}
+          onFocus={(e) => { if (suggestions.length > 0) setIsOpen(true); if (onFocus) onFocus(e); }}
+          onBlur={(e) => { if (onBlur) onBlur(e); }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"

@@ -37,6 +37,7 @@ export default function FloatingRouteCard({
   onSwap,
   onUseCurrentLocation,
   onSearchActiveChange,
+  onChooseFromMap,
   loading = false,
   hasRoute = false,
 }) {
@@ -373,6 +374,35 @@ export default function FloatingRouteCard({
         </View>
       </View>
 
+      {/* Action Pills Row */}
+      {activeField && (
+      <View style={styles.actionPillsRow}>
+        <TouchableOpacity
+          style={styles.actionPillBtn}
+          onPress={() => {
+            triggerHaptic(15);
+            if (onChooseFromMap) onChooseFromMap(activeField || 'start');
+          }}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="location-outline" size={16} color="#1B1C1A" />
+          <Text style={styles.actionPillText}>Select on map</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.actionPillBtn}
+          onPress={() => {
+            triggerHaptic(15);
+            if (onUseCurrentLocation) onUseCurrentLocation(activeField || 'start');
+          }}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons name="crosshairs-gps" size={15} color="#1B1C1A" />
+          <Text style={styles.actionPillText}>Current location</Text>
+        </TouchableOpacity>
+      </View>
+      )}
+
       {/* Loading Indicator for Route Plan */}
       {loading && (
         <View style={styles.loadingRow}>
@@ -607,6 +637,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(235, 220, 201, 0.8)',
+  },
+
+  /* Action Pills Row below inputs */
+  actionPillsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 16,
+    paddingLeft: 30, // Align with the inputs visually
+  },
+  actionPillBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EBDCC9',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+    gap: 6,
+    shadowColor: '#2D1A16',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  actionPillText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#2D1B18',
   },
 
   loadingRow: {
